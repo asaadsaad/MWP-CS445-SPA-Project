@@ -1,0 +1,16 @@
+@SERVER = 'http://mumstudents.org:9595/api'
+
+# @name login
+POST {{SERVER}}/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "mwp", 
+    "password":"123"
+}
+@token = {{login.response.token}}
+
+###
+
+GET  {{SERVER}}//animation HTTP/1.1
+Authorization: Bearer {{token}}
