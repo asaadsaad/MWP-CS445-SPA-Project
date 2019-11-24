@@ -10,4 +10,4 @@ Fork your initial repository along with the Rest API client file from:  https://
 A daily push is required to track your code and performance. If you miss a push that will affect your final grade. 
 The project deadline will be on Thursday December 5th at 8 pm. No further pushes should be made to your repository. Perform one Pull Request to the original repository.  
 
-Please refer to project.doc for more details.
+Please refer to project-specs.pdf for more details.
