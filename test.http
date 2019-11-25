@@ -1,16 +1,14 @@
-@SERVER = 'http://www.mumstudents.org/api'
-
 # @name login
-POST {{SERVER}}/login HTTP/1.1
+POST http://www.mumstudents.org/api/login HTTP/1.1
 content-type: application/json
 
 {
     "username": "mwp", 
     "password":"123"
 }
-@token = {{login.response.token}}
+@token = {{login.response.body.token}}
 
 ###
 
-GET  {{SERVER}}//animation HTTP/1.1
+GET  http://www.mumstudents.org/api/animation HTTP/1.1
 Authorization: Bearer {{token}}
