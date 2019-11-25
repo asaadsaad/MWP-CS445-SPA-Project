@@ -1,4 +1,4 @@
-@SERVER = 'http://mumstudents.org/api'
+@SERVER = 'http://www.mumstudents.org/api'
 
 # @name login
 POST {{SERVER}}/login HTTP/1.1
