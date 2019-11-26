@@ -3,6 +3,9 @@
 "use strict"
 window.onload = function () {
     let isLogin = false;
+    let navigatorKey = "BwkHCDaltXvuMGpJSCng2fxGy3uLjEfZ";
+    let longitude;
+    let latitude;
     let token;
 
 
@@ -38,6 +41,25 @@ window.onload = function () {
 
 
     function animEventList() {
+        //Get the geolocation
+        const location = navigator.geolocation.getCurrentPosition(success, fail);
+
+
+        function success(position) {
+            longitude = position.coords.longitude;
+            latitude = position.coords.latitude;
+            console.log(longitude);
+            console.log(latitude);
+            currentPosition();
+        }
+
+        function fail(msg) {
+            alert(`${msg.code} ====> ${msg.message} `);
+        }
+
+
+
+
         //Get the DOM Elements once inside the animation page
         let geolocation = document.querySelector("#geolocation");
         let animation = document.querySelector("#animation");
@@ -85,6 +107,7 @@ window.onload = function () {
                 "password": "123"
             })
         })
+
         const myJson = await result.json()
         token = myJson.token;
         const status = myJson.status;
@@ -92,12 +115,18 @@ window.onload = function () {
         if (status === true) {
             insideLogin();
         }
+    }
 
-
-
-
-
-
+    async function currentPosition() {
+        const result = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${navigatorKey}&location=${latitude},${longitude}&includeRoadMetadata=true&includeNearestIntersection=true`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+        const myPosition = await result.json();
+        console.log(myPosition);
+        geolocation.innerHTML = `${myPosition.results[0].locations[0].adminArea5}, ${myPosition.results[0].locations[0].adminArea3} ${myPosition.results[0].locations[0].adminArea1}`;
 
     }
 
