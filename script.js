@@ -3,17 +3,18 @@
 "use strict"
 window.onload = function () {
     let isLogin = false;
+    let token;
 
 
     //Create a HTML Page
     let loginPage = `<h1>Please Login</h1><br>
-    Username: <input type="text" id="username"><br>
-    Password: <input type="text" id="password"><br>
+    Username: <input type="text" id="username" value="mwp"><br>
+    Password: <input type="text" id="password" value="123"><br>
     <input type="button" id="login" value="Login">`
 
     let animationPage = `<h1>Welcome all from</h1>
     <h2 id="geolocation"></h2>
-    <input type="text" id="animation"><br>
+    <textarea rows="40" cols="100" id="animation"></textarea><br>
     <button type="button" id="refresh">Refresh Animation</button>
     <button type="button" id="logout">Logout</button>`
 
@@ -23,6 +24,7 @@ window.onload = function () {
         //Get the DOM Element to create Login Page
         let outlet = document.querySelector("#outlet");
         outlet.innerHTML = loginPage;
+        history.pushState("login", "login", "?login")
 
         //Get the DOM Element for Login Page
         let loginButton = document.querySelector("#login");
@@ -30,7 +32,7 @@ window.onload = function () {
         let password = document.querySelector("#password");
 
         //Create EventListener for Login Page
-        loginButton.addEventListener("click", insideLogin);
+        loginButton.addEventListener("click", getCred);
 
     }
 
@@ -49,24 +51,14 @@ window.onload = function () {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     //Functions for the EventListenter
 
     //To login
     function insideLogin() {
+        history.pushState("animation", "animation", "?animation")
         outlet.innerHTML = animationPage;
         isLogin = true;
+
         animEventList()
     }
 
@@ -80,6 +72,33 @@ window.onload = function () {
             login();
 
         }
+    }
+
+    async function getCred() {
+        const result = await fetch("http://www.mumstudents.org/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "username": "mwp",
+                "password": "123"
+            })
+        })
+        const myJson = await result.json()
+        token = myJson.token;
+        const status = myJson.status;
+
+        if (status === true) {
+            insideLogin();
+        }
+
+
+
+
+
+
+
     }
 
 
