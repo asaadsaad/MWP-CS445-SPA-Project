@@ -1,7 +1,5 @@
-// your code herewin\\\
-
-window.onload = app;
-function app () {
+window.onload = main;
+function main () {
     <div class="page">
         <div class="form">
             <form class="main-form">
