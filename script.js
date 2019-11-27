@@ -1,8 +1,9 @@
 window.onload = function () {
-    let loginView, loginBtn, animationView, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation, animatinToken;
+    let loginView, loginBtn, animationView, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation, animationToken, animationFrames = [];
     const OUTLET = getElement('#outlet');
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
     const TOKEN_URL = `http://www.mumstudents.org/api/login`;
+    const ANIMATION_URL = `http://www.mumstudents.org/api/animation`;
 
     loginView = `
     <div id="loginView">
@@ -35,7 +36,7 @@ window.onload = function () {
             lat = position.coords.latitude;
             long = position.coords.longitude;
             console.log(`lat: ${lat}, long: ${long}`);
-        }, () => { err => console.log('Error:' + err)}, {enableHighAccuracy: true, timeout: 5000});
+        }, () => { err => console.log('Error:' + err) }, { enableHighAccuracy: true, timeout: 5000 });
     }
 
     /**
@@ -47,6 +48,11 @@ window.onload = function () {
         loginBtn.addEventListener('click', loadAnimationView);
 
         getToken();
+
+        setTimeout(() => {
+            getAnimationFrames();
+        })
+        
     }
 
     /**
@@ -78,7 +84,10 @@ window.onload = function () {
         })
     }
 
-    function getToken(){
+    /**
+     * Function to get token for animation api using POST request asynchronously
+     */
+    function getToken() {
         fetch(TOKEN_URL, {
             method: 'POST',
             headers: {
@@ -89,9 +98,23 @@ window.onload = function () {
                 "password": "123"
             })
         }).then(response => response.json()).then(data => {
-            animatinToken = data.token;
-            console.log(animatinToken);
+            animationToken = data.token;
+            console.log(animationToken);
         });
+    }
+
+    /**
+     * Function to get animation frames from the animation api using GET request asynchronously
+     */
+    function getAnimationFrames() {
+        console.log(animationToken);
+        fetch(ANIMATION_URL, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${animationToken}`
+            }
+        }).then(response => response.text()).then(data => console.log(data));
+        animationFrames = data.split('=====');
     }
 
     /**
