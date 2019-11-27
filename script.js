@@ -74,36 +74,6 @@ function SPA() {
 
     }
 
-    // function logout(){
-    //     outlet.innerHTML = loginTemplate;
-
-    // }
-
-    // function refresh(){
-
-    //     fetch("http://www.mumstudents.org/api/animation", {
-    //             method: "GET",
-    //             headers: {
-    //                 "Authorization": `Bearer ${token}`,
-    //             }
-    //         })
-    //         .then((res) => document.querySelector("#display").innerHTML += res.text())
-
-
-    //   console.log(response);
-    //   const animation=await response.text();
-    //   const frames=animation.split('=====\n')
-    //   const framelength=frames.length;
-    //   let currentframe=0;
-
-    //   animationId=setInterval(()=>{
-    //       document.querySelector('#display').value=frames[currentframe];
-    //       currentframe++;
-    //       if(currentframe==framelength){
-    //           currentframe=0;
-    //       }},200)
-    //     }
-
-
+    
 
 }
