@@ -23,9 +23,9 @@ Password <input type="text" placeholder="123" value = "123"/> <br>
         redirectingPage();                //to load the second page
     }
     function redirectingPage() {
-        let logOutBTN = document.getElementById("logoutid");
+        let myLogOut = document.getElementById("logoutid");
         //  let tex
-        logOutBTN.addEventListener("click", function () {
+        myLogOut.addEventListener("click", function () {
             outlet.innerHTML = loginPage;
         })
 
