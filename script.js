@@ -1,10 +1,11 @@
 window.onload = function () {
-    let loginView, loginBtn, animationView, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation, animationToken, animationFrames = [];
+    let loginView, loginBtn, animationView, animationArea, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation, animationToken, animationFrames = [], loadFramesTimeout, displayFramesTimout, displayFrameInterval;
     const OUTLET = getElement('#outlet');
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
     const TOKEN_URL = `http://www.mumstudents.org/api/login`;
     const ANIMATION_URL = `http://www.mumstudents.org/api/animation`;
-
+    let i = 0;
+    
     loginView = `
     <div id="loginView">
         <h1>Please Login</h1>
@@ -46,12 +47,6 @@ window.onload = function () {
         OUTLET.innerHTML = loginView;
         loginBtn = getElement('#login');
         loginBtn.addEventListener('click', loadAnimationView);
-
-        getToken();
-
-        setTimeout(() => {
-            getAnimationFrames();
-        })
         
     }
 
@@ -60,13 +55,25 @@ window.onload = function () {
      */
     function loadAnimationView() {
         getUserLocation();
+
         OUTLET.innerHTML = animationView;
+        animationArea = getElement('#animationArea');
 
         refreshBtn = getElement('#refresh');
         refreshBtn.addEventListener('click', refreshAnimation);
 
         logoutBtn = getElement('#logout');
         logoutBtn.addEventListener('click', logOut);
+
+        getToken();
+
+        loadFramesTimeout = setTimeout(() => {
+            getAnimationFrames();
+        }, 1000)
+
+        displayFramesTimout = setTimeout(() => {
+            displayAnimation();
+        }, 1500);
     }
 
     /**
@@ -113,15 +120,43 @@ window.onload = function () {
             headers: {
                 'Authorization': `Bearer ${animationToken}`
             }
-        }).then(response => response.text()).then(data => console.log(data));
-        animationFrames = data.split('=====');
+        }).then(response => response.text()).then(data => {
+            console.log(data);
+            animationFrames = data.split('=====');
+        });
+    }
+
+    /**
+     * Function to display animation frames
+     */
+    function displayAnimation() {
+        debugger
+        displayFrameInterval = setInterval(() => {
+            if (i < animationFrames.length) {
+                animationArea.value = animationFrames[i++]; 
+            } else {
+                i = 0;
+            }
+            // i++;
+        }, 200);
     }
 
     /**
      * Function to refresh the animation view asynchronously
      */
     function refreshAnimation() {
-        alert('animation view is refreshed!');
+        clearTimeout(loadFramesTimeout);
+        clearTimeout(displayFramesTimout);
+        clearInterval(displayFrameInterval);
+        i = 0;
+
+        loadFramesTimeout = setTimeout(() => {
+            getAnimationFrames();
+        }, 1000)
+
+        displayFramesTimout = setTimeout(() => {
+            displayAnimation();
+        }, 1500);
     }
 
     /**
