@@ -1,7 +1,8 @@
 window.onload = function () {
-    let loginView, loginBtn, animationView, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation;
+    let loginView, loginBtn, animationView, refreshBtn, logoutBtn, questApiUrl, lat, long, userLocation, animatinToken;
     const OUTLET = getElement('#outlet');
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
+    const TOKEN_URL = `http://www.mumstudents.org/api/login`;
 
     loginView = `
     <div id="loginView">
@@ -44,6 +45,8 @@ window.onload = function () {
         OUTLET.innerHTML = loginView;
         loginBtn = getElement('#login');
         loginBtn.addEventListener('click', loadAnimationView);
+
+        getToken();
     }
 
     /**
@@ -64,24 +67,31 @@ window.onload = function () {
      * Function to get user location asynchronously
      */
     function getUserLocation() {
-        debugger
         //41.0031878,-91.965341
-        let loc = `41.0031878,-91.965341`;
-        loc = `${lat},${long}`;
-        console.log(loc);
+        mapQuestApiUrl = `http://www.mapquestapi.com/geocoding/v1/reverse?key=${QUEST_API_KEY}&location=${lat},${long}`;
+        console.log(mapQuestApiUrl);
 
-        questApiUrl = `http://www.mapquestapi.com/geocoding/v1/reverse?key=${QUEST_API_KEY}&location=${loc}`;
-        console.log(questApiUrl);
-
-        fetch(questApiUrl).then(response => response.json()).then(data => {
-            console.log(`lat: ${lat}, long: ${long}`);
-            console.log(questApiUrl);
+        fetch(mapQuestApiUrl).then(response => response.json()).then(data => {
             let address = data.results[0].locations[0];
-            console.log(address);
             userLocation = `${address.street}, ${address.adminArea5}, ${address.adminArea3}, ${address.postalCode}`;
             getElement('#location').innerHTML = userLocation;
-            console.log(userLocation);
         })
+    }
+
+    function getToken(){
+        fetch(TOKEN_URL, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                "username": "mwp",
+                "password": "123"
+            })
+        }).then(response => response.json()).then(data => {
+            animatinToken = data.token;
+            console.log(animatinToken);
+        });
     }
 
     /**
