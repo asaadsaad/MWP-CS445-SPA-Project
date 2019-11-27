@@ -9,10 +9,11 @@ window.onload=function(){
     document.getElementById("default1").value="mwp";
     document.getElementById("default2").value="123";
     let button=document.getElementById("button");
-    
-    // function buttonClick(){
-    //    location.replace()
-    // }
+    //when our login button clicked
+    function loginClicked(){
+       location.replace("http://127.0.0.1:5500/firstproject/MWP-CS452-2019-SPA-Project/index.html")
+    }
+    button.addEventListener("click",loginClicked);
 
 }
 
