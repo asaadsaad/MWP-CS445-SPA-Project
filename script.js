@@ -1,3 +1,4 @@
+// TODO wrap into function
 
 // animation fields
 let animationIndex = 0;
@@ -207,6 +208,14 @@ function onClickLogin() {
 function onClickLogout() {
   // cancel interval
   clearInterval(animationTimerId);
+
+  // clear app session data
+  animationTimerId = null;
+  token = null;
+  animationFrames = null;
+  animationIndex = 0;
+  isLoggedIn = false;
+
   // load log in page
   goToLogin();
 
