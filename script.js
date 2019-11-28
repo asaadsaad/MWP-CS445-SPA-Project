@@ -1,17 +1,26 @@
 // your code here
 
 window.onload=function(){
-    const loginTemplate=` <h1>Please Login</h1><br>
+    const loginTemplate=`
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <div  class="container">
+    <div class="row-5"><h1>Please Login</h1><br></div>
            UserName <input type="text" id="un" value="mwp"><br>
            PassWord <input type="text" id="pw" value="123"><br>
-           <button id="logInBTN">LogIn</button>`;
+           <button id="logInBTN">LogIn</button>
+           </div>`;
 
-    const animationTemplate=`<div>
+    const animationTemplate=`
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <div>
     <h3 id="dis_h3"></h3>
-    <textarea id="disAnimation" cols="100" rows="40"></textarea><br>
+    <textarea id="disAnimation" cols="70" rows="25"></textarea><br>
     <button id="refAnimationBTN">Refresh Animation</button>
     <button id="logoutBTN">Logout</button>
-    <button id="decreaseBTN">-</button><span>-- speed ++</span><button id="increaseBTN">+</button>
+    <button id="decreaseBTN">- -</button><span> speed </span><button id="increaseBTN">++</button>
+    <button id="startBTN">Start</button> <button id="stopBTN">Stop</button>
     </div>`;
 
     let token="";
@@ -90,12 +99,24 @@ window.onload=function(){
      const speedArr=[50,100,200,300,400,500,600,700,800,900,1050];
      let speedIndex=(speedArr.length-1)/2;
      let myAnimation=true;
-     let tempFetchAnimationPictures="";
+     let tempFetchAnimationPictures="",tempIndexToStopAnimation=0;
 
 
         function allContentOfAnimation(){
             geoLocationFunc().then(()=>{document.getElementById("dis_h3").innerHTML=streetYourAddress});
             mineAnimationFunc();
+            let stop=document.getElementById("stopBTN");
+            let start=document.getElementById("startBTN");
+            start.disabled=true;
+
+    stop.addEventListener("click",$=> {
+        if(animationId)clearInterval(animationId);
+        start.disabled=false;
+        stop.disabled=true;});
+    start.addEventListener("click",$=> {
+        tempFuncToSupportSpeed();
+        start.disabled=true;
+        stop.disabled=false;});
 
     document.getElementById("increaseBTN").addEventListener("click",_=>{
         if(animationId)clearInterval(animationId);
@@ -131,6 +152,7 @@ window.onload=function(){
           let reset = 0;
           animationId = setInterval(_ => {
             textArea.value = picSplit[reset++];
+            tempIndexToStopAnimation=reset;
             if (reset == picSplit.length) {
               reset = 0;
             }
@@ -145,6 +167,7 @@ window.onload=function(){
                 tempFetchAnimationPictures=aniSplit;
                 animationId= setInterval(_=>{
                  textArea.value=aniSplit[resetCount++];
+                 tempIndexToStopAnimation=resetCount;
                  if(resetCount==aniSplit.length){resetCount=0}
              },speedArr[speedIndex]);
              //console.log(aniSplit);
@@ -153,7 +176,7 @@ window.onload=function(){
 
         function tempFuncToSupportSpeed(){
             const textArea=document.getElementById("disAnimation");
-            let resetCount=0;
+            let resetCount=tempIndexToStopAnimation;
             animationId= setInterval(_=>{
              textArea.value=tempFetchAnimationPictures[resetCount++];
              if(resetCount==tempFetchAnimationPictures.length){resetCount=0}
