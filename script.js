@@ -11,6 +11,7 @@ window.onload=function(){
     <textarea id="disAnimation" cols="100" rows="40"></textarea><br>
     <button id="refAnimationBTN">Refresh Animation</button>
     <button id="logoutBTN">Logout</button>
+    <button id="decreaseBTN">-</button><span>-- speed ++</span><button id="increaseBTN">+</button>
     </div>`;
 
     let token="";
@@ -86,44 +87,77 @@ window.onload=function(){
      }
 
 
-
+     const speedArr=[50,100,200,300,400,500,600,700,800,900,1050];
+     let speedIndex=(speedArr.length-1)/2;
+     let myAnimation=true;
+     let tempFetchAnimationPictures="";
 
 
         function allContentOfAnimation(){
             geoLocationFunc().then(()=>{document.getElementById("dis_h3").innerHTML=streetYourAddress});
-    const textArea=document.getElementById("disAnimation");
-    const refreshBTN=document.getElementById("refAnimationBTN");
-    const logOutBTN=document.getElementById("logoutBTN");
+            mineAnimationFunc();
 
-let picSplit = picture.split("=====");
-let reset=0;
-animationId=setInterval(_=>{
-    textArea.value=picSplit[reset++];
-    if(reset==picSplit.length){reset=0}
-},800);
-console.log(picSplit[3]);
+    document.getElementById("increaseBTN").addEventListener("click",_=>{
+        if(animationId)clearInterval(animationId);
+        (speedIndex>0)? --speedIndex : speedIndex=0;
+        (myAnimation)?mineAnimationFunc():tempFuncToSupportSpeed();
+    });
 
-    logOutBTN.addEventListener("click",function(){
+    document.getElementById("decreaseBTN").addEventListener("click",_=>{
+        if(animationId)clearInterval(animationId);
+        (speedIndex<speedArr.length)? ++speedIndex : speedIndex=speedArr.length-1;
+        (myAnimation)?mineAnimationFunc():tempFuncToSupportSpeed();
+    });
+
+    document.getElementById("logoutBTN").addEventListener("click",function(){
         token="";
         outlet.innerHTML=loginTemplate;
        // history.pushState({ 'page_id': 1}, "login", "login.html");
 
         });
 
-    refreshBTN.addEventListener("click",function(){
-      
-       getPictureFromServer().then(reso=>{
-           let resetCount=0;
-           textArea.value='';
-           let aniSplit=reso.split("=====");
-           animationId= setInterval(_=>{
-            textArea.value=aniSplit[resetCount++];
-            if(resetCount==aniSplit.length){resetCount=0}
-        },200);
-        //console.log(aniSplit);
-       });
+    document.getElementById("refAnimationBTN").addEventListener("click",function(){
+        myAnimation=false;
+        speedIndex=(speedArr.length-1)/2;
+        fetchAnimationFunc();
     });    
 
+        }
+
+        function mineAnimationFunc() {
+        const textArea=document.getElementById("disAnimation");
+          let picSplit = picture.split("=====");
+          tempFetchAnimationPictures=picSplit;
+          let reset = 0;
+          animationId = setInterval(_ => {
+            textArea.value = picSplit[reset++];
+            if (reset == picSplit.length) {
+              reset = 0;
+            }
+          }, speedArr[speedIndex]);
+          //console.log(picSplit[3]);
+        }
+        function fetchAnimationFunc(){
+            const textArea=document.getElementById("disAnimation");
+            getPictureFromServer().then(reso=>{
+                let resetCount=0;
+                let aniSplit=reso.split("=====");
+                tempFetchAnimationPictures=aniSplit;
+                animationId= setInterval(_=>{
+                 textArea.value=aniSplit[resetCount++];
+                 if(resetCount==aniSplit.length){resetCount=0}
+             },speedArr[speedIndex]);
+             //console.log(aniSplit);
+            });
+        }
+
+        function tempFuncToSupportSpeed(){
+            const textArea=document.getElementById("disAnimation");
+            let resetCount=0;
+            animationId= setInterval(_=>{
+             textArea.value=tempFetchAnimationPictures[resetCount++];
+             if(resetCount==tempFetchAnimationPictures.length){resetCount=0}
+         },speedArr[speedIndex]);
         }
 
 }
