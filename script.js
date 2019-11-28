@@ -1,5 +1,8 @@
 window.onload = function () {
   let token;
+  let timerId;
+  let Key = "nOkTZJzGcN8wKdZbHtemhMf4zHkvJBVG"
+
   const loginTemplate = `
        <h1>Please login</h1>
        UserName <input placeholder="mwp" value="mwp"/> <br>
@@ -27,8 +30,9 @@ window.onload = function () {
       myGet()
     }
   }
-
   myGet = async function () {
+
+    clearInterval(timerId);
 
     const result = await fetch('http://www.mumstudents.org/api/animation',
       {
@@ -39,18 +43,40 @@ window.onload = function () {
     const obj = await result.text()
     console.log(obj)
     const anime = obj.split("=====\n");
+
     console.log(anime)
     const mylength = anime.length;
-    
-    let timerId = setInterval(() => {
-      let i = 0;
-      while (!(i == mylength - 1)) {
-        document.getElementById("animation1").innerHTML = anime[i];
-        i++;
+    let count = 0;
+
+
+
+    timerId = setInterval(function () {
+      document.getElementById("animation1").innerHTML = anime[count];
+      count++
+      if (count === mylength) {
+        count = 0
       }
-    }, 300);
+
+    }, 200);
   }
+  function locationFinder() {
+  navigator.geolocation.getCurrentPosition(success);
+    let long, lat
+   async function success(position) {
+        long= position.coords.longitude.toFixed(3)
+        lat= position.coords.latitude.toFixed(3)
+      console.log(long +"," + lat)
+    let theLocation = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${Key}&location=${lat},${long}&&includeRoadMetadata=true&includeNearestIntersection=true`)
+         theLocation= await theLocation.json()
+ 
+    const city=theLocation.results[0].locations[0].adminArea5;
+    const state=theLocation.results[0].locations[0].adminArea3;
+      
+      document.getElementById('adress').innerHTML=`welcome all from ${city }, ${state}` ;
+    }}
+
   function myHTML() {
+
     function login() {
       document.getElementById("outlet").innerHTML = loginTemplate
     }
@@ -59,26 +85,17 @@ window.onload = function () {
     function aniPage() {
 
       document.getElementById("outlet").innerHTML = animationTemplate;
+      locationFinder()
       document.getElementById("logout").addEventListener("click", login)
       document.getElementById("refresh").addEventListener("click", myGet)
     }
-
     document.getElementById("login").addEventListener("click", aniPage)
     document.getElementById("login").addEventListener("click", post)
   }
 
-  myHTML();  
+  myHTML();
 
 }
 
 
 
-//if(anime.length!==0){
-    //console.log(anime[0])
-    //clearInterval(timerId)
-  
-  //  console.log(anime)
-  // //anime.forEach(()=>{
-
-  //   for(let i =0; i<anime.length; i++){
-  //     let each = anime[i];
