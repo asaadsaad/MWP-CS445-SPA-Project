@@ -6,7 +6,7 @@ i was also be able to log out and go back to the previus out let page(log in pag
 i will work on the animation page, and fetching stuff tommorrow
 i will email all the problems i have faced tommorow
 
-today 11/26/19
+today 11/27/19
 today i have tried to work on fetching the token and fetching the 
 animation and i was able to display the animation on the text area
 i am planing to do the geolcation functionality and the rest for thursday, on thanks giving day....
