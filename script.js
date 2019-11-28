@@ -1,5 +1,6 @@
 window.onload = function(){
-//let token;
+let token;
+
 
 const login = `
 <h1>Please Login</h1><br>
@@ -55,11 +56,13 @@ function fetchToken() {
         })
     })
         .then(resp => resp.json())
-        .then(data => {
-            fetch("http://mumstudents.org/api/animation", {
+        .then(data =>{token=data.token;
+            fetchAnim()})
+}
+function fetchAnim(){fetch("http://mumstudents.org/api/animation", {
                 method: 'GET',
                 headers: {
-                    "Authorization": `Bearer ${data.token}`
+                    "Authorization": `Bearer ${token}`
                 }
             })
             .then(reps => reps.text())
@@ -68,10 +71,7 @@ function fetchToken() {
                 animFrames = data.split("=====");
                 //console.log(animFrames);
             });
-        });
-}
-
+      
+        }
 fetchToken();
-
-
 }
