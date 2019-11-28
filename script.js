@@ -21,15 +21,7 @@ window.onload=function(){
     //index.html
     const outlet=document.getElementById("outlet");
     outlet.innerHTML=loginTemplate;
-    let picture= `   
-   o
-  /#\
-  _|_
- =====
-  \o/
-   #
- _/ \_  
-    `;
+    let picture= ` o\n/#\\\n_|_===== \\o/\n  #\n_/ \\_=====|_o_\n  # \\\n_/|_===== _o_/\n/ #\n _|\\_`;
 
     //login.html
     const logInBTN=document.getElementById("logInBTN");
@@ -109,6 +101,7 @@ animationId=setInterval(_=>{
     textArea.value=picSplit[reset++];
     if(reset==picSplit.length){reset=0}
 },800);
+console.log(picSplit[3]);
 
     logOutBTN.addEventListener("click",function(){
         token="";
