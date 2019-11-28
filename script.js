@@ -4,7 +4,9 @@ function SPA() {
 
     // select
     let outlet = document.querySelector("#outlet");
-    let token, animationId;
+    let token;
+    let animation, animationId;
+    
 
 
     // login template
@@ -21,59 +23,55 @@ function SPA() {
     <button id="refresh" >Refresh Animation</button>
     <button id="logout">Logout</button>
     `
+
+
+    // listneer
+
     //check
-    outlet.innerHTML = loginTemplate;
-
-
-
-    // addPost
-    document.querySelector("#login").addEventListener("click", addPost);
-    // document.querySelector("#login").addEventListener("click", x);
-
-
-
-    function addPost() {
-
+    let addPost = async function () {
         let username = document.querySelector("#username").value;
         let password = document.querySelector("#password").value;
-        fetch('http://www.mumstudents.org/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
+        let res = await fetch('http://www.mumstudents.org/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
             })
-            .then(res => res.json())
-            .then((data) => {
-                token = data.token;
-                //console.log(data);
-                //console.log(token);
-            })
-            .catch(error => console.log(error));
+        })
+        let response = await res.json();
+        token = response.token;
+        animationpage();
+        getPost();
+    }
 
+    let getPost = async function () {
+        let res1 = await fetch("http://www.mumstudents.org/api/animation", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        })
 
-        outlet.innerHTML = animationTemplate
-
-        fetch("http://www.mumstudents.org/api/animation", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                }
-            })
-            .then((res) => res.text())
-            .then(data => document.querySelector("#display").innerHTML = (data))
-
-
-        //setTimeout(() => console.log(token), 3000)
-
-
+        let data = await res1.text();
+        let array = data.split("=====\n")
+        console.log(array)
+        document.querySelector('#display').innerHTML= array;
 
     }
 
-    
+    function login() {
+        outlet.innerHTML = loginTemplate;
+    }
+    login()
+    document.querySelector("#login").addEventListener("click", addPost);
+
+    function animationpage() {
+        outlet.innerHTML = animationTemplate;
+        document.querySelector("#logout").addEventListener("click", login);
+        document.querySelector("#refresh").addEventListener("click", getPost)
+    }
+
 
 }
