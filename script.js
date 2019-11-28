@@ -38,7 +38,7 @@ Password <input id="password" type="text"><br>
         let textNode = document.getElementById("textarea");
         function refreshFunc() {
 
-            textNode.innerHTML = getToken();
+            textNode.innerHTML = animate(d);
         }
     }
     async function getToken() {
@@ -68,16 +68,28 @@ Password <input id="password" type="text"><br>
             method: "GET",
             headers: { "Authorization": `Bearer ${data.token}` }
         });
-        let b = a.text()
-        console.log(b);
+        let b = await a.text()
+        let c = await b.split('=====');
+         d = await animate;
+        console.log(d);
+       
+     
+    
 
-            // .then(data => data.text())
-            // .then(elem => console.log(elem));
+       // .then(data => data.text())
+        // .then(elem => console.log(elem));
         // console.log(elem);
 
 
     }
-    getToken()
+    getToken();
+     function animate(arr) {
+   arr.forEach((element,index,arra )=> {
+       setInterval((element) => {
+           console.log(arra[index])
+       }, 500);
+   });
+    } 
 
 
 
