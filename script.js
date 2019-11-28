@@ -1,9 +1,3 @@
-
-
-
-
-    
-
   window.onload = function() {
     loginPage = `<h1>Please Login</h1>
     <br />
