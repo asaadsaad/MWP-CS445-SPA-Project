@@ -10,7 +10,10 @@ function cs445Project() {
 
   const displayPage = document.getElementById("outlet");
   let token;
-  let tokenSatus;
+  let geoLocation = "test";
+  let timerId;
+
+  //let tokenSatus;
   const loginTemplate = `<div class="log-form">
     <h1 >Please Login</h1>
     <form>
@@ -20,69 +23,113 @@ function cs445Project() {
     </form>
   </div><!--end log form -->`;
 
+  //animation template 
   const animationTemplate = `<div id="location"> welcome to SPA Animation</div>
   <textarea id="loding" rows="20" cols="50"></textarea><br>
   <button id="refresh" >Refresh Animation</button>
   <button id="logOut"> LogOut </button>`;
 
-  
-  
+
+  //default template 
   displayPage.innerHTML = loginTemplate;
-  document.getElementById("login").addEventListener("click", getToken);
-  document.getElementById("login").addEventListener("click", getAnimation);
+
+  // listeners to login 
+  document.getElementById("login").addEventListener("click", loginPage);
+
+
+
 
 
   /**
-   * function to feach token from server 
-   * @return {promises}  Json Object 
+   * Function to feach response token as Authentication 
+   * @return {promises}  Json Object token 
    */
-  function getToken() {
-    tokenSatus = "logIn";
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    let logObject = {
-      username: username,
-      password: password
-    };
-    //  change into animation page 
-    displayPage.innerHTML = animationTemplate;
+  async function loginPage() {
 
-    //  1st route to fetch token 
-    return fetch(" http://www.mumstudents.org/api/login ", {
+    // try cach block 
+    try {
+      let username = document.getElementById("username").value;
+      let password = document.getElementById("password").value;
+      let logObject = {
+        username: username,
+        password: password
+      };
+
+      //  change into animation template 
+      displayPage.innerHTML = animationTemplate;
+
+
+      //  1st route to fetch token 
+      let response = await fetch(" http://www.mumstudents.org/api/login ", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(logObject)
-      })
-      .then((responce) => {
-        return responce.json();
-      }).then((result) => {
-        token = result.token;
-        console.log(token);
-      })
-      .catch((error) => console.log(error));
+      });
+      // result  from the Json response 
+      let result = await response.json();
+      token = result.token;
+      console.log(token);
 
+      // start animation onlogin 
+      getAnimation();
 
-
+      //adding lisinner to refresh the page loding new animation each time 
+      document.getElementById("refresh").addEventListener("click", _ => {
+        if (timerId) clearInterval(timerId);
+        getAnimation()
+      });
+      //throwing error message 
+    } catch (error) {
+      console.log(`error message ${error}`)
+    }
   }
-  /**
+
+
+
+
+  /***
+   * Function to fetching animation  
    * @return {string} string of animation 
    */
-  function getAnimation() {
-    // 2nd route to fetch animations list 
-    return fetch("http://www.mumstudents.org/api/animation ", {
-        method: "GET",
-        headers: {"Authorization":`Bearer  ${{token}}`
+  async function getAnimation() {
+
+    // 2nd rout to fetch animation string  
+    try {
+      let getAnimation = await fetch("http://www.mumstudents.org/api/animation", {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      })
-      .then(result => console.log(result));
+      });
+
+      // response with animation string 
+      let animation = await getAnimation.text();
+
+      // creating animation 
+      let animationArray = animation.split("=====\n");
+      let index = 0;
+      timerId = setInterval(_ => {
+        document.getElementById("loding").value = animationArray[index];
+        index++;
+        // looping the animation 
+        if (index == animationArray.length) {
+          index = 0;
+        }
+      }, 200);
+
+      // adding lisinner into logout button 
+      document.getElementById("logOut").addEventListener("click", _ => {
+        displayPage.innerHTML = loginTemplate;
+      });
+      ///document.getElementById("refresh").addEventListener("click", _=>{ getAnimation()});
+
+    } catch (e) {
+      console.log("Error message" + e);
+    }
+
 
 
   }
-
-
-
-
 
 }
