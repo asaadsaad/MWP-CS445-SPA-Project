@@ -1,10 +1,8 @@
   window.onload = function() {
-
     let token = null,
     animation = null,
     userLatitude = 0,
     userLongitude = 0,
-
     loginPage = `<h1>Please Login</h1>
     <br />
     <form id="myLoginForm">
