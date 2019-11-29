@@ -26,11 +26,42 @@ window.onload = function () {
             <button id="logout">Logout</button>
         </div>
         `;
+
+    window.addEventListener('popstate', popstateHandler);
+
     getLatLong();
     loadLogin();
 
     /**
-     * Function the current use lat and long
+     * Function to handle popstate event
+     * @param {Event} event 
+     */
+    function popstateHandler(event) {
+        debugger
+        if (event) {
+            OUTLET.innerHTML = event.state.view;
+            event.state.btnIds.forEach(id => {
+                let btn = getElement(id);
+                switch (id) {
+                    case 'refresh':
+                        btn.addEventListener('click', refreshAnimation);
+                        displayAnimation(event.state.data);
+                        break;
+                    case 'logout':
+                        btn.addEventListener('click', logOut);
+                        break;
+                    default:
+                        btn.addEventListener('click', loadAnimationView);
+                        displayAnimation(event.state.data);
+                        break;
+                }
+            });
+        }
+    }
+
+
+    /**
+     * Function to get the current user lat and long
      */
     function getLatLong() {
         // getting current user lat long
@@ -49,16 +80,7 @@ window.onload = function () {
         loginBtn = getElement('#login');
         loginBtn.addEventListener('click', loadAnimationView);
 
-        let loginViewState = `
-            <div id="loginView">
-                <h1>Please Login</h1>
-                <label for="username">UserName: </label>
-                <input type="text" id="username" value="mwp"><br>
-                <label for="password">Password: </label> 
-                <input type="password" value="123"><br>
-                <button id="login" onclick="loadAnimationView()">Login</button>
-            </div>
-            `;
+        history.pushState({ data: animationFrames, btnIds: ['#login'], view: loginView }, null, '?login');
     }
 
     /**
@@ -90,6 +112,8 @@ window.onload = function () {
 
         clearInterval(displayFrameInterval);
         getAnimationFrames();
+
+        history.pushState({ data: animationFrames, view: animationView, btnIds: ['#refresh', '#logout'] }, null, '?animation')
     }
 
     /**
@@ -123,7 +147,7 @@ window.onload = function () {
      * Function to fetch animation frames asynchronously
      * @param {String} url animation frame url
      */
-    function fetchFrames(url) {
+    function fetchFrames(url, token) {
         fetch(url, {
             method: 'GET',
             headers: {
@@ -133,17 +157,20 @@ window.onload = function () {
             .then(response => response.text())
             .then(data => {
                 animationFrames = data.split('=====');
-                displayAnimation();
+                displayAnimation(animationFrames);
             });
     }
 
     /**
      * Function to display animation frames
      */
-    function displayAnimation() {
+    function displayAnimation(frames) {
+        debugger
+        clearInterval(displayFrameInterval);
+        console.log(frames.join('====='));
         displayFrameInterval = setInterval(() => {
-            if (i < animationFrames.length) {
-                animationArea.value = animationFrames[i++];
+            if (i < frames.length) {
+                animationArea.value = frames[i++];
             } else {
                 i = 0;
             }
