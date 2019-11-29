@@ -1,6 +1,7 @@
 window.onload = function () {
     let token = "";
     let animaresult;
+    let isFirstPageLoaded=true;
     let interval = "";
     let geo = "GnbD8akWduu4C7RmTqYTJ7f6ODvTEbbv";
     //login template
@@ -85,7 +86,10 @@ window.onload = function () {
         //this will fetch and bring the result in text format
          animaresult = await animafetch.text();
         //to display the first animation on the animation page with out refreshing
-        displayFirstAnima();
+        if(isFirstPageLoaded){
+            displayFirstAnima();
+        }
+        
     }
 
 
@@ -95,25 +99,25 @@ window.onload = function () {
         let splitedanima = animaresult.split("=====\n");
          let index= 0;
         let arrayLength= splitedanima.length;
-        setInterval(() => {
+        interval=setInterval(() => {
             textarea.innerHTML = splitedanima[index];
             index++;
-            if (index === arrayLength-1) {
+            if (index === arrayLength) {
                 index=0;
             }
         }, 200);
     }
 
     function displayRefesh() {
-       
+        isFirstPageLoaded=false;
         fetchAnimation();
-        let splitedanima = animArray.split("=====\n");
+        let splitedanima = animaresult.split("=====\n");
         let arrayLength = splitedanima.length;
         let index= 0;
         interval = setInterval(() => {
             textarea.innerHTML = splitedanima[index];
             index++;
-            if (index === arrayLength-1) {
+            if (index === arrayLength) {
                 index = 0;
             }
         }, 200);
