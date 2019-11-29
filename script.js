@@ -10,8 +10,8 @@ function cs445Project() {
 
   const displayPage = document.getElementById("outlet");
   let token;
-  let geoLocation = "test";
   let timerId;
+  let geokey = `1jwCRc01HYt6VS4GQSVQTMxsHTAIHqGt`
 
   //let tokenSatus;
   const loginTemplate = `<div class="log-form">
@@ -82,7 +82,7 @@ function cs445Project() {
       });
       //throwing error message 
     } catch (error) {
-      console.log(`error message ${error}`)
+      console.log(`Error message : ${error}`)
     }
   }
 
@@ -94,7 +94,7 @@ function cs445Project() {
    * @return {string} string of animation 
    */
   async function getAnimation() {
-
+    geoLocation();
     // 2nd rout to fetch animation string  
     try {
       let getAnimation = await fetch("http://www.mumstudents.org/api/animation", {
@@ -122,14 +122,40 @@ function cs445Project() {
       document.getElementById("logOut").addEventListener("click", _ => {
         displayPage.innerHTML = loginTemplate;
       });
-      ///document.getElementById("refresh").addEventListener("click", _=>{ getAnimation()});
 
-    } catch (e) {
-      console.log("Error message" + e);
+    } catch (error) {
+      console.log(`Error message : ${error}`);
     }
-
-
-
   }
+
+
+  //accesing the location of the user 
+  async function geoLocation() {
+
+    try {
+      navigator.geolocation.getCurrentPosition(success, faile);
+
+      async function success(position) {
+        let long = position.coords.longitude;
+        let lat = position.coords.latitude;
+
+        let geoResponse = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${geokey}
+                       &location=${lat},${long}&includeRoadMetadata=true&includeNearestIntersection=true`);
+        let location = await geoResponse.json();
+        const city = location.results[0].locations[0].adminArea5;
+        const state = location.results[0].locations[0].adminArea3;
+        const country = location.results[0].locations[0].adminArea1;
+
+        document.getElementById("location").innerHTML = `Welcome all from ${city},${state},${country}`;
+      }
+      async function faile() {
+        document.getElementById("location").innerHTML = `Welcome all to  SPA  Animation  `;
+      }
+    } catch (error) {
+      console.log("Error Message " + error)
+
+    }
+  }
+
 
 }
