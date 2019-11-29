@@ -107,6 +107,6 @@ function domain() {
     }
     refresh.addEventListener("click", function () {
          clearInterval(animationId);
-        fetchAnimation()// animation does not iterate 
+        fetchAnimation()// I am trying to iterate the animation
     })
 }

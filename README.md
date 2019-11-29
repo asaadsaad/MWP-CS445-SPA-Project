@@ -14,3 +14,4 @@ Please refer to project-specs.pdf for more details.
 
 
 #The login page, textarea and logout buttons are work well. 
+#I am trying to iterate the animation, but does not fixed yet.
