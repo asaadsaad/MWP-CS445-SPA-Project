@@ -1,9 +1,14 @@
 
-// 'use strict';
 /**
- * This project is a play animation 
- * this first function encapsulate every code and runs after all code is loaded.
- * @augments no parameter for this function
+ * Weldensie Embaye
+ * @Nov. 26, 2019
+ * wembaye@mum.edu;
+
+ 
+/**
+ * This project is about playing an animation 
+ * this first function encapsulate every code and runs after the page has finished laoding.
+ * @param no parameter for this function
  * @returns it return the login page where users verify themselves and start to play with the animation. 
  */
 window.onload = function animationProject() {
@@ -12,7 +17,6 @@ window.onload = function animationProject() {
              username: <input type="text" value="mwp" id="input1" /> <br/>
              password: <input type="text" value="123" id="input2" /> <br/>
              <button type="button" id="login">login</button>`
-
 
     let myAnimation = `<h1 id="locationTitle"> </h1>
              <textarea type="text" id="outputDiv" cols="60" rows="15" style="font-size: 18px;"></textarea></br>
@@ -25,14 +29,19 @@ window.onload = function animationProject() {
 
 
     /**
-     * I add login listener that accepts two parameters.
-     * I recommend the user to refresh the page to make sure every code is loaded before every click
+     * I added login listener that accepts two parameters.
+     * I recommend the user to refresh the page to make sure every code is loaded before trying to login
      * This event includes multiple function
-     * @param  {"click"} is the first parameter that allow the user run the event via one click.
+     * @param  {"click"} is the first parameter that allow the user to login and run the event via one click.
      * @param  {function } is the second parameter that does not take any parameter.
      * @returns this event has multiple functions so do as multiple returns.
      */
+
+
+
     document.getElementById("login").addEventListener('click', async function () {
+        history.pushState({ page: 1 }, null, "?page=1");
+
         document.getElementById("outlet").innerHTML = myAnimation;
 
 
@@ -58,7 +67,8 @@ window.onload = function animationProject() {
             async function findLocation() {
                 try {
                     /**
-                    * This function fetch (get) allow to get the geolocation address of the user ased on access id, the latitude and longitude information
+                    * This function fetch (get) allow to get the geolocation address of the 
+                     user ased on access id, the latitude and longitude information
                    * @param  {string} is an id to allow access to the server
                    * @param  {number} is latitude information of the user
                    * @param  {number} is longitude information of the user
@@ -74,7 +84,7 @@ window.onload = function animationProject() {
                     const city = response1.results[0].locations[0].adminArea5;
                     const state = response1.results[0].locations[0].adminArea3;
                     const country = response1.results[0].locations[0].adminArea1;
-                    document.getElementById('locationTitle').innerHTML = `Welcome all from ${city}, ${state},${country}`;
+                    document.getElementById('locationTitle').innerHTML = `Welcome all from ${city}, ${state}, ${country}!!`;
                 }
                 /**
                * This function handle error in case geolocation information request go wrong.
@@ -135,8 +145,13 @@ window.onload = function animationProject() {
 
                 textId = await response3.text();
                 playAnimation();
+                // let url = 'C:/Users/wembaye/Documents/GitHub/MWP-CS452-2019-SPA-Project/animation';
+                // history.pushState(textId, null, url);
+
                 async function playAnimation() {
+
                     textId = await textId.split("=====\n");
+
                     let count = 0;
                     animationID = await setInterval(() => {
                         document.getElementById("outputDiv").innerHTML = textId[count];
@@ -164,16 +179,19 @@ window.onload = function animationProject() {
          * @returns {function} this second return function call the get animation function and play new animation.
 
          */
+        let count2 = 2
         animation.addEventListener("click", async function () {
+            history.pushState({ page: count2 }, null, `?page=${count2}`);
             await clearInterval(animationID);
+            ++count2
             getAnimation();
         });
 
         /**
-        * I add logout listener that accepts two parameters.
+        * I added logout listener that accepts two parameters.
         * @param  {"click"} is the first parameter that allow the user to logout of the animation game.
         * @param  {function } is the second parameter that does not take any parameter.
-        * @returns returns the login page where the user can login and play again.
+        * @returns returns the login page where the user can login and play again. 
         */
         logout.addEventListener("click", async function () {
             document.getElementById("outlet").innerHTML = myLogin;
