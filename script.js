@@ -3,7 +3,9 @@
 window.onload = animationApp;
 
 function animationApp() {
+
   const GEOLOCATION_API_KEY = "KAPjZLb1XuZglHU4hsaPZ3ip7ZRHUaFm";
+
   let animationId;
   let token;
 
@@ -20,8 +22,6 @@ function animationApp() {
 <button id="logout">Logout</button>
 `;
 
-let logout=document.getElementById('logout');
-let refreshA=document.getElementById('refresh');
   //login page and animation textrea page function. when first the function invokes take you
   //to the login templete.
 
@@ -40,16 +40,17 @@ let refreshA=document.getElementById('refresh');
 
   document.getElementById("login").addEventListener("click", function(e) {
     fetching();
-    // fetchAnimation(token);
     pagination(animationPage);
   });
 
   async function fetching() {
+    //creating a username and password object.
     let data = {
       username: document.querySelectorAll("input")[0].value,
       password: document.querySelectorAll("input")[1].value
     };
 
+    //fetching the token for the username and password from the url.
     const res = await fetch("http://www.mumstudents.org/api/login", {
       method: "POST",
       headers: {
@@ -61,23 +62,39 @@ let refreshA=document.getElementById('refresh');
     const result = await res.json();
     token = result.token;
     console.log(token);
-  }
 
-  //logout.onclick=function(){ pagination(loginPage)};
-
-  refreshA.addEventListener('click',function(){
+    //creating the refresh annimation button and invoking the fetchAnimation from here.
+    document.getElementById('refresh').addEventListener('click',fetchAnimation);
     fetchAnimation();
-  });
+  } 
 
   async function fetchAnimation() {
+   //any time you are clicking the refresh animation, the animation Id needs to be cleared.
+   //clear interval is calling from here.
    
+    if(animationId){ clearInterval(animationId);}
+
     const response = await fetch("http://www.mumstudents.org/api/animation", {
       headers: {
-        " Authorization": `Bearer ${token}`
+        'Authorization': `Bearer ${token}`
       }
     });
     console.log(response);
     const animation = await response.text();
- 
+    console.log(animation);
+
+//changing the animation to array in order to play the diffent parts at interval.
+  const frames=animation.split('=====\n')
+  const framelength=frames.length;
+  let currentframe=0;
+
+  animationId=setInterval(()=>{
+      document.querySelector('#animation').value=frames[currentframe];
+      currentframe++;
+      if(currentframe===framelength){
+          currentframe=0;
+      }},200)
+//display the animation in the text area.
+   document.getElementById('animation').innerHTML=animation;
   }
 }
