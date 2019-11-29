@@ -107,6 +107,6 @@ function domain() {
     }
     refresh.addEventListener("click", function () {
          clearInterval(animationId);
-        fetchAnimation()
+        fetchAnimation()// animation does not iterate 
     })
 }
