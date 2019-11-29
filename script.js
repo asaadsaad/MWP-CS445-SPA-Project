@@ -4,25 +4,64 @@ window.onload=function(){
     const loginTemplate=`
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+     <!-- Just an image -->
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand" href="#">
+    <img src="angular.png" width="30" height="30" alt="fail">
+  </a>
+</nav>
     <div  class="container">
-    <div class="row-5"><h1>Please Login</h1><br></div>
-           UserName <input type="text" id="un" value="mwp"><br>
-           PassWord <input type="text" id="pw" value="123"><br>
-           <button id="logInBTN">LogIn</button>
+
+    <form class="form">
+    <div class="row-3 col-md-4 mb-3"><h1>Please Login</h1><br></div>
+    <div class="form-group col-md-4 mb-3">
+      <label for="un">UserName</label>
+      <input type="text" id="un" value="mwp" class="form-control" >
+    </div>
+    <div class="form-group col-md-4 mb-3">
+      <label for="pw">Password</label>
+      <input type="text" id="pw" value="123" class="form-control"></br>
+      <button id="logInBTN" class="btn btn-primary col-md-4 mb-3 row-5">LogIn</button>
+    </div>
+    
+  </form>
+
+           
            </div>`;
 
     const animationTemplate=`
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+    .button {
+        display: inline-block;
+        padding: 15px 25px;
+        font-size: 24px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        color: #fff;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+      }
+      .speed {border-radius: 50%;}
+    
+    </style>
+    <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand" href="#">
+    <img src="angular.png" width="30" height="30" alt="fail">
+  </a>
+</nav>
     <div>
-    <h3 id="dis_h3"></h3>
+    <h3 id="dis_h3" style="color:darkslategrey;font-weight:bold;"></h3>
     <textarea id="disAnimation" cols="70" rows="25"></textarea><br>
-    <button id="refAnimationBTN">Refresh Animation</button>
-    <button id="logoutBTN">Logout</button>
-    <button id="decreaseBTN">- -</button><span> speed </span><button id="increaseBTN">++</button>
-    <button id="startBTN">Start</button> <button id="stopBTN">Stop</button>
+    <button id="refAnimationBTN" class="button">Refresh Animation</button>
+    <button id="logoutBTN" class="button" style="background-color: red;">Logout</button>
+    <button id="decreaseBTN" style="background-color: saddlebrown;" class="button speed">- -</button><span style="color:darkslategray;font-weight:bold"> speed </span><button style="background-color: darkolivegreen;" id="increaseBTN" class="button speed">++</button>
+    <button id="startBTN" style="background-color: aquamarine;" class="button">Start</button> <button id="stopBTN" style="background-color: tomato;" class="button">Stop</button>
     </div>`;
-
+    
     let token="";
     let geoAPI="YRKzE5ny7ImpiaGl9iN0lcGiHkUdfd9M",streetYourAddress="Welcome all from ";
      let animationId="";
@@ -35,12 +74,12 @@ window.onload=function(){
 
     //login.html
     const logInBTN=document.getElementById("logInBTN");
-  
+
     logInBTN.addEventListener("click",function(){
     postPromisesFunc();
         outlet.innerHTML=animationTemplate;
-      //  history.pushState({ 'page_id': 1}, "animate", "animate.html");
-
+        // history.pushState({ 'page_id': 2}, "animate", "animate.html");
+        // history.replaceState({ 'page_id': 2}, "page 3", "login.html")
         allContentOfAnimation();
         });
 
@@ -133,8 +172,8 @@ window.onload=function(){
     document.getElementById("logoutBTN").addEventListener("click",function(){
         token="";
         outlet.innerHTML=loginTemplate;
-       // history.pushState({ 'page_id': 1}, "login", "login.html");
-
+        // history.pushState({ 'page_id': 2}, "login", "login.html");
+        // history.replaceState({ 'page_id': 2}, "page 3", "animate.html");
         });
 
     document.getElementById("refAnimationBTN").addEventListener("click",function(){
