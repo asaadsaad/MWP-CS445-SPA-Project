@@ -37,28 +37,32 @@ window.onload = function () {
      * @param {Event} event 
      */
     function popstateHandler(event) {
-        debugger
-        if (event) {
+        console.log(history.state);
+        if (event.state) {
             OUTLET.innerHTML = event.state.view;
             event.state.btnIds.forEach(id => {
                 let btn = getElement(id);
                 switch (id) {
                     case 'refresh':
                         btn.addEventListener('click', refreshAnimation);
-                        displayAnimation(event.state.data);
                         break;
                     case 'logout':
                         btn.addEventListener('click', logOut);
                         break;
                     default:
                         btn.addEventListener('click', loadAnimationView);
-                        displayAnimation(event.state.data);
                         break;
                 }
             });
+
+            if (event.state.data) {
+                getElement('#location').innerHTML = `Wellcome all from ${userLocation}`;
+                displayAnimation(event.state.data);
+                console.log(animationArea);
+                console.log(animationArea.value);
+            }
         }
     }
-
 
     /**
      * Function to get the current user lat and long
@@ -79,8 +83,8 @@ window.onload = function () {
         OUTLET.innerHTML = loginView;
         loginBtn = getElement('#login');
         loginBtn.addEventListener('click', loadAnimationView);
-
-        history.pushState({ data: animationFrames, btnIds: ['#login'], view: loginView }, null, '?login');
+        console.log(history.state);
+        history.pushState({ data: null, location: userLocation, btnIds: ['#login'], view: loginView }, null, '');
     }
 
     /**
@@ -112,8 +116,6 @@ window.onload = function () {
 
         clearInterval(displayFrameInterval);
         getAnimationFrames();
-
-        history.pushState({ data: animationFrames, view: animationView, btnIds: ['#refresh', '#logout'] }, null, '?animation')
     }
 
     /**
@@ -135,11 +137,11 @@ window.onload = function () {
                 .then(data => {
                     token = data.token;
                     console.log('token: ' + token);
-                    fetchFrames(ANIMATION_URL);
+                    fetchFrames(ANIMATION_URL, token);
                 });
         } else {
             console.log('token: ' + token);
-            fetchFrames(ANIMATION_URL);
+            fetchFrames(ANIMATION_URL, token);
         }
     }
 
@@ -165,7 +167,6 @@ window.onload = function () {
      * Function to display animation frames
      */
     function displayAnimation(frames) {
-        debugger
         clearInterval(displayFrameInterval);
         console.log(frames.join('====='));
         displayFrameInterval = setInterval(() => {
@@ -175,6 +176,7 @@ window.onload = function () {
                 i = 0;
             }
         }, 200);
+        history.pushState({ data: frames, location: userLocation, view: animationView, btnIds: ['#refresh', '#logout'] }, null, '/animation')
     }
 
     /**
@@ -197,7 +199,7 @@ window.onload = function () {
     }
 
     /**
-     * Function to get an element
+     * Function to get an element using css selector
      * @param {String} selector selector for an element
      */
     function getElement(selector) {
