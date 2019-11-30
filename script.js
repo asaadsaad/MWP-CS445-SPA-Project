@@ -2,15 +2,11 @@ window.onload = SPA;
 
 function SPA() {
 
-    // select
     let outlet = document.querySelector("#outlet");
     let token;
     let timerId;
 
-
-
     // login template
-
     let loginTemplate = `
     <h1>Please Login</h1>
     Username : <input type="text" id="username" placeholder="mwp" value="mwp"><br>
@@ -19,13 +15,10 @@ function SPA() {
     `
     // animation template
     let animationTemplate = `<div id="location" style="font-size :20px">welcome to my animation spa</div>
-    <textarea id="display" row="40" cols="40" style="font-size:20px"></textarea><br>
+    <textarea id="display" rows="20" cols="50" style="font-size:20px"></textarea><br>
     <button id="refresh" >Refresh Animation</button>
     <button id="logout">Logout</button>
     `
-
-
-    // listneer
 
     //check
     let addPost = async function () {
@@ -44,11 +37,10 @@ function SPA() {
         let response = await res.json();
         token = response.token;
         animationPage();
-        getPost();
-
     }
 
-    let getPost = async function () {
+    // Get(fetch) animation
+    let getAnimation = async function () {
         if (timerId) {
             clearInterval(timerId)
         }
@@ -57,7 +49,6 @@ function SPA() {
                 "Authorization": `Bearer ${token}`,
             }
         })
-
         let data = await resolve.text();
         let array = data.split("=====\n")
         console.log(array)
@@ -68,15 +59,12 @@ function SPA() {
             if (index == array.length) {
                 index = 0;
             }
-        }, 200)
-
-        //document.querySelector('#display').innerHTML = array;
-
+        }, 200);
     }
 
     // Find location of the user using API key & location(longitude & latitude) - reverse geocode
 
-    function location() {
+    function getLocation() {
 
         navigator.geolocation.getCurrentPosition(success, fail);
 
@@ -91,31 +79,31 @@ function SPA() {
             let city = address.results[0].locations[0].adminArea5;
             let state = address.results[0].locations[0].adminArea3;
             let country = address.results[0].locations[0].adminArea1;
-            document.querySelector("#location").innerHTML=`welcome all from ${city},${state},${country}`;
-
+            document.querySelector("#location").innerHTML = `welcome all from ${city},${state},${country}`;
         }
-
 
         function fail(msg) {
             console.log(msg.code + msg.message);
         }
-
     }
-
+    //Login page
     function loginPage() {
         outlet.innerHTML = loginTemplate;
-        
+        history.pushState({page: 1 }, null, "/loginpage");
+        document.querySelector("#login").addEventListener("click", addPost);
+        window.addEventListener('popstate', animationPage)
     }
-    loginPage()
-    document.querySelector("#login").addEventListener("click", addPost);
 
+    loginPage()
+    // Animation page
     function animationPage() {
         outlet.innerHTML = animationTemplate;
         document.querySelector("#logout").addEventListener("click", loginPage);
-        document.querySelector("#refresh").addEventListener("click", getPost);
-        location()
-        
-    
-    }
+        document.querySelector("#refresh").addEventListener("click", getAnimation);
+        history.pushState({page: 2 }, null, "/animationpage")
+        window.addEventListener('popstate', loginPage)
+        getLocation()
+        getAnimation();
 
+    }
 }

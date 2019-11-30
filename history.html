@@ -1,0 +1,22 @@
+<button id="b1">Button 1 </button>
+<button id="b2">Button 2 </button>
+<button id="b3">Back </button>
+
+<script>
+    const button1 = document.querySelector('#b1')
+    const button2 = document.querySelector('#b2')
+    const button3 = document.querySelector('#b3')
+    button1.addEventListener('click', _ => history.pushState({ page: 1 }, "title 1", "?page=login"))
+    button2.addEventListener('click', _ => history.pushState({ page: 2 }, "title 2", "?page=animation"))
+     history.back()
+    window.addEventListener('popstate', function (event) {
+        if(state.page==1){
+            addpost
+
+        }else{
+            getpost;
+        }
+        alert("location : " + document.location +"state: " + JSON.stringify(event.state))
+    }); 
+    </script>
+    ////
