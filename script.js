@@ -17,10 +17,16 @@
     </label>
     <br />  
     <button type="submit">login</button>
-     </form>`;
+     </form>`,
+     
+    animationPage = `<h3 id="locationTag">Location will be here</h3>
+      <textarea id="animationArea" cols="50" rows="20"></textarea>
+      <br />
+      <button id="loadAnimationBtn">load animation</button>
+      <button id="logOutBtn">log out</button>
+      `;
 
-    document.getElementById("outlet").innerHTML = loginPage;
-
+      document.getElementById("outlet").innerHTML = loginPage;
       document.getElementById("myLoginForm").onsubmit = async function(event) {
       event.preventDefault();
 
@@ -35,6 +41,13 @@
 
       token = restoken.token;
       console.log(token);
+
+      try {
+        animation = await getAnimations("http://mumstudents.org/api/animation");
+        console.log(animation);
+      } catch (err) {
+        console.log(err);
+      }
       
     };
 
@@ -55,6 +68,34 @@
       });
       return await response.json(); 
     }
-  
+
+
+    async function getAnimations(url = "") {
+     
+      const response = await fetch(url, {
+        headers: new Headers({
+          Accept: "application/json",
+          Authorization: "Bearer " + token
+        })
+      });
+      return await response.text(); // parses JSON response into native JavaScript objects
+    }
+    async function getAnimations(url = "") {
+      // Default options are marked with *
+      console.log(token);
+      const response = await fetch(url, {
+        headers: new Headers({
+          Accept: "application/json",
+          Authorization: "Bearer " + token
+        })
+      });
+      return await response.text(); // parses JSON response into native JavaScript objects
+    }
+    
+
+
+
+
+
 
   }
