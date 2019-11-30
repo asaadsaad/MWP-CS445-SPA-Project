@@ -14,3 +14,6 @@ i will email all the problems i have faced during fetching the animation
 
 today 11/28/19
 today i was working on geolocation api and i was able to fetch my location using map quest api, it was succesfully displayed on the h3 header. i signed up for the service to get the developer key. i was having difficulty to assign the lattitude and longitude by using navigator, i will s finish up the animation totaly tomoorrow anad i am planned to history api pushing tommorrow
+today 11/29/19
+today i was succesfully finished the animation, all animations work as they are supposed to be, navigation api was working perfectly, i was able to declare longitude and latitude by declaring them globally
+and call them on the fetch function .tommorow i will finsih on history push state
