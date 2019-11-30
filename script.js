@@ -1,7 +1,7 @@
 
 /**
  * Weldensie Embaye
- * @Nov. 26, 2019
+ * Nov. 26, 2019
  * wembaye@mum.edu;
 
  
@@ -13,7 +13,7 @@
  */
 window.onload = function animationProject() {
 
-    let myLogin = `<h1>Please refresh and login </h1><br/>
+    let myLogin = `<h1>Please refresh the page and login </h1><br/>
              username: <input type="text" value="mwp" id="input1" /> <br/>
              password: <input type="text" value="123" id="input2" /> <br/>
              <button type="button" id="login">login</button>`
@@ -26,6 +26,7 @@ window.onload = function animationProject() {
 
     document.getElementById("outlet").innerHTML = myLogin;
     let tokenId, animationID, textId, longitude, latitude, keyId = "8SdUOIMUJzlXswkGbSVInlBgxi17ejOI";
+    history.pushState({ page: 1 }, "login", "?page=1");
 
 
     /**
@@ -40,7 +41,7 @@ window.onload = function animationProject() {
 
 
     document.getElementById("login").addEventListener('click', async function () {
-        history.pushState({ page: 1 }, null, "?page=1");
+        history.pushState({ page: 2 }, "animation", "?page=2");
 
         document.getElementById("outlet").innerHTML = myAnimation;
 
@@ -179,11 +180,11 @@ window.onload = function animationProject() {
          * @returns {function} this second return function call the get animation function and play new animation.
 
          */
-        let count2 = 2
+        let page = 3
         animation.addEventListener("click", async function () {
-            history.pushState({ page: count2 }, null, `?page=${count2}`);
+            history.pushState({ page: page }, null, `?page=${page}`);
             await clearInterval(animationID);
-            ++count2
+            ++page
             getAnimation();
         });
 
