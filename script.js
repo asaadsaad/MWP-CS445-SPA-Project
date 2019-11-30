@@ -1,5 +1,6 @@
 "use strict";
 window.onload = cs445Project;
+window.addEventListener('popstate', cs445Project);
 /**
  * CS445 Project SPA(Single Page application)
  * This function raps the entire page functions
@@ -31,17 +32,23 @@ function cs445Project() {
   <button id="logOut"> LogOut </button>`;
 
 
-  //default template 
+  //default template for login 
   displayPage.innerHTML = loginTemplate;
 
   // listeners to login 
   document.getElementById("login").addEventListener("click", loginPage);
+  // adding history 
+  const loginButon = document.getElementById('login');
+  loginButon.addEventListener('click', _ => history.pushState({
+    page: 'login'
+  }, null, "?animaion"))
 
 
-  /**
+  /****************************************************************************************
    * Function to feach response token as Authentication 
-   * @return {promises}  Json Object token 
-   */
+   * @return {promises}  Json Object for token(autorization) 
+   *  info :   gelocation   and  getAnimation called in this function 
+   ****************************************************************************************/
   async function loginPage() {
     try {
       let username = document.getElementById("username").value;
@@ -53,7 +60,6 @@ function cs445Project() {
 
       //  change into animation template 
       displayPage.innerHTML = animationTemplate;
-        
 
       //  1st route to fetch token 
       let response = await fetch(" http://www.mumstudents.org/api/login ", {
@@ -70,14 +76,21 @@ function cs445Project() {
 
       // start animation onlogin 
       getAnimation();
+      // displaying location 
+      geoLocation();
 
       //adding lisinner to refresh the page loding new animation each time 
       document.getElementById("refresh").addEventListener("click", _ => {
         if (timerId) clearInterval(timerId);
         getAnimation();
       });
-      // displaying location 
-      geoLocation();
+      //  history push after click refresh 
+      const refresh = document.getElementById('refresh');
+      refresh.addEventListener('click', _ => history.pushState({
+        page: 'refresh'
+      }, null, "?/animation"))
+
+
       //throwing error message 
     } catch (error) {
       console.log(`Error message : ${error}`)
@@ -86,10 +99,11 @@ function cs445Project() {
 
 
 
-  /***
+  /*********************************************************************************************
    * Function to fetching animation  
    * @return {string} string of animation 
-   */
+   * 
+   *********************************************************************************************/
   async function getAnimation() {
 
     // 2nd rout to fetch animation string  
@@ -118,21 +132,32 @@ function cs445Project() {
       // adding lisinner into logout button 
       document.getElementById("logOut").addEventListener("click", _ => {
         displayPage.innerHTML = loginTemplate;
-        // clear the token 
+
+        // adding history pushstate into login after logout
+        const logOutButton = document.getElementById('logOut');
+        logOutButton.addEventListener('click', _ => history.pushState({
+          page: 'logOut'
+        }, null, "?/login"))
+
+        // clear the token after each animation 
         token = null;
         // clear animation list 
         animationArray.splice(index, animationArray.length - 1);
         // clear timeInterval 
         clearInterval(timerId);
       });
-  
+
     } catch (error) {
       console.log(`Error message : ${error}`);
     }
   }
 
 
-  //accesing the location of the user 
+
+  /***********************************************************************************************
+   * @return JSON object with location of user 
+   *  info :  called inside loginpage function 
+   **********************************************************************************************/
   async function geoLocation() {
 
     try {
@@ -158,24 +183,6 @@ function cs445Project() {
       console.log(error);
     }
   }
-  
-    //adding history  to go back and forward using the arraows
-    
-    const loginButon =  document.getElementById('login')
-    const logOutButton  = document.getElementById('logOut');
-    const refresh = document.getElementById('refresh')
-  
-    loginButon.addEventListener('click', _ => history.pushState({ page: 'login' }, null, "?/animation"))
-    logOutButton.addEventListener('click', _ => history.pushState({ page: 'logOut' }, null, "?/login"))
-    refresh.addEventListener('click', _ => history.pushState({ page: 'refresh' }, null, "?/animation"))
-    history.replaceState({page: 'logOut'},null,"?/")
-    window.addEventListener('popstate', function(event) {
-      console.log('popstate fired!');
-
-
-    });
-  
-
 
 
 }
