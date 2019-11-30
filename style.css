@@ -6,8 +6,12 @@ body{
    background-image: url("nature-wallpaper-for-desktop-full-size-free-download.jpg");
    background-repeat: no-repeat;
 }
-text{}
-
+#animation{
+   background-image: url("nice.jpg");
+   background-repeat: no-repeat;
+   background-size:600px;
+   
+}
 
 #logIn{
    height: 30px;
@@ -19,7 +23,7 @@ text{}
 }
 #refresh{
     height: 30px;
-    background: rgb(219, 5, 105);
+    background: rgb(224, 224, 9);
     background:5;
     padding-left:20px;
     padding-right: 20px;
@@ -27,7 +31,7 @@ text{}
  }
  #logOut{
     height: 30px;
-    background: rgb(241, 9, 118);
+    background: rgb(224, 224, 9);
     background:5;
     padding-left:20px;
     padding-right: 20px;
@@ -39,6 +43,6 @@ h1{
     padding-left:20px;
     padding-bottom: 50px;
     padding-right: 20px;
-    color: rgb(19, 71, 241);
+    color: rgb(228, 240, 62);
 
  }

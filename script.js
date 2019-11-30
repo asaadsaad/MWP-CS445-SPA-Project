@@ -29,7 +29,7 @@ window.onload = function () {
   //This variable is about the textarea where our animation is displayd
   let animationView = `
     <h1 id="myLocation"></h1>
-    <textarea id="animation" rows="30" cols="60"style="font-size:10px"></textarea>
+    <textarea id="animation" rows="30" cols="60"style="font-size:10px"></textarea><br>
     <button id="refresh">Refresh Animation</button>
     <button id="logOut">Logout</button>`;
 
