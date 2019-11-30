@@ -25,14 +25,18 @@ function animationApp() {
   //login page and animation textrea page function. when first the function invokes take you
   //to the login templete.
 
-  pagination(loginPage);
-
-  function pagination(page) {
-    if (page === loginPage) {
+   
+  pagination(loginPage,"random",'/my-url');
+   
+  function pagination(state,random,url) {
+   
+    if (state === loginPage) {
       document.getElementById("outlet").innerHTML = loginPage;
+     // history.pushState(state,random,url);
     }
-    if (page === animationPage) {
+    if (state === animationPage) {
       document.getElementById("outlet").innerHTML = animationPage;
+      //history.pushState(state,random,url);
     }
   }
 
@@ -40,8 +44,11 @@ function animationApp() {
 
   document.getElementById("login").addEventListener("click", function(e) {
     fetching();
+    fetchAdress();
     pagination(animationPage);
   });
+
+ 
 
   async function fetching() {
     //creating a username and password object.
@@ -63,11 +70,44 @@ function animationApp() {
     token = result.token;
     console.log(token);
 
-    //creating the refresh annimation button and invoking the fetchAnimation from here.
+    //refresh annimation button &
+    //invoking the fetchAnimation from here.&
+    //logout button. 
     document.getElementById('refresh').addEventListener('click',fetchAnimation);
     fetchAnimation();
+    document.getElementById('logout').addEventListener('click',function(){ 
+    pagination(loginPage);
+    //when logout it clears the animation id.
+    if(animationId){ clearInterval(animationId);}
+  });
   } 
+  //getting the geoloation.
+  function fetchAdress(){
+    navigator.geolocation.getCurrentPosition(success, failed);
 
+    async function success(position){
+
+    let long= position.coords.longitude;
+    let lat=position.coords.latitude;
+
+      console.log(position);
+
+      let response= await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${GEOLOCATION_API_KEY}&location=${lat},${long}&&includeRoadMetadata=true&includeNearestIntersection=true`);
+      response=await response.json();
+      console.log(response);
+     const city=response.results[0].locations[0].adminArea5;
+     const state=response.results[0].locations[0].adminArea3;
+     const country=response.results[0].locations[0].adminArea1;
+     const zip=response.results[0].locations[0].postalcode;
+
+     document.querySelector('#adress').innerHTML=`welcome all from ${city},${state},${country}`;
+    }
+  
+  function failed(err){
+    document.querySelector('#address').innerHTML="welcome anonymous";
+  }
+}
+  
   async function fetchAnimation() {
    //any time you are clicking the refresh animation, the animation Id needs to be cleared.
    //clear interval is calling from here.
