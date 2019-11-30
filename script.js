@@ -48,7 +48,6 @@ window.onload = function () {
     let count = 0;
     timerId = setInterval(function () {
       document.getElementById("animation1").innerHTML = anime[count];
-
       count++
       if (count === mylength) {
         count = 0;
@@ -82,11 +81,11 @@ window.onload = function () {
   function login() {
    // document.getElementById("logout").disabled=false;
     document.getElementById("outlet").innerHTML = loginTemplate;
-    history.pushState({ page: 1 }, "title 1", "?login"); 
+   // history.pushState({ page: 1 }, "title 1", "?login"); 
     // document.getElementById("logout").disabled=timerId;
-    if(timerId){
+    //if(timerId){
       clearInterval(timerId);
-    }
+    //}
   }
 
   login();
@@ -94,8 +93,8 @@ window.onload = function () {
   function aniPage() {
     //document.getElementById("login").disabled=false;
     document.getElementById("outlet").innerHTML = animationTemplate;
-     history.pushState({ page: 2 }, "title 2", "?refresh"); 
-  history.pushState({ page: 2 }, "title 2", "?logout")
+    // history.pushState({ page: 2 }, "title 2", "?refresh"); 
+  //history.pushState({ page: 2 }, "title 2", "?logout")
 
   locationFinder()
     document.getElementById("logout").addEventListener("click", login);
@@ -103,9 +102,8 @@ window.onload = function () {
     document.getElementById("refresh").addEventListener("click", myGet);
 
   }
-
-   let x= document.getElementById("login").addEventListener("click", aniPage);
-  let y = document.getElementById("login").addEventListener("click", post);
+  document.getElementById("login").addEventListener("click", aniPage);
+  document.getElementById("login").addEventListener("click", post);
 
   //window.addEventListener('popstate', );
  
