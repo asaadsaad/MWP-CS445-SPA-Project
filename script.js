@@ -1,5 +1,5 @@
 window.onload = function () {
-    let loginView, loginBtn, animationView, animationArea, refreshBtn, logoutBtn, lat, long, userLocation, token, animationFrames = [], displayFrameInterval, i = 0;
+    let loginView, animationView, animationArea, lat, long, userLocation, token, animationFrames = [], displayFrameInterval, i = 0, state, animationCounter = 0;
 
     const OUTLET = getElement('#outlet');
     const QUEST_API_URL = 'http://www.mapquestapi.com/geocoding/v1/reverse';
@@ -27,40 +27,58 @@ window.onload = function () {
         </div>
         `;
 
+    const ROUTES = {
+        '/': loginView,
+        '/login': loginView,
+        '/animation': animationView
+    };
+
     window.addEventListener('popstate', popstateHandler);
 
-    getLatLong();
-    loadLogin();
+    initialize();
+
+    function initialize() {
+        getLatLong();
+        state = { data: null, path: '/', userLocation: userLocation, initialState: true };
+        history.replaceState(state, null, '/login');
+        render(state);
+    }
+
+    function render(state) {
+        debugger
+        OUTLET.innerHTML = ROUTES[state.path];
+        let btns = document.querySelectorAll('button');
+        console.log(btns);
+        if (btns) {
+            btns.forEach((btn) => {
+                if (btn.id === 'refresh') {
+                    btn.addEventListener('click', refreshAnimation);
+                } else if (btn.id === 'logout') {
+                    btn.addEventListener('click', logOut);
+                } else {
+                    btn.addEventListener('click', logIn);
+                }
+            });
+        }
+        let location = getElement('#location');
+        if (location) {
+            location.innerHTML = `Wellcome all from ${state.userLocation}`;
+        }
+        if (state.data) {
+            displayAnimation(state.data);
+        } else {
+            displayAnimation(animationFrames);
+        }
+    }
 
     /**
      * Function to handle popstate event
      * @param {Event} event 
      */
     function popstateHandler(event) {
-        console.log(history.state);
         if (event.state) {
-            OUTLET.innerHTML = event.state.view;
-            event.state.btnIds.forEach(id => {
-                let btn = getElement(id);
-                switch (id) {
-                    case 'refresh':
-                        btn.addEventListener('click', refreshAnimation);
-                        break;
-                    case 'logout':
-                        btn.addEventListener('click', logOut);
-                        break;
-                    default:
-                        btn.addEventListener('click', loadAnimationView);
-                        break;
-                }
-            });
-
-            if (event.state.data) {
-                getElement('#location').innerHTML = `Wellcome all from ${userLocation}`;
-                displayAnimation(event.state.data);
-                console.log(animationArea);
-                console.log(animationArea.value);
-            }
+            state = event.state;
+            render(state);
         }
     }
 
@@ -68,62 +86,46 @@ window.onload = function () {
      * Function to get the current user lat and long
      */
     function getLatLong() {
-        // getting current user lat long
         navigator.geolocation.getCurrentPosition((position) => {
             lat = position.coords.latitude;
             long = position.coords.longitude;
             console.log(`lat: ${lat}, long: ${long}`);
-        }, () => { err => console.log('Error:' + err) }, { enableHighAccuracy: true, timeout: 5000 });
-    }
-
-    /**
-     * Function to load login view
-     */
-    function loadLogin() {
-        OUTLET.innerHTML = loginView;
-        loginBtn = getElement('#login');
-        loginBtn.addEventListener('click', loadAnimationView);
-        console.log(history.state);
-        history.pushState({ data: null, location: userLocation, btnIds: ['#login'], view: loginView }, null, '');
+        });
     }
 
     /**
    * Function to get user location asynchronously
    */
-    function getUserLocation() {
+    async function getUserLocation() {
         mapQuestApiUrl = `${QUEST_API_URL}?key=${QUEST_API_KEY}&location=${lat},${long}`;
 
-        fetch(mapQuestApiUrl).then(response => response.json()).then(data => {
-            let address = data.results[0].locations[0];
-            userLocation = `${address.adminArea5}, ${address.adminArea3}, ${address.adminArea1}`;
-            getElement('#location').innerHTML = `Wellcome all from ${userLocation}`;
-        })
+        let response = await fetch(mapQuestApiUrl);
+        return response.json();
     }
 
     /**
      * Function to load animation view
      */
-    function loadAnimationView() {
-        getUserLocation();
-        OUTLET.innerHTML = animationView;
-        animationArea = getElement('#animationArea');
+    async function logIn() {
+        let address = await getUserLocation();
+        address = address.results[0].locations[0];
+        userLocation = `${address.adminArea5}, ${address.adminArea3}, ${address.adminArea1}`;
 
-        refreshBtn = getElement('#refresh');
-        refreshBtn.addEventListener('click', refreshAnimation);
-
-        logoutBtn = getElement('#logout');
-        logoutBtn.addEventListener('click', logOut);
-
-        clearInterval(displayFrameInterval);
-        getAnimationFrames();
+        await getAnimationFrames();
+        state.initialState = false;
+        state.data = animationFrames;
+        state.path = '/animation';
+        state.userLocation = userLocation;
+        history.pushState(state, null, `/animation?${animationCounter++}`);
+        render(state);
     }
 
     /**
    * Function to get animation frames from the animation api using GET request asynchronously
    */
-    function getAnimationFrames() {
+    async function getAnimationFrames() {
         if (!token) {
-            fetch(TOKEN_URL, {
+            let response = await fetch(TOKEN_URL, {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
@@ -132,16 +134,14 @@ window.onload = function () {
                     "username": "mwp",
                     "password": "123"
                 })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    token = data.token;
-                    console.log('token: ' + token);
-                    fetchFrames(ANIMATION_URL, token);
-                });
+            });
+
+            response = await response.json();
+            token = response.token;
+            await fetchFrames(ANIMATION_URL, token);
+
         } else {
-            console.log('token: ' + token);
-            fetchFrames(ANIMATION_URL, token);
+            await fetchFrames(ANIMATION_URL, token);
         }
     }
 
@@ -149,18 +149,16 @@ window.onload = function () {
      * Function to fetch animation frames asynchronously
      * @param {String} url animation frame url
      */
-    function fetchFrames(url, token) {
-        fetch(url, {
+    async function fetchFrames(url, token) {
+        debugger
+        let response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        })
-            .then(response => response.text())
-            .then(data => {
-                animationFrames = data.split('=====');
-                displayAnimation(animationFrames);
-            });
+        });
+        let frames = await response.text();
+        animationFrames = frames.split('=====');
     }
 
     /**
@@ -168,25 +166,32 @@ window.onload = function () {
      */
     function displayAnimation(frames) {
         clearInterval(displayFrameInterval);
+        animationArea = getElement('#animationArea');
         console.log(frames.join('====='));
-        displayFrameInterval = setInterval(() => {
-            if (i < frames.length) {
-                animationArea.value = frames[i++];
-            } else {
-                i = 0;
-            }
-        }, 200);
-        history.pushState({ data: frames, location: userLocation, view: animationView, btnIds: ['#refresh', '#logout'] }, null, '/animation')
+
+        if (frames.length > 0) {
+            displayFrameInterval = setInterval(() => {
+                if (i < frames.length) {
+                    animationArea.value = frames[i++];
+                } else {
+                    i = 0;
+                }
+            }, 200);
+        }
     }
 
     /**
      * Function to refresh the animation view asynchronously
      */
-    function refreshAnimation() {
-        clearInterval(displayFrameInterval);
+    async function refreshAnimation() {
         i = 0;
-
-        getAnimationFrames();
+        await getAnimationFrames();
+        state.initialState = false;
+        state.data = animationFrames;
+        state.path = '/animation';
+        state.userLocation = userLocation;
+        history.pushState(state, null, `/animation?${animationCounter++}`);
+        render(state);
     }
 
     /**
@@ -195,7 +200,11 @@ window.onload = function () {
     function logOut() {
         clearInterval(displayFrameInterval);
         i = 0;
-        loadLogin();
+        animationFrames = [];
+        state.data = animationFrames;
+        state.path = '/';
+        history.pushState(state, null, `/login`);
+        render(state);
     }
 
     /**
