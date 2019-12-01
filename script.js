@@ -1,15 +1,15 @@
 'use strict';
 window.onload = function project() {
-    // window.addEventListener.popstate
-    // this.history.pushstate 
-    let token;
-    let long;
-    let lati;
+
+    window.addEventListener("popstate", historyPopFunc);
+    console.log(history.state);
+    function historyPopFunc() {
+        
+    }
+
+
+    let token, long, lati, timerId, userlocation, loginId, animFrames
     let keys = "tvXbGrqGqLqjaZ0RV8Bm1Mug02ScMW1T";
-    let timerId;
-    let userlocation;
-    let loginId;
-    let animFrames;
 
     const login = `
         <h1>Please Login</h1><br>
@@ -33,13 +33,14 @@ window.onload = function project() {
         loginTemplate.innerHTML = login;
         loginId = document.getElementById("loginbtn");
         loginId.addEventListener("click", logToAnimationpage);
-    
-    }
+      
 
+    }
+    //history.pushState({ data}, null, '?html');
 
     const animation = `
         <div id="address"> Welcome to SPA Animation</div>
-        <textarea id="animation" rows="20" cols="35" style="font-size: 20px"></textarea><br><br>
+        <textarea id="animation" rows="23" cols="50" style="font-size: 20px"></textarea><br><br>
         <button id="refresh">Refresh Animation</button>
         <button id="logout">Logout</button>        
         `
@@ -50,18 +51,19 @@ window.onload = function project() {
         clearInterval(timerId);
         loginTemplate.innerHTML = animation;
         fetchAddress();
-       
+
         // logout();
         // refresh();
         document.getElementById("logout").addEventListener("click", logout);
         document.getElementById("refresh").addEventListener("click", refresh);
         fetchToken();
+        //history.pushState({data}, null, '?animation')
     }
     // let logoutId = document.getElementById("logout");
     // logoutId.addEventListener("click",logToLoginpage);
 
     function logout() {
-     
+
         loginTemplate.innerHTML = login;
         let loginId = document.getElementById("loginbtn");
         loginId.addEventListener("click", logToAnimationpage);
@@ -118,7 +120,7 @@ window.onload = function project() {
                     }
                 }, 200)
             });
-
+        
     }
 
     // fetchToken();
