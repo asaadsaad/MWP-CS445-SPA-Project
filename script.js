@@ -1,5 +1,7 @@
 
 function SPA() {
+    //let timeid2;
+    let i;
     let token;
     let timeid;
     let login = `<h2> Please log in </h2>
@@ -14,9 +16,10 @@ function SPA() {
     <button id="logout">Logout</button>`
 
     async function getlogin() {
-
+        clearInterval(timeid);
         document.getElementById("outlet").innerHTML = login;
-        clearInterval(timeid);  
+        history.replaceState(login, "document.title", "index.html")
+
         let sema = {
             username: document.getElementById("username").value,
             password: document.getElementById("password").value
@@ -31,22 +34,25 @@ function SPA() {
         let resp = await result.json()
         token = resp
         document.getElementById("button").addEventListener("click", animationpage)
-       // document.getElementById("button").addEventListener('click', _ => history.pushState({ page: 1 }, "index.html", "?login"))
+
+
+
     }
     getlogin();
 
     function animationpage() {
 
-        
+
         document.getElementById("outlet").innerHTML = animation
-      //  document.getElementById("refresh").addEventListener('click', _ => history.pushState({ page: 2 }, "index.html", "?animation"))
+        //  document.getElementById("refresh").addEventListener('click', _ => history.pushState({ page: 2 }, "index.html", "?animation"))
 
         document.getElementById("logout").addEventListener("click", getlogin)
         document.getElementById("refresh").addEventListener("click", getAnimation);
         findaddress()
+        //history.pushState({id:"animation"},"login", "?animation")
     }
+    //window.addEventListener("popstate",(event)=>{JSON.stringify(event.state)})
 
-    
 
 
     // let gettoken = async function () {
@@ -66,7 +72,7 @@ function SPA() {
 
     // }
     let getAnimation = async function () {
-   
+
         let anime = await fetch("http://mumstudents.org/api/animation",
             {
                 headers: {
@@ -75,10 +81,13 @@ function SPA() {
             })
         let response = await anime.text()
         let y = response.split("=====\n")
+
+        history.pushState(y, document.title, "index.html")
+
         clearInterval(timeid);
-        let i = 0
+        i = 0
         timeid = setInterval(function () {
-            
+
             document.getElementById("animation").innerHTML = y[i]
             //console.log(y[0])
             i++
@@ -90,6 +99,29 @@ function SPA() {
 
     }
 
+    window.addEventListener("popstate", function () {
+        clearInterval(timeid);
+        if (history.state === login || history.state===null ) {
+            clearInterval(timeid);
+            document.getElementById("outlet").innerHTML = login;
+            getlogin();
+            
+        }
+        i = 0;
+        if (history.state !== login ) {
+
+            timeid = setInterval(function () {
+
+                document.getElementById("animation").innerHTML = history.state[i];
+                i++
+                if (i === history.state.length) {
+                    i = 0
+                }
+
+            }, 200)
+        }
+
+    })
     function findaddress() {
         navigator.geolocation.getCurrentPosition(success)
         async function success(position) {
@@ -97,7 +129,6 @@ function SPA() {
             let y = position.coords.latitude;
             let Address = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=QHd2uOYscxkIZAqAzzwQEWy70b3A8Izg&location=${y},${x}&&includeRoadMetadata=true&includeNearestIntersection=true`)
             let obj = await Address.json()
-            console.log(obj.results);
             let city = obj.results[0].locations[0].adminArea5
             let country = obj.results[0].locations[0].adminArea1;
             document.getElementById("adress").innerHTML = `Well come to ${city} , ${country}`
