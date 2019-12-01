@@ -37,6 +37,9 @@ window.onload = function () {
 
     initialize();
 
+    /**
+     * Function to load the initial view
+     */
     function initialize() {
         getLatLong();
         state = { data: null, path: '/', userLocation: userLocation, initialState: true };
@@ -44,6 +47,10 @@ window.onload = function () {
         render(state);
     }
 
+    /**
+     * Function to render the state
+     * @param {Object} state state to the current view
+     */
     function render(state) {
         debugger
         OUTLET.innerHTML = ROUTES[state.path];
@@ -52,11 +59,11 @@ window.onload = function () {
         if (btns) {
             btns.forEach((btn) => {
                 if (btn.id === 'refresh') {
-                    btn.addEventListener('click', refreshAnimation);
+                    btn.addEventListener('click', refreshAsync);
                 } else if (btn.id === 'logout') {
                     btn.addEventListener('click', logOut);
                 } else {
-                    btn.addEventListener('click', logIn);
+                    btn.addEventListener('click', logInAsync);
                 }
             });
         }
@@ -96,7 +103,7 @@ window.onload = function () {
     /**
    * Function to get user location asynchronously
    */
-    async function getUserLocation() {
+    async function getLocationAsync() {
         mapQuestApiUrl = `${QUEST_API_URL}?key=${QUEST_API_KEY}&location=${lat},${long}`;
 
         let response = await fetch(mapQuestApiUrl);
@@ -106,12 +113,12 @@ window.onload = function () {
     /**
      * Function to load animation view
      */
-    async function logIn() {
-        let address = await getUserLocation();
+    async function logInAsync() {
+        let address = await getLocationAsync();
         address = address.results[0].locations[0];
         userLocation = `${address.adminArea5}, ${address.adminArea3}, ${address.adminArea1}`;
 
-        await getAnimationFrames();
+        await fetchFrameAsync();
         state.initialState = false;
         state.data = animationFrames;
         state.path = '/animation';
@@ -121,37 +128,33 @@ window.onload = function () {
     }
 
     /**
-   * Function to get animation frames from the animation api using GET request asynchronously
-   */
-    async function getAnimationFrames() {
-        if (!token) {
-            let response = await fetch(TOKEN_URL, {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "username": "mwp",
-                    "password": "123"
-                })
-            });
+     * Function to fetch token asynchronously
+     */
+    async function getTokenAsync() {
+        let response = await fetch(TOKEN_URL, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                "username": "mwp",
+                "password": "123"
+            })
+        });
 
-            response = await response.json();
-            token = response.token;
-            await fetchFrames(ANIMATION_URL, token);
-
-        } else {
-            await fetchFrames(ANIMATION_URL, token);
-        }
+        response = await response.json();
+        token = response.token;
     }
-
+    
     /**
      * Function to fetch animation frames asynchronously
-     * @param {String} url animation frame url
+     *
      */
-    async function fetchFrames(url, token) {
-        debugger
-        let response = await fetch(url, {
+    async function fetchFrameAsync() {
+        if (!token) {
+            await getTokenAsync(); 
+        }
+        let response = await fetch(ANIMATION_URL, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -183,9 +186,9 @@ window.onload = function () {
     /**
      * Function to refresh the animation view asynchronously
      */
-    async function refreshAnimation() {
+    async function refreshAsync() {
         i = 0;
-        await getAnimationFrames();
+        await fetchFrameAsync();
         state.initialState = false;
         state.data = animationFrames;
         state.path = '/animation';
@@ -209,7 +212,7 @@ window.onload = function () {
 
     /**
      * Function to get an element using css selector
-     * @param {String} selector selector for an element
+     * @param {String} selector CSS selector of an HTML element
      */
     function getElement(selector) {
         return document.querySelector(selector);
