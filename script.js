@@ -35,6 +35,7 @@ window.onload = function () {
 
   //logIn function takes as to the animation area
 
+  
   function logIn() {
    // alert("welcome to my page!");
     output.innerHTML = animationView;
@@ -51,6 +52,10 @@ window.onload = function () {
   function logOut() {
     //alert("See you later!");
     output.innerHTML = logInView;
+    let logInElement = document.querySelector("#logIn");
+
+  logInElement.addEventListener("click", logIn);
+    
   }
 
 //geo location function can provide "Allow" and "block" options to get the latitude and altitude.
@@ -130,7 +135,7 @@ window.onload = function () {
      
     let animationFrame = animationArray.split("=====\n")
     console.log(animationFrame)
-    let count = 1;
+    let count = 0;
     let max = animationFrame.length;
 if (timerId) clearInterval(timerId);
 timerId=setInterval(() => {
@@ -142,7 +147,7 @@ timerId=setInterval(() => {
       if (count === max) {
         count = 0
       } 
-    }, 200);
+    }, 250);
 
   }
 }

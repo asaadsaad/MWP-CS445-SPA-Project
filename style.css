@@ -16,9 +16,10 @@ body{
 #logIn{
    height: 30px;
    background: hsl(125, 85%, 44%);
-   background:5;
-   padding-left:20px;
-   padding-right: 20px;
+   background:15;
+   padding-left:30px;
+   padding-right: 30px;
+   border-radius: 16px;
    
 }
 #refresh{
@@ -27,6 +28,7 @@ body{
     background:5;
     padding-left:20px;
     padding-right: 20px;
+    border-radius:32px ;
 
  }
  #logOut{
@@ -35,6 +37,7 @@ body{
     background:5;
     padding-left:20px;
     padding-right: 20px;
+    border-radius: 16px;
 
  }
 
