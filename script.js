@@ -4,7 +4,7 @@ window.onload = function () {
 
         // over all html structure
     let animationTemplate = `<div id ="geolocation_id"></div> 
-                             <textarea  id="textAreaId" cols="90%" rows="45%"></textarea><br><br>
+                             <textarea  id="textAreaId" cols="90%" rows="45%" disabled></textarea><br><br>
                              <button id="animation_id"> Refresh Animation </button>
                              <button id="logout_id"> LogOut </button> `
 
@@ -50,6 +50,7 @@ window.onload = function () {
 
         document.getElementById("animation_id").addEventListener("click", getAnimation)
         let animationsplit = animationData.split("=====")
+      //  history.pushState(animationsplit,document.title,"animation");// animation array stored on history state
         let count = 0;
         animationId = setInterval(function () {
             document.getElementById("textAreaId").innerHTML = animationsplit[count]
@@ -58,6 +59,25 @@ window.onload = function () {
                 count = 0;
             }
         }, 200)
+
+// window.addEventListener("popstate",function(){
+//     console.log(history.state[0])
+//     clearInterval(animationId);
+//     splitedarray=history.state;
+//     count=0;
+//     animationId = setInterval(function (){
+//         document.getElementById("textAreaId").innerHTML=splitedarray[count]
+//         count++;
+//         if(count==splitedarray.length) {count=0};
+
+//     },200)
+
+
+    
+//    // document.getElementById("textAreaId").innerHTML=history.state;
+
+// })
+
         //geolocation fetch
         function location_func() {
 
