@@ -1,8 +1,7 @@
 'use strict';
 
 window.onload = () => {
-    let animationArea, lat, long, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0;
-
+    let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0;
     const OUTLET = getElement('#outlet');
     const QUEST_API_URL = 'http://www.mapquestapi.com/geocoding/v1/reverse';
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
@@ -40,7 +39,6 @@ window.onload = () => {
      * Self invoking arrow function to load the initial view
      */
     (() => {
-        getLatLong();
         state = { frames: null, path: '/', userLocation: userLocation };
         history.replaceState(state, null, '/login');
         render(state);
@@ -51,8 +49,10 @@ window.onload = () => {
      * @param {Object} state state to the current view
      */
     function render(state) {
+        let btns, location;
+
         OUTLET.innerHTML = ROUTES[state.path];
-        let btns = document.querySelectorAll('button');
+        btns = document.querySelectorAll('button');
 
         if (btns) {
             btns.forEach((btn) => {
@@ -65,10 +65,12 @@ window.onload = () => {
                 }
             });
         }
-        let location = getElement('#location');
+
+        location = getElement('#location');
         if (location) {
             location.innerHTML = `Wellcome all from ${state.userLocation}`;
         }
+
         animate(state.frames);
     }
 
@@ -84,24 +86,24 @@ window.onload = () => {
     }
 
     /**
-     * Function to get the current user latitude and longitude
-     */
-    function getLatLong() {
+   * Function to get user location asynchronously
+   */
+    async function getLocationAsync() {
+        let lat, long, mapQuestApiUrl, address;
+
         navigator.geolocation.getCurrentPosition((position) => {
             lat = position.coords.latitude;
             long = position.coords.longitude;
             console.log(`lat: ${lat}, long: ${long}`);
+
+            mapQuestApiUrl = `${QUEST_API_URL}?key=${QUEST_API_KEY}&location=${lat},${long}`;
+            fetch(mapQuestApiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    address = data.results[0].locations[0];
+                    userLocation = `${address.adminArea5}, ${address.adminArea3}, ${address.adminArea1}`;
+                });
         });
-    }
-
-    /**
-   * Function to get user location asynchronously
-   */
-    async function getLocationAsync() {
-        let mapQuestApiUrl = `${QUEST_API_URL}?key=${QUEST_API_KEY}&location=${lat},${long}`;
-
-        let response = await fetch(mapQuestApiUrl);
-        return response.json();
     }
 
     /**
@@ -110,10 +112,7 @@ window.onload = () => {
     async function logInAsync() {
         OUTLET.innerHTML = `<img src="loading.gif" alt="Loading gif">`;
 
-        let address = await getLocationAsync();
-        address = address.results[0].locations[0];
-        userLocation = `${address.adminArea5}, ${address.adminArea3}, ${address.adminArea1}`;
-
+        await getLocationAsync();
         await fetchFrameAsync();
 
         state.frames = animationFrames;
@@ -146,16 +145,19 @@ window.onload = () => {
      * Function to fetch animation frames asynchronously
      */
     async function fetchFrameAsync() {
+        let response, frames;
+
         if (!token) {
             await getTokenAsync();
         }
-        let response = await fetch(ANIMATION_URL, {
+        response = await fetch(ANIMATION_URL, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-        let frames = await response.text();
+
+        frames = await response.text();
         animationFrames = frames.split('=====');
     }
 
@@ -186,6 +188,7 @@ window.onload = () => {
     async function refreshAsync() {
         OUTLET.innerHTML = `<img src="loading.gif" alt="Loading gif">`;
         i = 0;
+
         await fetchFrameAsync();
 
         state.frames = animationFrames;
