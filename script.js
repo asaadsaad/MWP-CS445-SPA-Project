@@ -1,8 +1,9 @@
 window.onload = function () {
+
   let token;
   let timerId;
-
-
+  let count;
+let anime;
   const loginTemplate = `
        <h1>Please login</h1>
        UserName <input placeholder="mwp" value="mwp"/> <br>
@@ -17,7 +18,7 @@ window.onload = function () {
          <button id="logout">Logout</button>
          `;
 
-  let post = async function () {
+   let post = async function () {
 
     {
       const response = await fetch('http://mumstudents.org/api/login',
@@ -45,7 +46,10 @@ window.onload = function () {
     const obj = await result.text()
     const anime = obj.split("=====\n");
     const mylength = anime.length;
-    let count = 0;
+    count = 0;
+   
+    history.pushState( anime , "document.title", "index.html"); 
+    console.log(history.state.length)
     timerId = setInterval(function () {
       document.getElementById("animation1").innerHTML = anime[count];
       count++
@@ -53,8 +57,8 @@ window.onload = function () {
         count = 0;
       }
     }, 200);
-  }
 
+  }
   function locationFinder() {
 
     let Key = "nOkTZJzGcN8wKdZbHtemhMf4zHkvJBVG";
@@ -75,26 +79,18 @@ window.onload = function () {
       document.getElementById('adress').innerHTML = `welcome all from ${city}, ${state}`;
     }
   }
+  //history.pushState( "login" , "document.title", "index.html"); 
 
-  // function myHTML() {
 
   function login() {
-   // document.getElementById("logout").disabled=false;
     document.getElementById("outlet").innerHTML = loginTemplate;
-   // history.pushState({ page: 1 }, "title 1", "?login"); 
-    // document.getElementById("logout").disabled=timerId;
-    //if(timerId){
-      clearInterval(timerId);
-    //}
+    clearInterval(timerId);
   }
 
   login();
 
   function aniPage() {
-    //document.getElementById("login").disabled=false;
     document.getElementById("outlet").innerHTML = animationTemplate;
-    // history.pushState({ page: 2 }, "title 2", "?refresh"); 
-  //history.pushState({ page: 2 }, "title 2", "?logout")
 
   locationFinder()
     document.getElementById("logout").addEventListener("click", login);
@@ -105,17 +101,32 @@ window.onload = function () {
   document.getElementById("login").addEventListener("click", aniPage);
   document.getElementById("login").addEventListener("click", post);
 
-  //window.addEventListener('popstate', );
+  
+  window.addEventListener('popstate', function (){
+    clearInterval(timerId);
+    
+        count =0;
+      timerId1 = setInterval(function () {
+        document.getElementById("animation1").innerHTML = history.state[count];
+        count++
+        if (count === history.state.length) {
+          console.log(history.state.length)
+          count= 0;
+        }
+      }, 200);
+      
+    });
+      // window.addEventListener('popstate', login)
+      // clearInterval(timerId);
+
+  } 
+
+
+
+
+
+
  
-history.pushState({ page: 1 }, "title 1", "?login"); 
-history.pushState({ page: 2 }, "title 2", "?refresh"); 
-history.pushState({ page: 2 }, "title 2", "?logout"); 
-history.back() // triggers 'popstate' event
-}
-
-  //myHTML();
-
-// }
 
 
 
