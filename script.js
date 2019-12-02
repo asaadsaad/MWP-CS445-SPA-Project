@@ -60,23 +60,23 @@ window.onload = function () {
             }
         }, 200)
 
-// window.addEventListener("popstate",function(){
-//     console.log(history.state[0])
-//     clearInterval(animationId);
-//     splitedarray=history.state;
-//     count=0;
-//     animationId = setInterval(function (){
-//         document.getElementById("textAreaId").innerHTML=splitedarray[count]
-//         count++;
-//         if(count==splitedarray.length) {count=0};
+window.addEventListener("popstate",function(){
+    console.log(history.state[0])
+    clearInterval(animationId);
+    splitedarray=history.state;
+    count=0;
+    animationId = setInterval(function (){
+        document.getElementById("textAreaId").innerHTML=splitedarray[count]
+        count++;
+        if(count==splitedarray.length) {count=0};
 
-//     },200)
+    },200)
 
 
     
-//    // document.getElementById("textAreaId").innerHTML=history.state;
+   // document.getElementById("textAreaId").innerHTML=history.state;
 
-// })
+})
 
         //geolocation fetch
         function location_func() {
