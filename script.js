@@ -51,7 +51,7 @@ window.onload = function () {
                     document.getElementById("outlet").innerHTML = loginTemplate;
                     document.getElementById("login").addEventListener("click", loginAccess); 
                     clearInterval(animationId);
-                    history.replaceState({}, document.title,"index.html");
+                    history.replaceState({}, document.title,"/index.html");
                 });
 
 
@@ -103,12 +103,14 @@ window.onload = function () {
     }
 
     function updatcontent(event) {
+
         animationData = event.state;
-        if (Object.keys(event.state).length == 0) { // checking if the data is empty
+       // console.log(event.location.href.split("/").pop());
+        if (document.location.href.split("/").pop()=="index.html") { // checking if the data is empty
             document.getElementById("outlet").innerHTML = loginTemplate;
-            history.pushState({}, document.title, document.location.href);
+            //history.pushState({}, document.title, document.location.href);
             document.getElementById("login").addEventListener("click", loginAccess, true);
-            // history.replaceState({}, document.title, document.location.href);
+             history.replaceState({}, document.title, "/index.html");
 
             //window.location.replace(document.location.href)
             // event.stopImmediatePropagation();
@@ -127,10 +129,12 @@ window.onload = function () {
         }
     }
     window.addEventListener('popstate', function (event) {
+        console.log(event.currentTarget.location)
         updatcontent(event);
+        
         event.preventDefault();
 
     })
     //Store the initial content so we can revisit it later
-    history.replaceState({}, document.title, document.location.href);
+    history.replaceState({}, document.title, "/index.html");
 };
