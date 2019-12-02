@@ -146,3 +146,5 @@ timerId=setInterval(() => {
 
   }
 }
+
+//today(sunday) i studied about free variable, callstack and promise(resolve,reject)
