@@ -11,13 +11,13 @@
  * @param no parameter for this function
  * @returns it return the login page where users verify themselves and start to play with the animation. 
  */
-window.onload = function animationProject() {
+window.addEventListener("load", function animationProject (){ 
 
-    let myLogin = `<h1>Please refresh the page and login </h1><br/>
+    let myLogin = `<h1>Please login </h1><br/>
              username: <input type="text" value="mwp" id="input1" /> <br/>
              password: <input type="text" value="123" id="input2" /> <br/>
-             <button type="button" id="login">login</button>`
-
+             <button type="button" id="login">Login</button>`
+            
     let myAnimation = `<h1 id="locationTitle"> </h1>
              <textarea type="text" id="outputDiv" cols="60" rows="15" style="font-size: 18px;"></textarea></br>
              <button type="button" id="animation">Refresh Animation</button>
@@ -190,15 +190,18 @@ window.onload = function animationProject() {
 
         /**
         * I added logout listener that accepts two parameters.
-        * @param  {"click"} is the first parameter that allow the user to logout of the animation game.
+        * @param  {"click"} is the first parameter that allow the user to click and logout of the animation game.
         * @param  {function } is the second parameter that does not take any parameter.
         * @returns returns the login page where the user can login and play again. 
         */
         logout.addEventListener("click", async function () {
-            document.getElementById("outlet").innerHTML = myLogin;
+        document.getElementById("outlet").innerHTML = myLogin;
+         let url=`file:///C:/Users/wembaye/Documents/GitHub/MWP-CS452-2019-SPA-Project/index.html?page=1`;
+        window.location.replace(url);
+
         });
     });
-}
+})
 
 
 
