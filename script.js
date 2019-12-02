@@ -25,7 +25,7 @@
       <button id="loadAnimationBtn">load animation</button>
       <button id="logOutBtn">log out</button>
       `;
-
+      let animationInterval = null;
       document.getElementById("outlet").innerHTML = loginPage;
       document.getElementById("myLoginForm").onsubmit = async function(event) {
       event.preventDefault();
@@ -80,6 +80,21 @@
       });
       return await response.text(); 
     }
+    function loadAnimationWithInterval() {
+      let animationArea = document.getElementById("animationArea");
+      let animationLength = animationArr.length;
+      let counter = 0;
+      animationInterval = setInterval(() => {
+        if (animationLength > 0 && counter < animationLength) {
+          animationArea.innerHTML = animationArr[counter];
+          counter++;
+        } else {
+          counter = 0;
+        }
+      }, 200);
+    }
+
+    
     
   }
 
