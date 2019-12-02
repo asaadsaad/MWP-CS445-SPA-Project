@@ -11,24 +11,25 @@
  * @param no parameter for this function
  * @returns it return the login page where users verify themselves and start to play with the animation. 
  */
-window.addEventListener("load", function animationProject (){ 
+window.addEventListener("load", function animationProject() {
+    let tokenId, animationID, textId, longitude, latitude, keyId = "8SdUOIMUJzlXswkGbSVInlBgxi17ejOI";
 
-    let myLogin = `<h1>Please login </h1><br/>
+    const myLogin = `<h1>Please login </h1><br/>
              username: <input type="text" value="mwp" id="input1" /> <br/>
              password: <input type="text" value="123" id="input2" /> <br/>
              <button type="button" id="login">Login</button>`
-            
-    let myAnimation = `<h1 id="locationTitle"> </h1>
+
+    const myAnimation = `<h1 id="locationTitle"> </h1>
              <textarea type="text" id="outputDiv" cols="60" rows="15" style="font-size: 18px;"></textarea></br>
              <button type="button" id="animation">Refresh Animation</button>
              <button type="button" id="logout">Logout</button>`
 
 
     document.getElementById("outlet").innerHTML = myLogin;
-    let tokenId, animationID, textId, longitude, latitude, keyId = "8SdUOIMUJzlXswkGbSVInlBgxi17ejOI";
-    history.pushState({ page: 1 }, "login", "?page=1");
 
-
+   const  currentPage= window.location;
+    let page1 = history.pushState({currentPage}, "login", "?page=1");
+    console.log(page1)
     /**
      * I added login listener that accepts two parameters.
      * I recommend the user to refresh the page to make sure every code is loaded before trying to login
@@ -37,14 +38,44 @@ window.addEventListener("load", function animationProject (){
      * @param  {function } is the second parameter that does not take any parameter.
      * @returns this event has multiple functions so do as multiple returns.
      */
+    document.getElementById("login").addEventListener('click', findToken);
 
 
+  
+ async function findToken(){
 
-    document.getElementById("login").addEventListener('click', async function () {
-        history.pushState({ page: 2 }, "animation", "?page=2");
+    try {
+        /**
+    * This function fetch (post) the user information to the server
+    * @param  {object} includes method and headers about the user
+    * @returns (JSON) token id once the server request is accepted.
+     */
 
-        document.getElementById("outlet").innerHTML = myAnimation;
+        response2 = await fetch(`http://mumstudents.org/api/login`,
+            {
+                method: `POST`,
+                headers: { 'content-Type': 'application/json' },
+                body: JSON.stringify({ username: "mwp", password: "123" })
+            })
+        response2 = await response2.json();
+        tokenId = response2.token;
+        if(response2.status==true){
+            animationCont();  
+        }
+        
+    }
+    /**
+        * This function handle error in case login request go wrong.
+        * @param  {error} error message
+        * @returns (error) return error message .
+        */
+    catch (err) {
+        console.log(err);
+    }
 
+}
+    
+   
 
         /**
         *This function request the user to display his/her geolocation
@@ -54,6 +85,7 @@ window.addEventListener("load", function animationProject (){
         * @returns {object} geolocation information if successfully accessed the user location
         * @returns {error} message if fails to locate the user
         */
+       function animationCont(){
         navigator.geolocation.getCurrentPosition(success, fail)
 
         function fail() {
@@ -81,7 +113,6 @@ window.addEventListener("load", function animationProject (){
                             headers: { 'Content-Type': 'application/json' },
                         })
                     response1 = await response1.json();
-                    console.log(response1);
                     const city = response1.results[0].locations[0].adminArea5;
                     const state = response1.results[0].locations[0].adminArea3;
                     const country = response1.results[0].locations[0].adminArea1;
@@ -96,33 +127,16 @@ window.addEventListener("load", function animationProject (){
                     console.log(err);
                 }
             }
+
             findLocation();
+
         }
 
-        try {
-            /**
-        * This function fetch (post) the user information to the server
-        * @param  {object} includes method and headers about the user
-        * @returns (JSON) token id once the server request is accepted.
-         */
+        history.pushState({ page: 2 }, "login", "?page=2");
 
-            response2 = await fetch(`http://mumstudents.org/api/login`,
-                {
-                    method: `POST`,
-                    headers: { 'content-Type': 'application/json' },
-                    body: JSON.stringify({ username: "mwp", password: "123" })
-                })
-            response2 = await response2.json();
-            tokenId = response2.token;
-        }
-        /**
-            * This function handle error in case login request go wrong.
-            * @param  {error} error message
-            * @returns (error) return error message .
-            */
-        catch (err) {
-            console.log(err);
-        }
+        document.getElementById("outlet").innerHTML = myAnimation;
+
+
 
         getAnimation();
 
@@ -146,8 +160,6 @@ window.addEventListener("load", function animationProject (){
 
                 textId = await response3.text();
                 playAnimation();
-                // let url = 'C:/Users/wembaye/Documents/GitHub/MWP-CS452-2019-SPA-Project/animation';
-                // history.pushState(textId, null, url);
 
                 async function playAnimation() {
 
@@ -190,17 +202,16 @@ window.addEventListener("load", function animationProject (){
 
         /**
         * I added logout listener that accepts two parameters.
-        * @param  {"click"} is the first parameter that allow the user to click and logout of the animation game.
+        * @param  {"click"} is the first parameter that allow the user to click and logout of the animation page.
         * @param  {function } is the second parameter that does not take any parameter.
-        * @returns returns the login page where the user can login and play again. 
+        * @returns returns the login page where the user can login and play the animation again. 
         */
         logout.addEventListener("click", async function () {
-        document.getElementById("outlet").innerHTML = myLogin;
-         let url=`file:///C:/Users/wembaye/Documents/GitHub/MWP-CS452-2019-SPA-Project/index.html?page=1`;
-        window.location.replace(url);
-
+            document.getElementById("outlet").innerHTML = myLogin;
+            window.location.replace(currentPage);
+            history.replaceState({ page: 1 }, "login", "?page=1");
         });
-    });
+    }
 })
 
 
