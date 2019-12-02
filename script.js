@@ -1,161 +1,148 @@
 "use strict";
-
 window.onload = main;
-
 function main() {
-    let myUniqueToken, myLat, myLon, animDisplayArea, animationColl, animPlay;
-    let myToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtd2EiLCJpc3N1ZWRBdCI6IjIwMTktMTEtMzAiLCJ1c2VybmFtZSI6Im13cCJ9.ooCKjj1SqIX7LjZ299ciAzzSX__vVTaqSC_s-K7NI72cO10AQCUmKztZxTbF4JkYmcc72Awr3KkqAM7ap-4gAA";
-    let myGeoLocKey = "bQDwCHvfs2jJ3B1Fpc8QGyMAFGU4AxrW";
-    let questMapU = `http://open.mapquestapi.com/geocoding/v1/reverse?key=${myGeoLocKey}&location=${myLat},${myLon}`;
+    let logins, animations, out, loggingBtn, myUniqueToken, myGeoLocKey, myGeoLoc, myLat, myLon, animFetching, animDisplayArea, animPlay, animArray;
 
-    const logins = `<h2>Please Login</h2><br>
+    logins = `<h2>Please Login</h2><br>
     Username: <input type="text" id="username" value="mwp"><br><br>
     Password: <input type="text" id="password" value="123"><br><br>
-    <button id="lgin" >Login</button>`
+    <input type="button" id="lgin" value="Login"></input>`
 
-    const animations = `<h3 id="mygeoloc"></h3>
+    animations = `<h3 id="mygeoloc"></h3>
     <textarea rows="30" cols="80" id="animationDisp"></textarea><br>
-    <button type="button" id="refresh">Refresh Animation</button>
-    <button type="button" id="logout">Logout</button>`
+    <input type="button" id="refresh" value="Refresh Animation"></input>
+    <input type="button" id="logout" value="Logout"></input>`
 
-    // outlet declaration
-    let out = document.querySelector('#outlet');
+    out = document.querySelector('#outlet');
+    out.innerHTML = logins;
+    loggingBtn = document.querySelector("#lgin");
+    myGeoLocKey = "bQDwCHvfs2jJ3B1Fpc8QGyMAFGU4AxrW";
 
-    // invoking the login user interface
-    loggingUI();
+    /** 
+     * Creates EventListener for the login button do the following operations
+     * ======================================================================
+     * Directs to the animation UI
+     * Accesses user's creditential
+     * User's current location
+     * Fetches Animation from given address
+     * 
+    */
+    loggingBtn.addEventListener("click", function loggingUI() {
+        let refrBtn, lOutBtn;
+        out.innerHTML = animations;
+        accessUserLoc();
+        accessingToken();
 
-    // loggingUI(): function loads the login page
-    function loggingUI() {
-        //get element from the DOM to build Login UI page
-        out.innerHTML = logins;
-        // get element from the DOM for login 
-        let loggingBtn = document.querySelector("#lgin");
+        animDisplayArea = document.querySelector('#animationDisp');
+        refrBtn = document.querySelector('#refresh');
 
-        //creates EventListener for the login button directs to the animation UI
-        loggingBtn.addEventListener("click",accessingToken);
-    } // end of loggingUI function
+        refrBtn.addEventListener('click',
+            // fetches animation 
+            animFetching = function () {
+                fetch('http://mumstudents.org/api/animation',
+                    {
+                        method: 'GET',
+                        headers: {
+                            "content-type": "application/text",
+                            Authorization: `Bearer ${myUniqueToken}`
+                        }
+                    }).then((respo) => respo.text())
+                    .then(d => {
+                        animArray = d.split("=====\n");
+
+                        if (animPlay) {
+                            clearInterval(animPlay)
+                        }
+                        visualAnim();
+                    });
+            } // end of animFetching() function
+        );
+
+        lOutBtn = document.querySelector('#logout');
+
+        lOutBtn.addEventListener('click', function () {
+            outlet.innerHTML = logins;
+            loggingBtn.addEventListener("click", loggingUI);
+            clearInterval(animPlay)
+        });
+    }); // end of login button OPERATION
 
 
 
-    //accessingToken
-    async function accessingToken () {
-        let resp = await fetch("http://mumstudents.org/api/login", {
+
+    // access users location
+    function accessUserLoc() {
+        navigator.geolocation.getCurrentPosition(
+            function (currPos) {
+                myLon = currPos.coords.longitude;
+                myLat = currPos.coords.latitude;
+                myGeoLoc = document.querySelector("#mygeoloc");
+                locFetching();
+            });
+    }
+
+    // accessingToken(): send request, fetches creditentials
+    function accessingToken() {
+        fetch("http://mumstudents.org/api/login", {
             method: 'POST',
-            headers: { "content-type": "application/json" },
+            headers: { "content-type": "application/json", },
 
             body: JSON.stringify({
                 "username": "mwp",
                 "password": "123"
             })
-        });
-        let jsonRes = await resp.json();
-        myUniqueToken = jsonRes.token;
-        let jsonStatus = jsonRes.jsonStatus;
-
-        if (jsonStatus === true) {
-            animationUI();
-        }
-    } // end of accessingToken function
-
-    function animEvents() {
-        // access location
-        navigator.geolocation.getCurrentPosition(
-            function (currPos) {
-                myLon = currPos.coords.longitude;
-                myLat = currPos.coords.latitude;
-                locFetching();
-                refrBtn = document.querySelector('#refresh');
-                lOutBtn = document.querySelector('#logout');
-
-                lOutBtn.addEventListener('click',
-                    // loggingOut(): function redirects back to login UI
-                    function () {
-                        loggingUI();
-                    });// end of logging Out function
-
-                refrBtn.addEventListener('click',
-                    // if success
-                    function () {
-                        clearInterval(animPlay)
-                        animFetching();
-                    });
-            },
-            // if something went wrong 
-            function () {
-                alert("CAN'T access ")
+        }).then((res) => res.json())
+            .then(d => {
+                myUniqueToken = d.token;
+                animFetching();
             });
-    } // end of function 
+    } // end of function accessingToken() 
 
-    // animationUI(): function loads the animation page
-    function animationUI() {
-        out.innerHTML = animations;
-        animEvents();
-        animFetching();
-    } // end of animationUI function
 
-    // fetches animation 
-    async function animFetching() {
-        let jsonRes = await fetch('http://mumstudents.org/api/animation',
-            {
-                method: 'GET',
-                headers: {
-                    "content-type": "application/text",
-                    Authorization: `Bearer ${myUniqueToken}`
-                }
-            });
-        //let myRes 
-        animationColl = await jsonRes.text();
-        //animationColl = myRes;
-        visualAnim();
-    } // end of animFetching() function
 
-    function visualAnim() {
-        animDisplayArea = document.querySelector('#animationDisp');
-        let animArray = animationColl.split("=====");
-        animDisplayArea.innerHTML = animArray[0];
-        let currentAnim = 0;
-        let maxlength = animArray.length;
-        animPlay = setInterval(() => {
-            animDisplayArea.innerHTML = animArray[currentAnim];
-            currentAnim++;
-            if (currentAnim === maxlength) {
-                currentAnim = 0;
-            }
-        }, 150);
-    } // end of function visualAnim()
-
-    // fetches users location
-    //async 
+    // locFetching(): send request, fetches location
     function locFetching() {
-        let fetchLoc, getLoc, city, state, country;
-        myGeoLoc = document.querySelector("#mygeoloc");
-        fetchLoc = //await 
+        let questMapU, city, state, country;
+
+        questMapU = `http://open.mapquestapi.com/geocoding/v1/reverse?key=${myGeoLocKey}&location=${myLat},${myLon}`;
         fetch(questMapU,
             {
                 method: 'GET',
                 headers: { 'content-type': 'application/json', }
+            }).then((fRes) => fRes.json())
+            .then((currPos) => {
+                city = currPos.results[0].locations[0].adminArea5;
+                state = currPos.results[0].locations[0].adminArea3;
+                country = currPos.results[0].locations[0].adminArea1;
+
+                myGeoLoc.innerHTML = `WELCOME all from ${city}, ${state}, ${country}`;
             });
-        getLoc = //await 
-        fetchLoc.json();
-        city = getLoc.outcomes[0].fetchLoc[0].adminArea5;
-        state = getLoc.outcomes[0].fetchLoc[0].adminArea3;
-        country = getLoc.outcomes[0].fetchLoc[0].adminArea1;
+    } // end of function locFetching() 
 
-        myGeoLoc.innerHTML = `welcome all from, ${city}, ${state}, ${country}`;
-    } // end of locFetching() function
+    // visualAnim(): displays animation based on the given time interval
+    function visualAnim() {
+        let currentAnim = 0;
+        animPlay = setInterval(() => {
+            animDisplayArea.innerHTML = animArray[currentAnim];
+            currentAnim++;
+            if (currentAnim === animArray.length) {
+                currentAnim = 0;
+            }
+        }, 300);
+    } // end of function visualAnim()
 
-    //MyRouters(): function constructor creates two routes for default(LOGIN UI), & animation (ANIMATON UI)
-    // let MyRouters = function (name, routers) {
-    //     return ({ name: name, routers: routers });
-    // };
-    // let myRouts = new MyRouters("myRouts",
-    //     [{ path: "/", name: "Login - Page" },
-    //     { path: "/animation", name: "Animation - Page" }]);
+    //MyRouters(): function constructor creates two routes for default (LOGIN UI), & animation(ANIMATON UI)
+    let MyRouters = function (name, routers) {
+        return ({ name: name, routers: routers });
+    };
+    let myRouts = new MyRouters("myRouts",
+        [{ path: "/", name: "Login - Page" },
+        { path: "/animation", name: "Animation - Page" }]);
 
-    // let currPath = window.location.pathname;
-    // if (currPath === "/") {
-    //     out.innerHTML = logins;
-    // } else if (currPath === "/animation") {
-    //     out.innerHTML = animations;
-    // }
-} // end of main() function
+    let currPath = window.location.pathname;
+    if (currPath === "/") {
+        out.innerHTML = logins;
+    } else if (currPath === "/animation") {
+        out.innerHTML = animations;
+    }
+}; // end of main() function
