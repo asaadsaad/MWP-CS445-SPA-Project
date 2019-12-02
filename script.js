@@ -3,7 +3,7 @@ window.onload = function () {
   let token;
   let timerId;
   let count;
-let anime;
+  let anime;
   const loginTemplate = `
        <h1>Please login</h1>
        UserName <input placeholder="mwp" value="mwp"/> <br>
@@ -18,7 +18,7 @@ let anime;
          <button id="logout">Logout</button>
          `;
 
-   let post = async function () {
+  let post = async function () {
 
     {
       const response = await fetch('http://mumstudents.org/api/login',
@@ -47,8 +47,8 @@ let anime;
     const anime = obj.split("=====\n");
     const mylength = anime.length;
     count = 0;
-   
-    history.pushState( anime , "document.title", "index.html"); 
+
+    history.pushState(anime, "document.title", "index.html");
     console.log(history.state.length)
     timerId = setInterval(function () {
       document.getElementById("animation1").innerHTML = anime[count];
@@ -79,12 +79,16 @@ let anime;
       document.getElementById('adress').innerHTML = `welcome all from ${city}, ${state}`;
     }
   }
-  //history.pushState( "login" , "document.title", "index.html"); 
 
+  history.pushState("login", "document.title", "index.html");
+console.log(history.state)
 
   function login() {
     document.getElementById("outlet").innerHTML = loginTemplate;
     clearInterval(timerId);
+    //  let x= "file:///Users/simon/Documents/cs%20445%20assignments/final%20project/MWP-CS452-2019-SPA-Project/index.html"
+    //   window.location.replace(x);
+
   }
 
   login();
@@ -92,8 +96,9 @@ let anime;
   function aniPage() {
     document.getElementById("outlet").innerHTML = animationTemplate;
 
-  locationFinder()
+    locationFinder()
     document.getElementById("logout").addEventListener("click", login);
+
 
     document.getElementById("refresh").addEventListener("click", myGet);
 
@@ -101,32 +106,57 @@ let anime;
   document.getElementById("login").addEventListener("click", aniPage);
   document.getElementById("login").addEventListener("click", post);
 
-  
-  window.addEventListener('popstate', function (){
+  clearInterval(timerId);
+  //clearInterval(timerId1);
+
+  window.addEventListener('popstate', function () {
+
     clearInterval(timerId);
-    
-        count =0;
-      timerId1 = setInterval(function () {
-        document.getElementById("animation1").innerHTML = history.state[count];
-        count++
-        if (count === history.state.length) {
-          console.log(history.state.length)
-          count= 0;
-        }
-      }, 200);
-      
-    });
-      // window.addEventListener('popstate', login)
-      // clearInterval(timerId);
 
-  } 
+    if (history.state === null) {
+      clearInterval(timerId);
+      //login()
+
+    }
+    if (history.state === login) {
+      clearInterval(timerId)
+      document.getElementById("outlet").innerHTML = history.state;
+      // let x = "file:///Users/simon/Documents/cs%20445%20assignments/final%20project/MWP-CS452-2019-SPA-Project/index.html"
+      // window.location.replace(x);
 
 
+    }
+
+    // clearInterval(timerId);
+
+    count = 0;
+    timerId = setInterval(function () {
+      document.getElementById("animation1").innerHTML = history.state[count];
+      count++
+      if (count === history.state.length) {
+        //console.log(history.state)
+        count = 0;
+
+      }
+
+    }, 200);
+
+
+
+  });
+
+
+  //window.addEventListener('popstate', login)
+  // clearInterval(timerId);
+
+}
 
 
 
 
- 
+
+
+
 
 
 
