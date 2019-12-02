@@ -27,7 +27,11 @@ Password <input id="password" type="text"><br>
             outlet.innerHTML = loginPage;
         }
     }
-    async function getToken() {
+    function refresh() {
+        document.getElementById("refAnimBtn").addEventListener("click", refreshFunc);
+    }
+    let interval = "";
+    async function refreshFunc() {
         let tokenResponse = await fetch("http://mumstudents.org/api/login", {
             method: "POST",
             headers: {
@@ -40,40 +44,59 @@ Password <input id="password" type="text"><br>
                     "password": "123"
                 })
         })
+        if (interval) clearInterval(interval);
         let tokenObj = await tokenResponse.json();
         let animeResponse = await fetch("http://www.mumstudents.org/api/animation", {
             method: "GET",
             headers: { "Authorization": `Bearer ${tokenObj.token}` }
         });
         let animeString = await animeResponse.text();
-        // console.log(animeString);
         eachString = animeString.split('=====');
-        // console.log(eachString);
-        function animate(arr) {
-            for (let i = 0; i < arr.length; i++){
-                setInterval(() => {
-                   console.log(arr[i]) 
-                }, 500);
-            }
-        }
-        animate(eachString);
-    }
-    getToken();
-    function refresh() {
-        document.getElementById("refAnimBtn").addEventListener("click", refreshFunc);
-        let textNode = document.getElementById("textarea");
-        function refreshFunc() {
+        console.log(eachString);
 
-            textNode.innerHTML = eachString;
+        // function animate(arra) {
+        //     let count = 0;
+        //     for (let i = count; count < arra.length; i++){
+        //         console.log(arra[count]);
+                
+        //     }
+            // eachString.forEach((element,index,arr) => {
+            //     setInterval(() => {
+            //         console.log(arr[index]);
+            //     }, 500);
+            // });
+     
+        // }
+        
+        // }
+        // animate(eachString);
+        let count = 0;
+         interval=setInterval(function () { 
+            document.getElementById("textarea").innerHTML = eachString[count++];
+            if (count == eachString.length) { count = 0;}
+        },300);
+        
+    }
+    refreshFunc();
+    function getPos() {
+        navigator.geolocation.getCurrentPosition(success, failed);
+        async function success(position) {
+            console.log(position)
+            let pos = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${mapsKey}&location=${position.coords.latitude},${position.coords.longitude}`)
+            let obj = await pos.json()
+            console.log(obj)
+            let location = obj.results[0].locations;
+            console.log(location);
+            document.getElementById("location").innerHTML = `Welcome to ${location[0].adminArea5},${location[0].adminArea3},${location[0].adminArea1}`;
+        }
+
+        function failed() {
+            document.getElementById("location").innerHTML = `locTION NOT RECOGNIZED`;
+
         }
     }
-    async function getPos() {
-        let position = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${mapsKey}&location=30.333472,-81.470448`)
-        let obj = await position.json()
-        let location = obj.results[0].locations;
-        document.getElementById("location").innerHTML = `Welcome to ${location[0].adminArea5},${location[0].adminArea3},${location[0].adminArea1}`;
-    }
-    getPos();
+
+    // getPos();
 }
             // arr.forEach((element, index, arra) => {
             //     setInterval((element) => {
