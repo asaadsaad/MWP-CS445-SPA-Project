@@ -22,6 +22,7 @@ function SPA() {
 
     //check
     let addPost = async function () {
+        try{
         let username = document.querySelector("#username").value;
         let password = document.querySelector("#password").value;
         let res = await fetch('http://www.mumstudents.org/api/login', {
@@ -37,6 +38,9 @@ function SPA() {
         let response = await res.json();
         token = response.token;
         animationPage();
+    }catch(error){
+        alert("error has occured")
+    }
     }
 
     // Get(fetch) animation
@@ -83,16 +87,16 @@ function SPA() {
         }
 
         function fail(msg) {
-            console.log(msg.code + msg.message);
+            document.querySelector("#location").innerHTML= msg.message;
         }
     }
     //Login page
     function loginPage() {
         outlet.innerHTML = loginTemplate;
-        history.pushState({page: 1 }, null, "/loginpage");
+        history.pushState({page:"login" }, null, "/loginpage");
         document.querySelector("#login").addEventListener("click", addPost);
-        window.addEventListener('popstate', animationPage)
-    }
+        window.addEventListener('popstate',animationPage);
+        }
 
     loginPage()
     // Animation page
@@ -100,7 +104,7 @@ function SPA() {
         outlet.innerHTML = animationTemplate;
         document.querySelector("#logout").addEventListener("click", loginPage);
         document.querySelector("#refresh").addEventListener("click", getAnimation);
-        history.pushState({page: 2 }, null, "/animationpage")
+        history.pushState({page: "display" }, null, "/animationpage")
         window.addEventListener('popstate', loginPage)
         getLocation()
         getAnimation();
