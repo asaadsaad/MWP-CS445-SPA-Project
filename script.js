@@ -86,11 +86,8 @@ function cs445Project() {
       });
       //  history push after click refresh 
       const refresh = document.getElementById('refresh');
-      refresh.addEventListener('click', _ => history.pushState({
-        page: 'refresh'
-      }, null, "?/animation"))
-
-
+      refresh.addEventListener('click', _ => history.pushState(
+        {page: 'refresh'}, null, "?/animation"))
       //throwing error message 
     } catch (error) {
       console.log(`Error message : ${error}`)
