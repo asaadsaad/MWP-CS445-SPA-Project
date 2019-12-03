@@ -3,31 +3,25 @@
 
 window.onload = function () {
   const key = "iMLTuAXntzfWDQsqrKFVOiQKURpyaCnf";
-  let longitude, latitude;
-  let timerId;
-  //let myLocation;
-  let tokenObj;
-  let tokentAddress;
-  let animationArray;
-  let animArea;
+  let longitude, latitude, timerId, tokenObj, tokentAddress, animationArray, animArea, pathName, username, Password, output, logInView, logInElement, animationView, logOutElement;
 
 
   // let outlet=document.querySelector("##outlet");
-  let output = document.querySelector("#outlet");
-  let logInView = `
+  output = document.querySelector("#outlet");
+  logInView = `
    <h1>Login Here</h1>
    Username:<input id="mwp" value="MWP"/><br>
    Password: <input id="123" value="123"/><br>
    <button id = "logIn">Loging</button> `;
-  let Username = document.getElementById("#mwp");
-  let Password = document.getElementById("#123");
-//About login view and the login function.
+  username = document.getElementById("#mwp");
+  Password = document.getElementById("#123");
+  //About login view and the login function.
   output.innerHTML = logInView;
-  let logInElement = document.querySelector("#logIn");
+  logInElement = document.querySelector("#logIn");
 
   logInElement.addEventListener("click", logIn);
   //This variable is about the textarea where our animation is displayd
-  let animationView = `
+  animationView = `
     <h1 id="myLocation"></h1>
     <textarea id="animation" rows="30" cols="60"style="font-size:10px"></textarea><br>
     <button id="refresh">Refresh Animation</button>
@@ -35,30 +29,33 @@ window.onload = function () {
 
   //logIn function takes as to the animation area
 
-  
+
   function logIn() {
-   // alert("welcome to my page!");
+    // alert("welcome to my page!");
     output.innerHTML = animationView;
-    let logOutElement = document.getElementById("logOut");
+    logOutElement = document.getElementById("logOut");
     logOutElement.addEventListener("click", logOut);
+
     animArea = document.querySelector("#animation")
-    document.querySelector("#refresh").addEventListener("click",animationfetch);
+    document.querySelector("#refresh").addEventListener("click", animationfetch);
     myGeoLocation();
     fetchanimationtoken()
-   animationfetch()
+    animationfetch()
+    history.pushState({ data: "" }, null, "/animation")
 
   }
-     //loOut function can bringback to the login page
+  //loOut function can bringback to the login page
   function logOut() {
     //alert("See you later!");
     output.innerHTML = logInView;
     let logInElement = document.querySelector("#logIn");
 
-  logInElement.addEventListener("click", logIn);
-    
+    logInElement.addEventListener("click", logIn);
+    history.pushState({ data: "" }, null, "/Login")
+
   }
 
-//geo location function can provide "Allow" and "block" options to get the latitude and altitude.
+  //geo location function can provide "Allow" and "block" options to get the latitude and altitude.
   // success function can work the allow, and the fail function do if the user press block  the function will show the message
   //also call the getLocation function 
 
@@ -76,22 +73,26 @@ window.onload = function () {
     }
   }
   //geoLocation function send the request by Get method to 
-//getLocation function can get our exact location from map by using the KEY(the uniqu id)
+  //getLocation function can get our exact location from map by using the KEY(the uniqu id)
   async function getLocation() {
-    let response = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${key}&location=${latitude},${longitude}&includeRoadMetadata=true&includeNearestIntersection=true`, {
+
+    let response, country, state, city, getResponse;
+
+    response = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${key}&location=${latitude},${longitude}&includeRoadMetadata=true&includeNearestIntersection=true`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       }
-    })
-    let getResponse = await response.json();
+    });
+
+    getResponse = await response.json();
     console.log(getResponse)
-    let country = getResponse.results[0].locations[0].adminArea1;
-    let state = getResponse.results[0].locations[0].adminArea3;
-    let city = getResponse.results[0].locations[0].adminArea5;
+    country = getResponse.results[0].locations[0].adminArea1;
+    state = getResponse.results[0].locations[0].adminArea3;
+    city = getResponse.results[0].locations[0].adminArea5;
     document.querySelector("#myLocation").innerHTML = `WELCOME TO THE UNIFIED FIELD OF ${country},${city},${state}`
   }
-//this function fetch username and passward and recive incrypted token id used for getting animations
+  //this function fetch username and passward and recive incrypted token id used for getting animations
   async function fetchanimationtoken() {
 
     const result = await fetch(`http://mumstudents.org/api/login`, {
@@ -101,7 +102,6 @@ window.onload = function () {
 
         'username': 'mwp',
         'password': '123'
-
       })
     });
 
@@ -130,15 +130,16 @@ window.onload = function () {
     animationmove()
 
   }
-// animationmove can recive array of animations, the function make the frames move(build animation)
+  // animationmove can recive array of animations, the function make the frames move(build animation)
   function animationmove() {
-     
-    let animationFrame = animationArray.split("=====\n")
+
+    let animationFrame, count, max;
+    animationFrame = animationArray.split("=====\n")
     console.log(animationFrame)
-    let count = 0;
-    let max = animationFrame.length;
-if (timerId) clearInterval(timerId);
-timerId=setInterval(() => {
+    count = 0;
+    max = animationFrame.length;
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
 
       animArea.innerHTML = animationFrame[count];
 
@@ -146,10 +147,27 @@ timerId=setInterval(() => {
 
       if (count === max) {
         count = 0
-      } 
+      }
     }, 250);
 
   }
+
+
+  window.onpopstate = function (event) {
+    pathName = location.pathname;
+    if (pathName === "/Login") {
+      output.innerHTML = logInView;
+      let logInElement = document.querySelector("#logIn");
+
+      logInElement.addEventListener("click", logIn);
+    } else {
+
+      logIn();
+
+    }
+
+  }
 }
+
 
 //today(sunday) i studied about free variable, callstack and promise(resolve,reject)
