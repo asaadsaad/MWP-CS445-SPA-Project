@@ -1,7 +1,7 @@
 'use strict';
 
 window.onload = () => {
-    let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0, username, password;
+    let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0, username, password, logedOut = false;
     const OUTLET = getElement('#outlet');
     const QUEST_API_URL = 'http://www.mapquestapi.com/geocoding/v1/reverse';
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
@@ -79,8 +79,12 @@ window.onload = () => {
      * @param {Event} event 
      */
     function popstateHandler(event) {
-        if (event.state) {
+        if (event.state && !logedOut) {
             state = event.state;
+            render(state);
+        } else {
+            state = { frames: null, path: '/', userLocation: userLocation };
+            history.replaceState(state, null, '/login');
             render(state);
         }
     }
@@ -210,6 +214,7 @@ window.onload = () => {
      */
     function logOut() {
         clearInterval(animationInterval);
+        logedOut = true;
         i = 0;
         animationFrames = [];
         state.frames = animationFrames;
