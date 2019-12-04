@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<script src="https://unpkg.com/rxjs/bundles/rxjs.umd.min.js"></script>
+
+<button id="b1">Click promis </button>
+<button id="b2">Click Async </button>
+<button id="b3">Click Reactive </button>
+<div id='output'></div>
+
+<script>
+    document.getElementById('b1').addEventListener('click', getPromis);
+    document.getElementById('b2').addEventListener('click', getAsync);
+    document.getElementById('b3').addEventListener('click', getReactive);
+
+    function getPromis() {
+
+        fetch(`https://randomuser.me/api/.`)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+
+                let names = data.results[0].name.first
+                let stateName = data.results[0].location.state;
+                let countryName = data.results[0].location.country;
+                let adreess = stateName + " ," + countryName;
+                document.getElementById("output").innerHTML = `Name : ${names} <br/>  Location : ${adreess}`
+            });
+
+    }
+    async function getAsync(position) {
+        `https://randomuser.me/api/.`
+
+        let response = await fetch(`https://randomuser.me/api/.`)
+        response = await response.json();
+        console.log(response)
+
+        let names = response.results[0].name.first
+        let stateName = response.results[0].location.state;
+        let countryName = response.results[0].location.country;
+        let adreess = stateName + " ," + countryName;
+        document.getElementById("output").innerHTML = `Name : ${names} <br/>  Location : ${adreess}`
+    }
+
+    async function getReactive() {
+        const { Observable, from } = rxjs;
+
+        const response$ = await from(fetch("https://randomuser.me/api/"));
+        response$.subscribe(
+            async function (response) {
+               response = await response.json()
+                console.log(response);
+
+                let names = response.results[0].name.first
+                let stateName = response.results[0].location.state;
+                let countryName = response.results[0].location.country;
+                let adreess = stateName + " ," + countryName;
+                document.getElementById("output").innerHTML = `Name : ${names} <br/>  Location : ${adreess}`
+            })
+
+
+    }
+
+
+</script>
+
+<body>
+
+</body>
+
+</html>
