@@ -16,7 +16,8 @@ window.addEventListener("load", function animationProject() {
 
     const myLogin = `<h1>Please login </h1><br/>
              username: <input type="text" value="mwp" id="input1" /> <br/>
-             password: <input type="text" value="123" id="input2" /> <br/>
+             password: <input type="text" value="123" id="inpu
+             t2" /> <br/>
              <button type="button" id="login">Login</button>`
 
     const myAnimation = `<h1 id="locationTitle"> </h1>
@@ -25,67 +26,80 @@ window.addEventListener("load", function animationProject() {
              <button type="button" id="logout">Logout</button>`
 
 
-    document.getElementById("outlet").innerHTML = myLogin;
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page == 1) {
+            clearInterval(animationID)
+            pageOne();
+        } else{
+            clearInterval(animationID)
+            animationCont();
+        }
 
-   const  currentPage= window.location;
-    let page1 = history.pushState({currentPage}, "login", "?page=1");
-    console.log(page1)
+    })
+    pageOne();
+    function pageOne() {
+        document.getElementById("outlet").innerHTML = myLogin;
+
+    }
+
+
+    const currentPage = window.location;
+    history.pushState({ page: 1 }, "login", "?page=1");
+
     /**
      * I added login listener that accepts two parameters.
-     * I recommend the user to refresh the page to make sure every code is loaded before trying to login
-     * This event includes multiple function
      * @param  {"click"} is the first parameter that allow the user to login and run the event via one click.
      * @param  {function } is the second parameter that does not take any parameter.
-     * @returns this event has multiple functions so do as multiple returns.
+     * @returns token that is used to fetch data from the server.
      */
     document.getElementById("login").addEventListener('click', findToken);
 
 
-  
- async function findToken(){
 
-    try {
-        /**
-    * This function fetch (post) the user information to the server
-    * @param  {object} includes method and headers about the user
-    * @returns (JSON) token id once the server request is accepted.
-     */
+    async function findToken() {
 
-        response2 = await fetch(`http://mumstudents.org/api/login`,
-            {
-                method: `POST`,
-                headers: { 'content-Type': 'application/json' },
-                body: JSON.stringify({ username: "mwp", password: "123" })
-            })
-        response2 = await response2.json();
-        tokenId = response2.token;
-        if(response2.status==true){
-            animationCont();  
+        try {
+            /**
+        * This function fetch (post) the user information to the server
+        * @param  {object} includes method and headers about the user
+        * @returns (JSON) token id once the server request is accepted.
+         */
+
+            response2 = await fetch(`http://mumstudents.org/api/login`,
+                {
+                    method: `POST`,
+                    headers: { 'content-Type': 'application/json' },
+                    body: JSON.stringify({ username: "mwp", password: "123" })
+                })
+            response2 = await response2.json();
+            tokenId = response2.token;
+            if (response2.status == true) {
+                animationCont();
+            }
+
         }
-        
-    }
-    /**
-        * This function handle error in case login request go wrong.
-        * @param  {error} error message
-        * @returns (error) return error message .
-        */
-    catch (err) {
-        console.log(err);
-    }
-
-}
-    
-   
-
         /**
-        *This function request the user to display his/her geolocation
-        * It takes two parameters
-        * @param  {function} success is the first function parameter
-        * @param  {function} fail is the second function paramter
-        * @returns {object} geolocation information if successfully accessed the user location
-        * @returns {error} message if fails to locate the user
-        */
-       function animationCont(){
+            * This function handle error in case login request go wrong.
+            * @param  {error} error message
+            * @returns (error) return error message .
+            */
+        catch (err) {
+            console.log(err);
+        }
+
+    }
+
+
+
+    /**
+    *This function request the user to display his/her geolocation
+    * It takes two parameters
+    * @param  {function} success is the first function parameter
+    * @param  {function} fail is the second function paramter
+    * @returns {object} geolocation information if successfully accessed the user location
+    * @returns {error} message if fails to locate the user
+    */
+    function animationCont() {
         navigator.geolocation.getCurrentPosition(success, fail)
 
         function fail() {
@@ -164,7 +178,6 @@ window.addEventListener("load", function animationProject() {
                 async function playAnimation() {
 
                     textId = await textId.split("=====\n");
-
                     let count = 0;
                     animationID = await setInterval(() => {
                         document.getElementById("outputDiv").innerHTML = textId[count];
@@ -192,11 +205,11 @@ window.addEventListener("load", function animationProject() {
          * @returns {function} this second return function call the get animation function and play new animation.
 
          */
-        let page = 3
+        // let page = 3
         animation.addEventListener("click", async function () {
-            history.pushState({ page: page }, null, `?page=${page}`);
+            // history.pushState({ page: page }, null, `?page=${page}`);
             await clearInterval(animationID);
-            ++page
+            // ++page
             getAnimation();
         });
 
