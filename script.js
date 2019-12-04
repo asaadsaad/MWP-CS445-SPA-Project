@@ -1,7 +1,7 @@
 'use strict';
 
 window.onload = () => {
-    let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0;
+    let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0, username, password;
     const OUTLET = getElement('#outlet');
     const QUEST_API_URL = 'http://www.mapquestapi.com/geocoding/v1/reverse';
     const QUEST_API_KEY = 'Y0ROZGOJZ8PxsijeatYiupEeXX4y2G4Z';
@@ -14,7 +14,7 @@ window.onload = () => {
             <label for="username">UserName: </label>
             <input type="text" id="username" value="mwp"><br>
             <label for="password">Password: </label> 
-            <input type="password" value="123"><br>
+            <input type="password" value="123" id="password"><br>
             <button id="login">Login</button>
         </div>
         `,
@@ -110,16 +110,23 @@ window.onload = () => {
      * Function to login and load animation asynchronously
      */
     async function logInAsync() {
-        OUTLET.innerHTML = `<img src="loading.gif" alt="Loading gif">`;
+        username = getElement('#username').value;
+        password = getElement('#password').value;
 
-        await getLocationAsync();
-        await fetchFrameAsync();
+        if (username === 'mwp' && password === '123') {
+            OUTLET.innerHTML = `<img src="loading.gif" alt="Loading gif">`;
 
-        state.frames = animationFrames;
-        state.path = '/animation';
-        state.userLocation = userLocation;
-        history.pushState(state, null, `/animation?${frameId++}`);
-        render(state);
+            await getLocationAsync();
+            await fetchFrameAsync();
+
+            state.frames = animationFrames;
+            state.path = '/animation';
+            state.userLocation = userLocation;
+            history.pushState(state, null, `/animation?${frameId++}`);
+            render(state);
+        } else {
+            alert('Wrong username and/or password!');
+        }
     }
 
     /**
