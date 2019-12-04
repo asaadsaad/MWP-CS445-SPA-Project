@@ -129,7 +129,7 @@ window.onload = function () {
         }
     }
     window.addEventListener('popstate', function (event) {
-        console.log(event.currentTarget.location)
+       // console.log(event.currentTarget.location)
         updatcontent(event);
         
         event.preventDefault();
