@@ -1,9 +1,6 @@
 window.onload = function () {
-  let token = null,
-    animation = null,
-    userLatitude = 0,
-    userLongitude = 0,
-    loginPage = `<h1>Please Login</h1>
+  let token = null, animation = null,userLatitude = 0,userLongitude = 0,
+ loginPage = `<h1>Please Login</h1>
     <br />
     <form id="myLoginForm">
     <label>
@@ -69,14 +66,14 @@ window.onload = function () {
     return await response.text();
   }
 
-
+  
   let loadAnimation = async function () {
     try {
 
       animation = await getAnimations("http://mumstudents.org/api/animation");
       animationArr = animation.split("=====\n");
       document.getElementById("outlet").innerHTML = animationPage;
-
+      getLocation();
       document.getElementById("loadAnimationBtn").onclick = () =>
         loadAnimation();
       document.getElementById("logOutBtn").onclick = () => logOut();
@@ -107,5 +104,37 @@ window.onload = function () {
     document.getElementById("outlet").innerHTML = loginPage;
     token = null;
   }
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    } else {
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  function showPosition(position) {
+    userLatitude = position.coords.latitude;
+    userLongitude = position.coords.longitude;
+    fetch(
+      `http://www.mapquestapi.com/geocoding/v1/address?key=SfsY2tGYHQs6eSYNdkGOysxRyL5Dz4cl&location=${userLatitude},${userLongitude}`
+      
+    )
+      .then(res => res.json())
+     
+      .then(data => {
+        let address = data.results[0].locations[0];
+        console.log(address);
+        
+        let street = address.street;
+        let state = address.adminArea3;
+        let country =address.adminArea1;
+        document.getElementById( "locationTag").innerHTML = 
+        `Wellcome All from ${street}, ${state}, ${country}!`;
+      });
+  }
+
+
+
 }
 
