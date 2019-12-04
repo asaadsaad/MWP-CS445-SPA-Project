@@ -1,66 +1,56 @@
 'use strict';
 window.onload = function project() {
 
-    window.addEventListener("popstate", historyPopFunc);
-    console.log(history.state);
-    function historyPopFunc() {
-        
-    }
-
-
-    let token, long, lati, timerId, userlocation, loginId, animFrames
+    let token, long, lati, timerId, userlocation, loginId, animFrames, username, password
     let keys = "tvXbGrqGqLqjaZ0RV8Bm1Mug02ScMW1T";
 
     const login = `
         <h1>Please Login</h1><br>
-        Username:<input placeholder="mwp" value="mwp"/><br/>
-        Password:<input placeholder="123" value="123"/><br/>
+        Username:<input placeholder="mwp" value="mwp" id="username"/><br/>
+        Password:<input placeholder="123" value="123" id="password"/><br/>
         <button id="loginbtn">Login</button>`;
 
     let loginTemplate = document.querySelector("#outlet");
-    // loginTemplate.innerHTML = login;
-    // let loginId = document.getElementById("loginbtn");
-    // loginId.addEventListener("click", logToAnimationpage);
 
-    getLocation();
+   // getLocation();
     LoginFunc();
-    // fetchAddress();
-    // clearInterval(timerId);
 
     function LoginFunc() {
-        //clearInterval(timerId);
-        loginTemplate = document.querySelector("#outlet");
+        clearInterval(timerId);
         loginTemplate.innerHTML = login;
         loginId = document.getElementById("loginbtn");
-        loginId.addEventListener("click", logToAnimationpage);
-      
-
+        loginId.addEventListener("click", logToAnimationpage);            
+            history.pushState({ page: 1 }, null, "?page=1")
+            window.addEventListener("popstate", function (e) {
+                if (e.state.page === 1) {
+                    LoginFunc()
+                }
+            })
+            getLocation();
     }
-    //history.pushState({ data}, null, '?html');
 
     const animation = `
-        <div id="address"> Welcome to SPA Animation</div>
+        <div id="address" style="font-size:30px" style = "font-weight: bold" > Welcome to SPA Animation</div>
         <textarea id="animation" rows="23" cols="50" style="font-size: 20px"></textarea><br><br>
         <button id="refresh">Refresh Animation</button>
         <button id="logout">Logout</button>        
         `
-    // let animationTemplate = document.querySelector("#outlet");
-    // loginTemplate.innerHTML = animation;
 
     function logToAnimationpage() {
+        username = document.getElementById("username").value;
+        password = document.getElementById("password").value;
+        if (username === "mwp" && password === "123") {
+        history.pushState({ page: 2 }, null, "?page=2")
         clearInterval(timerId);
         loginTemplate.innerHTML = animation;
         fetchAddress();
-
-        // logout();
-        // refresh();
         document.getElementById("logout").addEventListener("click", logout);
         document.getElementById("refresh").addEventListener("click", refresh);
         fetchToken();
-        //history.pushState({data}, null, '?animation')
+        }else {
+            alert("Incorrect username and password")
+        }
     }
-    // let logoutId = document.getElementById("logout");
-    // logoutId.addEventListener("click",logToLoginpage);
 
     function logout() {
 
@@ -72,11 +62,6 @@ window.onload = function project() {
     function refresh() {
         clearInterval(timerId);
         fetchAnim();
-        //let textarea = document.getElementById("animation");
-        // function refreshfunc() {
-        //     textarea.innerHTML = animFrames;
-
-        // }
     }
 
     function fetchToken() {
@@ -97,7 +82,7 @@ window.onload = function project() {
             })
     }
     function fetchAnim() {
-
+        
         fetch("http://mumstudents.org/api/animation", {
             method: 'GET',
             headers: {
@@ -106,62 +91,41 @@ window.onload = function project() {
         })
             .then(reps => reps.text())
             .then(data => {
-                // console.log(data);
-                animFrames = data.split("=====\n");
-                // console.log(animFrames)
+               
+                animFrames = data.split("=====\n");                
                 let count = 0;
+               
                 timerId = setInterval(function () {
-                    document.getElementById("animation").innerHTML = animFrames[count];
-                    //console.log(animFrames[count]);
+                    document.getElementById("animation").innerHTML = animFrames[count];                  
                     count++;
                     if (count === animFrames.length) {
-
                         count = 0;
                     }
                 }, 200)
+
             });
-        
     }
-
-    // fetchToken();
-
-
+    
     function getLocation() {
-
-        navigator.geolocation.getCurrentPosition(success);
+        navigator.geolocation.getCurrentPosition(success, fail);
         function success(position) {
-            //console.log('Longitude:' + position.coords.longitude);
-            //console.log('Latitude:' + position.coords.latitude);
-
             long = position.coords.longitude;
             lati = position.coords.latitude;
         }
         function fail(msg) {
-            console.log(msg.code + msg.message);
+            console.log("Welcome Anonymous");
         }
-        //console.log(long, lati);
-
-
     }
-
-
     function fetchAddress() {
-        console.log(lati);
         fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${keys}&location=${lati},${long}`)
             .then(data => data.json())
             .then(data => {
-                //let loc = data.results[0].locations[0];
-                // console.log(data);
                 let city = data.results[0].locations[0].adminArea5;
-                //console.log(city)
                 let state = data.results[0].locations[0].adminArea3;
                 let country = data.results[0].locations[0].adminArea1;
                 userlocation = `Welcome all from ${city},${state},${country}!`;
                 document.getElementById("address").innerHTML = userlocation;
-                //console.log(userlocation)
             })
     }
-    // fetchAddress();
-
 
 }
