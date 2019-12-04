@@ -33,8 +33,9 @@ window.onload = function () {
         getAnimation()
         //accesed token
     }
-
+       
        async function getAnimation() {
+        // geolocation fetch function call 
         // geolocation fetch function call 
               location_func()
   let response2 = await fetch("http://mumstudents.org/api/animation",
@@ -61,7 +62,7 @@ window.onload = function () {
         }, 200)
 
 window.addEventListener("popstate",function(){
-    console.log(history.state[0])
+   // console.log(history.state[0])
     clearInterval(animationId);
     splitedarray=history.state;
     count=0;
