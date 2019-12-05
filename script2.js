@@ -1,5 +1,6 @@
 
 function SPA() {
+    let arr;
     let i;
     let token;
     let timeid;
@@ -14,11 +15,11 @@ function SPA() {
     <button id="refresh">Refresh Animation</button>
     <button id="logout">Logout</button>`
 
-/** loads the login templates 
+    /** loads the login templates 
      * 
      */
     function getlogin() {
-        history.pushState(login, "document.title", " ?page= index.html")
+        history.pushState(login, "document.title", "index.html")
         clearInterval(timeid);
         document.getElementById("outlet").innerHTML = login;
 
@@ -27,7 +28,7 @@ function SPA() {
     }
     getlogin();
 
- /**
+    /**
      * sends post requeset to the server
      * checks password and username 
      * assign the event listners to the buttuns
@@ -52,12 +53,11 @@ function SPA() {
             token = resp
 
             document.getElementById("outlet").innerHTML = animation
-            history.pushState(animation, "document.title",  "? page = animation.html")
-            getAnimation();
-
+            history.pushState(animation, "document.title", "index.html")
+            document.getElementById("refresh").addEventListener("click", gettingtoken);
             document.getElementById("logout").addEventListener("click", getlogin)
-            document.getElementById("refresh").addEventListener("click", getAnimation);
             findaddress()
+            gettingtoken();
         }
         else {
             alert(" wrong username or password ")
@@ -65,10 +65,8 @@ function SPA() {
     }
     /** gets token from the server 
      * split the strinng to array of animation 
-     * display the animation
      */
-    let getAnimation = async function () {
-
+    async function gettingtoken() {
         let anime = await fetch("http://mumstudents.org/api/animation",
             {
                 headers: {
@@ -76,14 +74,25 @@ function SPA() {
                 }
             })
         let response = await anime.text()
-        let y = response.split("=====\n")
+        arr = response.split("=====\n") // array of the animations 
+        getAnimation()
+
+    }
+
+
+    /**display the animation 
+     * 
+     */
+    let getAnimation = function () {
+
+
         clearInterval(timeid);
         i = 0
         timeid = setInterval(function () {
 
-            document.getElementById("animation").innerHTML = y[i]
+            document.getElementById("animation").innerHTML = arr[i]
             i++
-            if (i === y.length) {
+            if (i === arr.length) {
                 i = 0
             }
 
@@ -95,10 +104,9 @@ function SPA() {
         if (history.state === null) {
             clearInterval(timeid);
             document.getElementById("outlet").innerHTML = login
-           getlogin();
+            getlogin();
         }
-        document.getElementById("outlet").innerHTML = history.state;
-        clearInterval(timeid);
+
         getlogin();
 
     })
@@ -117,6 +125,9 @@ function SPA() {
             document.getElementById("adress").innerHTML = `Well come to ${city} , ${country}`
         }
     }
+
+
+
 
 }
 
