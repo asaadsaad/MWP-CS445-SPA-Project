@@ -2,7 +2,6 @@
 
 "use strict"
 window.onload = function () {
-    let isLogin = false;
     let navigatorKey = "BwkHCDaltXvuMGpJSCng2fxGy3uLjEfZ";
     let longitude;
     let latitude;
@@ -24,109 +23,49 @@ window.onload = function () {
     <button type="button" id="logout">Logout</button>`
 
 
-    //Call the login function
+    /**
+     * EventListener for clicking on the back button
+     */
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page === 1) {
+            clearInterval(moveAnimation)
+            login();
+        } else {
+            clearInterval(moveAnimation)
+            insideLogin();
+        }
+    })
+
+    /**
+     * Calling the login function when the window loads
+     */
     login();
 
 
 
-    //function to login to the animation
+    /**
+     * The login function holds all the DOM elements for the credential page
+     */
     function login() {
         //Get the DOM Element to create Login Page
         let outlet = document.querySelector("#outlet");
         outlet.innerHTML = loginPage;
-        history.pushState("myLogin", "login", "?login")
+        history.pushState({
+            page: 1
+        }, "login", "?login")
 
         //Get the DOM Element for Login Page
         let loginButton = document.querySelector("#login");
-        let username = document.querySelector("#username");
-        let password = document.querySelector("#password");
 
         //Create EventListener for Login Page
         loginButton.addEventListener("click", getCred);
 
     }
 
-    //Function to get the animation Page and the geolocation
-    function animEventList() {
-        //Get the geolocation
-        const location = navigator.geolocation.getCurrentPosition(success, fail);
 
-
-        function success(position) {
-            longitude = position.coords.longitude;
-            latitude = position.coords.latitude;
-            currentPosition();
-            let geolocation = document.querySelector("#geolocation");
-            let animation = document.querySelector("#animation");
-            let refresh = document.querySelector("#refresh");
-            let logout = document.querySelector("#logout");
-
-            //Create an EvenListener once inside the animation page
-            //refresh.addEventListener("click", getNewAnimation);
-            logout.addEventListener("click", logoutOfAnimation);
-            refresh.addEventListener("click", clearLastAnimation);
-        }
-
-        function fail(msg) {
-            alert(`${msg.code} ====> ${msg.message} `);
-        }
-
-
-
-
-        //Get the DOM Elements once inside the animation page
-
-
-    }
-
-
-    //Functions for the EventListenter
-
-    //To login
-    function insideLogin() {
-        history.pushState("myAnimation", "animation", "?animation")
-        outlet.innerHTML = animationPage;
-        isLogin = true;
-
-        animEventList()
-        getAnimation();
-    }
-    //Function for making the string animate
-    function movingAnimation() {
-        const animArray = allAnimation.split("=====\n");
-        animation.innerHTML = animArray[0];
-        let currentAnim = 0;
-        let maxlength = animArray.length;
-        moveAnimation = setInterval(() => {
-            animation.innerHTML = animArray[currentAnim];
-            currentAnim++;
-            if (currentAnim === maxlength) {
-                currentAnim = 0;
-            }
-        }, 200);
-    }
-
-    //Clear the last animation
-    function clearLastAnimation() {
-        clearInterval(moveAnimation)
-        getAnimation();
-
-    }
-
-
-
-
-
-    //To logout
-    function logoutOfAnimation() {
-        if (isLogin) {
-            outlet.innerHTML = loginPage;
-            isLogin = false;
-            login();
-
-        }
-    }
-
+    /**
+     * Fetches the credential for the login from the API and if it is correct, calls the function that the animation page
+     */
     async function getCred() {
         const result = await fetch("http://www.mumstudents.org/api/login", {
             method: "POST",
@@ -144,10 +83,57 @@ window.onload = function () {
         const status = myJson.status;
 
         if (status === true) {
-            insideLogin();
+            insideLogin(); //Once the credential matches and status is true, Call the function that holds all the animation DOM
         }
     }
 
+
+    /**
+     * This function holds all the DOM elements for the animation page and calls 
+     * the function geoLocation() that finds the location and another function 
+     * getAnimation() that fetches the animation from the API
+     */
+    function insideLogin() {
+        history.pushState({
+            page: 2
+        }, "animation", "?animation")
+        outlet.innerHTML = animationPage;
+
+
+        geoLocation() //Call the function that gets the geolocation and has the DOM Elements for animation Page
+        getAnimation(); //Call the function to fetch the animation
+    }
+
+    /**
+     * Function to get the longitude and latitude of the user
+     */
+    function geoLocation() {
+        navigator.geolocation.getCurrentPosition(success, fail);
+
+        /**
+         * 
+         * @param {object} position holds the longitude and latitude 
+         */
+        function success(position) {
+            longitude = position.coords.longitude;
+            latitude = position.coords.latitude;
+            console.log(longitude);
+            console.log(latitude);
+            currentPosition(); //Call the fuction that fetches the mapquest API to get the position of user
+            animEventList(); //Call the function that creates the animation page; has all the DOM elements for it
+        }
+        //Runs if the user clicks Deny
+        function fail(msg) {
+            alert(`${msg.code} ====> ${msg.message} `);
+            outlet.innerHTML = "Sorry You need to accept the geolocation to see the animation";
+        }
+
+    }
+
+
+    /**
+     * Function that fetches the current position from the API
+     */
     async function currentPosition() {
         const result = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${navigatorKey}&location=${latitude},${longitude}`, {
             method: "GET",
@@ -163,6 +149,67 @@ window.onload = function () {
 
     }
 
+
+    /**
+     * Function that creates the DOM for the animation page and has the event listener
+     */
+    function animEventList() {
+        //Get the DOM Elements once inside the animation page
+        let geolocation = document.querySelector("#geolocation");
+        let animation = document.querySelector("#animation");
+        let refresh = document.querySelector("#refresh");
+        let logout = document.querySelector("#logout");
+
+        //Create an EvenListener once inside the animation page
+        logout.addEventListener("click", logoutOfAnimation);
+        refresh.addEventListener("click", clearLastAnimation);
+
+    }
+
+    /**
+     * Function that makes the string we got from API act as an animation
+     */
+    function movingAnimation() {
+        const animArray = allAnimation.split("=====\n");
+        animation.innerHTML = animArray[0];
+        let currentAnim = 0;
+        let maxlength = animArray.length;
+        moveAnimation = setInterval(() => {
+            animation.innerHTML = animArray[currentAnim];
+            currentAnim++;
+            if (currentAnim === maxlength) {
+                currentAnim = 0;
+            }
+        }, 200);
+    }
+
+    /**
+     * Function that clears the animation, so as we don't see the last animation when we get new animation
+     */
+    function clearLastAnimation() {
+        clearInterval(moveAnimation)
+        getAnimation(); //Function that fetches the animation from the API
+
+    }
+
+
+    /**
+     * Function that logs out of the animation page and takes to the credential page
+     */
+    function logoutOfAnimation() {
+        outlet.innerHTML = loginPage;
+        token = null;
+        login(); //The login function holds all the DOM elements for the credential page
+
+
+    }
+
+
+
+    /**
+     * Function that fetches the animation from the API and calls 
+     * movingAniamtion() that animates the string we got from the API
+     */
     async function getAnimation() {
         const result = await fetch(`http://mumstudents.org/api/animation`, {
             method: "GET",
@@ -176,9 +223,6 @@ window.onload = function () {
         })
         allAnimation = await result.text();
         movingAnimation();
-
-
     }
-
 
 }
