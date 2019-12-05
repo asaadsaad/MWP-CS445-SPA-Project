@@ -1,20 +1,20 @@
 
 window.onload = function () {
-
-    //  variable area 
+    let his = window.location
+    history.pushState({ page: 2 }, "animation", "?loging page ")
     let loged = false;
-    let tokenObject = 0
-    let Longitude = 0
-    let Latitude = 0
     let navigatorKey = "dumnufmhzSXEK1MB8EYjjGHgZgpLEGml"
     let animFrame, timerId, text, status;
-    let refresh = false;
-    let loginglook = ` <h1> Please login </h1>
+
+    let loginglook = ` 
+    <link href="loginstyle.css" type="text/css" rel="stylesheet">
+    <h1> Please login </h1>
     Username: <input id="UserName" type="text" value= "mwp"></br>
     Password: <input id="password" type="text"value= "123"></br>
     <button type="button" id="loging">Login</button>`;
 
-    let animationLook = `<h1 id="status"></h1>
+    let animationLook = `
+    <link href="animationstyle.css" type="text/css" rel="stylesheet"><h1 id="status"></h1>
     <textarea id="textarea" rows="25" cols="60"></textarea>
     <button type="button" id="refresh">Refresh Animayion</button>
     <button type="button" id="logout">logout</button>`;
@@ -37,10 +37,10 @@ window.onload = function () {
 
             let RefreshAnim = document.querySelector("#refresh");
             let logout = document.querySelector("#logout");
-            text = document.querySelector("#textarea")
+            text = document.querySelector("#textarea");
             RefreshAnim.addEventListener("click", cleartime);
             logout.addEventListener("click", logoutFunc);
-            status = document.querySelector("#status")
+            status = document.querySelector("#status");
         }
     }
 
@@ -48,16 +48,13 @@ window.onload = function () {
 
     // loging function 
     function logingFunc() {
-
+        history.pushState("myAnimation", "animation", "?animation")
         navigator.geolocation.getCurrentPosition(success, fail);
-
         divLook.innerHTML = animationLook;
         loged = true;
         tokenFetch()
         addEvent()
-        fetchAnimation()
-        refresh = true
-
+        loged = false;
     }
 
     // error function for location 
@@ -71,7 +68,6 @@ window.onload = function () {
 
     function fail(msg) {
         alert(" you said no ")
-        // console.log(msg.code + msg.message);
     }
 
     // Fetch function 
@@ -101,6 +97,11 @@ window.onload = function () {
     function logoutFunc() {
         divLook.innerHTML = loginglook;
         loged = false;
+
+        window.location.replace(his)
+        history.pushState({ page: 2 }, "animation", "?loging page ")
+
+
     }
 
     async function tokenFetch() {
@@ -118,52 +119,56 @@ window.onload = function () {
             });
 
         const result = await response.json()
-        tokenObject = result.token
+        tokenObject = result
 
     }
 
-    let t = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtd2EiLCJpc3N1ZWRBdCI6IjIwMTktMTEtMjYiLCJ1c2VybmFtZSI6Im13cCJ9.yvKwS6McQx4DiPTOf6K_MDbWmLPSsUAEMpWgab3k47hPSJDpnurIaL0ukyr_QiLOJlKRZ0GI3wGkV014JoB15w"
 
     async function fetchAnimation() {
-
         const response = await fetch('http://mumstudents.org/api/animation',
             {
                 method: 'GET',
                 headers: {
                     "content-type": "application/text",
-                    Authorization: `Bearer ${t}`
+                    Authorization: `Bearer ${tokenObject.token}`
                 }
             });
 
-        const rrr = await response.text()
-        animFrame = rrr
+        const anim_result = await response.text()
+        animFrame = anim_result;
+
         showAnimation()
     }
 
     function showAnimation() {
-        if (refresh) {
+        let anima_Array = animFrame.split("=====\n");
+        text.innerHTML = anima_Array[0]
+        let current_frame = 0;
+        let max_frames = anima_Array.length;
 
-            let anima_Array = animFrame.split("=====\n")
-            text.innerHTML = anima_Array[0]
-            let current_frame = 0;
-            let max_frames = anima_Array.length;
-
-            timerId = setInterval(() => {
-                text.innerHTML = anima_Array[current_frame];
-                current_frame++;
-                if (current_frame === max_frames) {
-                    current_frame = 0;
-                }
-            }, 200);
-
-        }
-
+        timerId = setInterval(() => {
+            text.innerHTML = anima_Array[current_frame];
+            current_frame++;
+            if (current_frame === max_frames) {
+                current_frame = 0;
+            }
+        }, 200);
     };
 
     function cleartime() {
         clearInterval(timerId)
-        fetchAnimation()
+        fetchAnimation();
     }
+
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page === 1) {
+            clearInterval(timerId)
+            logingFunc();
+        } else {
+            clearInterval(timerId)
+            logingFunc();
+        }
+    });
 
 }
 
