@@ -202,7 +202,7 @@ window.onload=function(){
         }
 
 
-        ////////////////////////  below all about helper functions   //////////////////////
+        ////////////////////////  below all about helper functions  
 
         function mineAnimationFunc() {
         const textArea=document.getElementById("disAnimation");
