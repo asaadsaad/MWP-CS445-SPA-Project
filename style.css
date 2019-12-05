@@ -1,0 +1,55 @@
+html{
+    background-image: url("image2.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#toLogin,#toLogout,#nextAnimation{
+    background-color: rgb(185, 86, 29); 
+    border: 2px solid;
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 25px; 
+    
+}
+
+
+h2{
+    font-family: "Times New Roman", Times, serif;
+    color:rgb(185, 86, 29); 
+}
+
+#animationView{
+    margin: auto;
+    /* padding: 100px ; */
+    width: 50%;
+    font-size: 25px; 
+}
+
+#loginView{
+    margin: auto;
+    padding: 200px; 
+    width: 50%;
+    color:rgb(185, 86, 29);
+    font-size: 25px ; 
+    font-weight: bold;
+
+}
+
+#userName,#passWord{
+    padding: 10px;
+    border: 2px solid;
+    border-radius: 8px;
+    color: rgba(8, 10, 10, 0.637);
+    margin-left: 20px;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+}
