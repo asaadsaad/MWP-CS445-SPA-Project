@@ -1,154 +1,147 @@
 window.onload = function () {
 
-  let token;
-  let timerId;
-  let count;
-  let anime;
-  const loginTemplate = `
-       <h1>Please login</h1>
-       UserName <input placeholder="mwp" value="mwp"/> <br>
-       Password <input older="123" value="123"/> <br>
-       <button id="login">Login</button>`;
+    let token, timerId, count;
+    let outlet = document.getElementById("outlet");
 
-  const animationTemplate =
-    `
-         <div id="adress">Welcome to SPA Animation</div>
-         <textarea name="" id="animation1" cols="50" rows="20" style="font-size: 18px;"></textarea> <br>
-         <button id="refresh">Refresh Animation</button>
-         <button id="logout">Logout</button>
-         `;
+    const loginTemplate =
+        `<h1>Please login</h1>
+         UserName <input id="un" placeholder="mwp" value="mwp"/> <br>
+         Password <input id = "pw" value="123"/> <br>
+         <button id="login">Login</button>`;
 
-  let post = async function () {
+    /*Animation HTML template that holds the textarea to hold the animations
+    having two buttons to refresh and logout from the animation
+     */
+    const animationTemplate =
+        `<div id="address">Welcome to SPA Animation</div>
+        <textarea name="" id="animation1" cols="50" rows="20" style="font-size: 18px;"></textarea> <br>
+        <button id="refresh">Refresh Animation</button>
+        <button id="logout">Logout</button>`;
 
-    {
-      const response = await fetch('http://mumstudents.org/api/login',
-        {
-          method: "POST",
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: "mwp", password: "123" })
+    /**asyn function that fetches the animation using the Get,
+    displayes the animations to the user.
+    pushes the pages into history. 
+     */
+    getAnimation = async function () {
+        history.pushState("refresh", "title 2", "?Animation2")
+
+        clearInterval(timerId);
+
+        const result = await fetch('http://www.mumstudents.org/api/animation', {
+
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         })
 
-      const myresponse = await (response.json());
-      token = myresponse.token;
-      myGet();
+        const obj = await result.text()
+        const animeString = obj.split("=====\n");
+        const mylength = animeString.length;
+        count = 0;
+
+        timerId = setInterval(function () {
+
+            document.getElementById("animation1").innerHTML = animeString[count];
+            count++
+
+            if (count === mylength) {
+                count = 0;
+            }
+        }, 200);
+
     }
-  }
 
-  myGet = async function () {
-    clearInterval(timerId);
+    /**locates the users place by fetching from mapquestapi 
+       after sending  the key, longutiude, and latitutude.
+     */
+    function geolocation() {
 
-    const result = await fetch('http://www.mumstudents.org/api/animation',
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+        let Key = "nOkTZJzGcN8wKdZbHtemhMf4zHkvJBVG";
+
+        navigator.geolocation.getCurrentPosition(success);
+
+        async function success(position) {
+
+            long = position.coords.longitude;
+            lat = position.coords.latitude;
+
+            let theLocation = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${Key}&location=${lat},${long}&includeRoadMetadata=true&includeNearestIntersection=true`)
+            theLocation = await theLocation.json()
+
+            const city = theLocation.results[0].locations[0].adminArea5;
+            const state = theLocation.results[0].locations[0].adminArea3;
+            const address = document.getElementById('address')
+            address.innerHTML = `welcome all from ${city}, ${state}`;
         }
-      })
-    const obj = await result.text()
-    const anime = obj.split("=====\n");
-    const mylength = anime.length;
-    count = 0;
-
-    history.pushState(anime, "document.title", "index.html");
-    console.log(history.state.length)
-    timerId = setInterval(function () {
-      document.getElementById("animation1").innerHTML = anime[count];
-      count++
-      if (count === mylength) {
-        count = 0;
-      }
-    }, 200);
-
-  }
-  function locationFinder() {
-
-    let Key = "nOkTZJzGcN8wKdZbHtemhMf4zHkvJBVG";
-
-    navigator.geolocation.getCurrentPosition(success);
-
-    async function success(position) {
-
-      long = position.coords.longitude;
-      lat = position.coords.latitude;
-
-      let theLocation = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${Key}&location=${lat},${long}&includeRoadMetadata=true&includeNearestIntersection=true`)
-      theLocation = await theLocation.json()
-
-      const city = theLocation.results[0].locations[0].adminArea5;
-      const state = theLocation.results[0].locations[0].adminArea3;
-
-      document.getElementById('adress').innerHTML = `welcome all from ${city}, ${state}`;
-    }
-  }
-
-  history.pushState("login", "document.title", "index.html");
-console.log(history.state)
-
-  function login() {
-    document.getElementById("outlet").innerHTML = loginTemplate;
-    clearInterval(timerId);
-    //  let x= "file:///Users/simon/Documents/cs%20445%20assignments/final%20project/MWP-CS452-2019-SPA-Project/index.html"
-    //   window.location.replace(x);
-
-  }
-
-  login();
-
-  function aniPage() {
-    document.getElementById("outlet").innerHTML = animationTemplate;
-
-    locationFinder()
-    document.getElementById("logout").addEventListener("click", login);
-
-
-    document.getElementById("refresh").addEventListener("click", myGet);
-
-  }
-  document.getElementById("login").addEventListener("click", aniPage);
-  document.getElementById("login").addEventListener("click", post);
-
-  clearInterval(timerId);
-  //clearInterval(timerId1);
-
-  window.addEventListener('popstate', function () {
-
-    clearInterval(timerId);
-
-    if (history.state === null) {
-      clearInterval(timerId);
-      //login()
-
-    }
-    if (history.state === login) {
-      clearInterval(timerId)
-      document.getElementById("outlet").innerHTML = history.state;
-      // let x = "file:///Users/simon/Documents/cs%20445%20assignments/final%20project/MWP-CS452-2019-SPA-Project/index.html"
-      // window.location.replace(x);
-
-
     }
 
-    // clearInterval(timerId);
+    /*  login button function, 
+    takes into the animation page.
+     */
+    function login() {
 
-    count = 0;
-    timerId = setInterval(function () {
-      document.getElementById("animation1").innerHTML = history.state[count];
-      count++
-      if (count === history.state.length) {
-        //console.log(history.state)
-        count = 0;
+        clearInterval(timerId);
+        outlet.innerHTML = loginTemplate;
+        const loginPage = document.getElementById("login");
+        loginPage.addEventListener("click", animationPage);
+        history.pushState("logout", "title 1", "?page =login");
+        // 
+    }
+    login();
 
-      }
+    /**this async function fetches the animation, after checking the passward and 
+    user name.
+    two listeners for logging out and refreshing the animation page
+     */
+    async function animationPage() {
 
-    }, 200);
+        const userName = document.getElementById("un");
+        const passWord = document.getElementById("pw");
 
+        if (userName.value === "mwp" && passWord.value === "123") {
 
+            const response = await fetch('http://mumstudents.org/api/login',
+                {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: "mwp", password: "123" })
+                })
 
-  });
+            const myresponse = await (response.json());
+            token = myresponse.token;
+            outlet.innerHTML = animationTemplate;
 
+            geolocation();
 
-  //window.addEventListener('popstate', login)
-  // clearInterval(timerId);
+            history.pushState("login", "title 1", "?page =Animation");
 
+            const logOut = document.getElementById("logout");
+            const refresh = document.getElementById("refresh");
+
+            logOut.addEventListener("click", login);
+            refresh.addEventListener("click", getAnimation);
+        }
+
+        else {
+            alert("wrong password ")
+        }
+    }
+
+    /**
+     * @param  {} "popstate" method to pop out history
+     * @param  {} function @ pops history states from the history array
+     */
+    window.addEventListener("popstate", function () {
+        if (history.state === animationTemplate) {
+            clearInterval(timerId);
+            animationPage()
+        }
+        else {
+
+            clearInterval(timerId);
+            login()
+        }
+    })
 }
 
 
