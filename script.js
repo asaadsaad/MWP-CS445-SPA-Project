@@ -1,7 +1,7 @@
 
 /**
  * Weldensie Embaye
- * Nov. 26, 2019
+ * Dec. 5, 2019
  * wembaye@mum.edu;
 
  
@@ -26,25 +26,41 @@ window.addEventListener("load", function animationProject() {
              <button type="button" id="logout">Logout</button>`
 
 
-    window.addEventListener('popstate', function (event) {
-        if (event.state.page == 1) {
+    window.addEventListener('popstate', function () {
+        if (history.state == null) {
+            document.getElementById("outlet").innerHTML = myLogin;
+            document.getElementById("login").addEventListener('click', findToken);
+
+        }
+        else {
             clearInterval(animationID)
-            pageOne();
-        } else{
-            clearInterval(animationID)
-            animationCont();
+            textId = history.state
+            let count = 0
+            animationID = setInterval(() => {
+                document.getElementById("outputDiv").innerHTML = textId[count];
+                count++
+                if (count == textId.length) {
+                    count = 0;
+                }
+            }, 200)
+
         }
 
+
     })
+
     pageOne();
+
+    /**
+    *  @param  {no param}.
+    * @returns shows the login page in the inner HTML.
+    */
     function pageOne() {
         document.getElementById("outlet").innerHTML = myLogin;
-
     }
 
 
     const currentPage = window.location;
-    history.pushState({ page: 1 }, "login", "?page=1");
 
     /**
      * I added login listener that accepts two parameters.
@@ -53,8 +69,6 @@ window.addEventListener("load", function animationProject() {
      * @returns token that is used to fetch data from the server.
      */
     document.getElementById("login").addEventListener('click', findToken);
-
-
 
     async function findToken() {
 
@@ -110,7 +124,6 @@ window.addEventListener("load", function animationProject() {
             longitude = (position.coords.longitude).toFixed(6);
             latitude = (position.coords.latitude).toFixed(6);
 
-
             async function findLocation() {
                 try {
                     /**
@@ -146,14 +159,12 @@ window.addEventListener("load", function animationProject() {
 
         }
 
-        history.pushState({ page: 2 }, "login", "?page=2");
 
         document.getElementById("outlet").innerHTML = myAnimation;
 
 
 
         getAnimation();
-
         /**
             * This function is used to as callback function everytime the user click refresh animation
             * @param  {none} no parameter
@@ -173,12 +184,12 @@ window.addEventListener("load", function animationProject() {
                     })
 
                 textId = await response3.text();
+
                 playAnimation();
-
                 async function playAnimation() {
-
                     textId = await textId.split("=====\n");
                     let count = 0;
+                    history.pushState(textId, "login", "?page=2");
                     animationID = await setInterval(() => {
                         document.getElementById("outputDiv").innerHTML = textId[count];
                         count++
@@ -188,6 +199,8 @@ window.addEventListener("load", function animationProject() {
                     }, 200)
                 }
             }
+
+
             /**
            * This function handle error in case animation request go wrong.
            * @param  {error} error message
@@ -197,6 +210,8 @@ window.addEventListener("load", function animationProject() {
                 console.log(err);
             }
         }
+
+
         /**
          * I add refresh animation listener that accepts two parameters.
          * @param  {"click"} is the first parameter that allow the user to clear the refresh button.
@@ -205,13 +220,11 @@ window.addEventListener("load", function animationProject() {
          * @returns {function} this second return function call the get animation function and play new animation.
 
          */
-        // let page = 3
         animation.addEventListener("click", async function () {
-            // history.pushState({ page: page }, null, `?page=${page}`);
             await clearInterval(animationID);
-            // ++page
             getAnimation();
         });
+
 
         /**
         * I added logout listener that accepts two parameters.
