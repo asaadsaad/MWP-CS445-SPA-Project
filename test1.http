@@ -1,9 +1,0 @@
-
-
-POST "http://mumstudents.org/api/login "
-content-type: application/json
-
-{
-    "username": "mwp",
-    "password": "123"
-}
