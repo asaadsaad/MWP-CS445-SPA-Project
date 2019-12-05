@@ -1,23 +1,27 @@
 
 function assignment() {
+  // creating all the variables
   let  playAnimationInterval =0 ,userAnimation = "" ,userToken = "" ,animArray = [], userLat = 0 , userLong = 0;
-  let userLoginUI = `<h1> Please Login </h1>
+  // html part  user log in uI
+  let userLoginUI = `<h1> Please Login </h1> 
      <form id="userLoginForm">
      username:<input type='text' id='username' value='mwp'/><br>  
      Password:<input type='password' id='password' value='123'/><br> 
      <button id="submit">Login </button>
      </form>`;
+     // user animation UI
   let userAnimUI = `<h3 id="userLocation">user location</h3>
        <textarea id="animTag" cols="60" rows="27"></textarea>
        <br />
        <button id="animLoadButton">Refresh animation</button>
        <button id="userLogOutButton">Log out</button>
        `;
+       // getting animation server
   async function getAnimationServer() {
     userAnimation = await gettingAnimations(
       "http://mumstudents.org/api/animation"
     );
-    animArray = userAnimation.split("=====\n");
+    animArray = userAnimation.split("=====\n"); // creating animarray 
     getUserLocation();
     document.getElementById("outlet").innerHTML = userAnimUI;
     history.pushState(animArray, null, '/logging')
@@ -25,13 +29,14 @@ function assignment() {
     document.getElementById("userLogOutButton").onclick = () => logOutUser();
     document.getElementById("animLoadButton").onclick = () => getAnimationServer();
   }
-
+// function of logoutuser here 
   function logOutUser() {
-    clearInterval(playAnimationInterval);
+    clearInterval(playAnimationInterval);// 
     userToken = "";
-    window.history.pushState({}, null, "/");
+    history.pushState({}, null, "/");
     document.getElementById("outlet").innerHTML = userLoginUI;
   }
+  // it will get the play animation interval 
   function playAnimWithInterval() {
     let animTag = document.getElementById("animTag");
     let animationLength = animArray.length;
@@ -52,6 +57,7 @@ function assignment() {
       let username = document.getElementById("username").value;
       let password = document.getElementById("password").value;
       let responseObj = await getTokenFromServer(
+        // requesting Api
         "http://mumstudents.org/api/login",
         {
           username,
@@ -74,7 +80,7 @@ function assignment() {
     }
   });
 
-
+// getting token from sever
   async function getTokenFromServer(requesturl = "", data = {}) {
     const response = await fetch(requesturl, {
       method: "POST",
@@ -90,6 +96,7 @@ function assignment() {
     });
     return await response.json();
   }
+  // getting animations and changing in to json 
   async function gettingAnimations(requesturl = "") {
     const response = await fetch(requesturl, {
       headers: new Headers({
@@ -99,7 +106,7 @@ function assignment() {
     });
     return await response.text();
   }
-
+// gettin users locations by using geo locations 
   function getUserLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
