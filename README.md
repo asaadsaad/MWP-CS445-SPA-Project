@@ -11,3 +11,7 @@ A daily push is required to track your code and performance. If you miss a push 
 The project deadline will be on Thursday December 5th at 8 pm. No further pushes should be made to your repository. Perform one Pull Request to the original repository.  
 
 Please refer to project-specs.pdf for more details.
+
+
+#The login page, textarea and logout buttons are work well. 
+#I am trying to iterate the animation, but does not fixed yet.
