@@ -70,6 +70,7 @@ window.addEventListener("load", function animationProject() {
      */
     document.getElementById("login").addEventListener('click', findToken);
 
+
     async function findToken() {
 
         try {
@@ -189,7 +190,7 @@ window.addEventListener("load", function animationProject() {
                 async function playAnimation() {
                     textId = await textId.split("=====\n");
                     let count = 0;
-                    history.pushState(textId, "login", "?page=2");
+                    history.pushState(textId, "animation", "?animation");
                     animationID = await setInterval(() => {
                         document.getElementById("outputDiv").innerHTML = textId[count];
                         count++
