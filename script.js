@@ -1,8 +1,6 @@
 window.onload = domain;
 function domain() {
-    let token;
-    let animationId;
-    let animation;
+    let token, animationId, animation;
     const outlet = document.querySelector('#outlet');
     const loginTemplate = `
     <h1>Login</h1>
@@ -39,19 +37,19 @@ function domain() {
             token = response.token;
             let status = response.status;
             if (status) {
-                
+
             } else {
                 outlet.innerHTML += `<p>Authentication faild</p>`
             }
             fetchAnimation()
         }
-        
+
         let logoutButton = document.querySelector('#logout')
-        logoutButton.addEventListener('click', function(){
+        logoutButton.addEventListener('click', function () {
             outlet.innerHTML = loginTemplate;
             location.reload()
         });
-    
+
         function fetchAddress() {
             navigator.geolocation.getCurrentPosition(success);
             async function success(position, fail) {
@@ -96,16 +94,16 @@ function domain() {
                     currentFrame = 0;
                 }
             }, 200);
-            document.querySelector('#refresh').addEventListener('click',_=> history.pushState({page: 1}, " Flag Man", "?page=1"));
-            document.querySelector('#refresh').addEventListener('click',_=> history.pushState({page: 2}, " Bicycle", "?page=2"));
-            document.querySelector('#refresh').addEventListener('click',_=> history.pushState({page: 3}, " Lader", "?page=3"));
+            document.querySelector('#refresh').addEventListener('click', _ => history.pushState({ page: 1 }, " Flag Man", "?page=1"));
+            document.querySelector('#refresh').addEventListener('click', _ => history.pushState({ page: 2 }, " Bicycle", "?page=2"));
+            document.querySelector('#refresh').addEventListener('click', _ => history.pushState({ page: 3 }, " Lader", "?page=3"));
         }
         const refresh = document.querySelector('#refresh');
         refresh.addEventListener("click", function () {
             clearInterval(animationId);
             fetchAnimation()
         })
-    
+
     })
 
 }
