@@ -155,8 +155,6 @@ window.onload = function () {
 
         showAnimation()
     };
-
-
     /**
      * to show the animation.
      */
