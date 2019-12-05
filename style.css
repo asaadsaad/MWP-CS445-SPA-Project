@@ -1,0 +1,51 @@
+body{
+    font: 20px/1.5 Arial, Helvetica, sans-serif;
+    padding: 10; 
+    margin: 10; 
+    background :hsl(325, 73%, 75%) ;
+   background-image: url("nature-wallpaper-for-desktop-full-size-free-download.jpg");
+   background-repeat: no-repeat;
+}
+#animation{
+   background-image: url("nice.jpg");
+   background-repeat: no-repeat;
+   background-size:600px;
+   
+}
+
+#logIn{
+   height: 30px;
+   background: hsl(125, 85%, 44%);
+   background:15;
+   padding-left:30px;
+   padding-right: 30px;
+   border-radius: 16px;
+   
+}
+#refresh{
+    height: 30px;
+    background: rgb(224, 224, 9);
+    background:5;
+    padding-left:20px;
+    padding-right: 20px;
+    border-radius:32px ;
+
+ }
+ #logOut{
+    height: 30px;
+    background: rgb(224, 224, 9);
+    background:5;
+    padding-left:20px;
+    padding-right: 20px;
+    border-radius: 16px;
+
+ }
+
+h1{
+    height: 30px;
+    padding-left:20px;
+    padding-bottom: 50px;
+    padding-right: 20px;
+    color: rgb(228, 240, 62);
+
+ }
