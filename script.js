@@ -6,7 +6,7 @@ window.onload = function () {
   let longitude, latitude, timerId, tokenObj, tokentAddress, animationArray, animArea, pathName, username, Password, output, logInView, logInElement, animationView, logOutElement;
 
 
-  // let outlet=document.querySelector("##outlet");
+  // let outlet=document.querySelector("#outlet");
   output = document.querySelector("#outlet");
   logInView = `
    <h1>Login Here</h1>
@@ -44,7 +44,7 @@ window.onload = function () {
     history.pushState({ data: "" }, null, "/animation")
 
   }
-  //loOut function can bringback to the login page
+  //logOut function can bringback to the login page
   function logOut() {
     //alert("See you later!");
     output.innerHTML = logInView;
@@ -170,4 +170,4 @@ window.onload = function () {
 }
 
 
-//today(sunday) i studied about free variable, callstack and promise(resolve,reject)
+//histry is workign on live server not on default browser !
