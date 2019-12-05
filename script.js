@@ -1,30 +1,59 @@
-window.onload = function () {
+
+    let interval = '';
     let token;
     const mapsKey = `CSFyNjI9A2gLtHH9xNLjS7oOQGpjaHED`;
-    const loginPage = `<h3>Please Login</h3>Username <input id="username" type="text"><br>
-Password <input id="password" type="text"><br>
-<button id="loginId">Login</button>`
     // templates
+    const loginPage = `<h3>Please Login</h3>Username <input id="username" placeholder="mwp" type="text"><br>
+Password <input id="password" placeholder="123"  type="text"><br>
+<button id="loginId">Login</button>`;
+
     const animationPage = `    <h3 id="location">
                 </h3>
-                <textarea id="textarea" cols="70" rows="20"></textarea><br>
+                <textarea id="textarea" cols="60" rows="30"></textarea><br>
                 <button id="refAnimBtn">Refresh Animation</button>
                 <button id="logoutButn">Logout</button>`
-    // render function
+
+    /**
+     * 
+     * @param {string} template the template to render
+     * @param {object} node the element to render in to
+     */
     function render(template, node) {
         node.innerHTML = template;
     }
-    // DOM elements
-    const outlet = document.querySelector("#outlet");
 
-    render(loginPage, outlet);
+    /**
+     * login 
+     */
+    function login() {
+        const outlet = document.querySelector("#outlet");
+        history.pushState({ page: 1 }, null, '?login')
+        render(loginPage, outlet);
+    }
+    login()
+
+    // pop state
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page === 1) {
+            clearInterval(interval)
+            login();
+        } else {
+            clearInterval(interval)
+            animationButton();
+        }
+    })
+
     const loginBtn = document.querySelector("#loginId");
     loginBtn.addEventListener("click", loadAnimationPage);
+    /**
+     * load the animation page in to the div 
+     */
     function loadAnimationPage() {
         render(animationPage, outlet);
         logOutBtn();
         getLocation();
-        allAnimationFunc();
+        animationButton();
+        animate()
     }
     // Log out function
 
@@ -35,11 +64,16 @@ Password <input id="password" type="text"><br>
         }
     }
 
-    // get position 
-
+    /**
+     * get the location of the user
+     */
     function getLocation() {
 
         navigator.geolocation.getCurrentPosition(success, failed);
+        /**
+         * 
+         * @param {object} position an html object that has latitude and longitude
+         */
         async function success(position) {
 
             const res = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${mapsKey}&location=${position.coords.latitude},${position.coords.longitude}`)
@@ -48,13 +82,18 @@ Password <input id="password" type="text"><br>
             const location = document.querySelector("#location")
             location.innerHTML = `Welcome to ${locationObj[0].adminArea5},${locationObj[0].adminArea3},${locationObj[0].adminArea1}`;
         }
+        /**
+         * if the location fails
+         */
         function failed() {
             location.innerHTML = `YOUR LOCATION NOT RECOGNIZED`;
         }
     }
 
-    // fetch the Token
 
+    /**
+     * fetch the token 
+     */
     async function fetchToken() {
         const tokenResponse = await fetch("http://mumstudents.org/api/login", {
             method: "POST",
@@ -71,12 +110,9 @@ Password <input id="password" type="text"><br>
         const tokenObj = await tokenResponse.json();
         token = tokenObj.token;
     }
-
-    
-    // fetch the Animation
-    
-    let interval = '';
-
+    /**
+     * fetch the animation
+     */
     async function fetchAnimation() {
 
         await fetchToken();
@@ -87,16 +123,22 @@ Password <input id="password" type="text"><br>
         });
         const animationArr = await animationResponse.text();
         return animationArr;
-        
+
     }
 
-    //animate the fetched data from server 
 
-    function allAnimationFunc() { 
+    /**
+     * animation button to trigger the animation
+     */
+    function animationButton() {
         document.querySelector("#refAnimBtn").addEventListener("click", animate);
+        history.pushState({ page: 2 }, null, '?Animation')
 
     }
-    function animate() {    
+    /**
+     * do the actual animation/animate the fetched data from server
+     */
+    function animate() {
         fetchAnimation().then(function (animationArr) {
             const eachString = animationArr.split('=====');
 
@@ -105,10 +147,10 @@ Password <input id="password" type="text"><br>
             interval = setInterval(function () {
                 textElement.innerHTML = eachString[count++];
                 if (count == eachString.length) { count = 0; }
-            }, 200); 
+            }, 200);
         });
     }
-}
+
 
 
 
