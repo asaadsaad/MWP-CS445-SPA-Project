@@ -1,6 +1,6 @@
 'use strict';
 
-window.onload = () => {
+
     let animationArea, userLocation, token, animationFrames = [], animationInterval, i = 0, state, frameId = 0, username, password, logedOut = false;
     const OUTLET = getElement('#outlet');
     const QUEST_API_URL = 'http://www.mapquestapi.com/geocoding/v1/reverse';
@@ -230,4 +230,4 @@ window.onload = () => {
     function getElement(selector) {
         return document.querySelector(selector);
     }
-}
+
