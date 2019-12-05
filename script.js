@@ -1,38 +1,62 @@
-// your code here
 window.onload = function () {
-    let mapsKey = `CSFyNjI9A2gLtHH9xNLjS7oOQGpjaHED`;
-    let loginPage =
-        `<h3>Please Login</h3>Username <input id="username" type="text"><br>
+    let token;
+    const mapsKey = `CSFyNjI9A2gLtHH9xNLjS7oOQGpjaHED`;
+    const loginPage = `<h3>Please Login</h3>Username <input id="username" type="text"><br>
 Password <input id="password" type="text"><br>
-<button id="loginId">Login</button>`;
-
-    let animationPage = `    <h3 id="location">welcome All from <h3 ></h3>
+<button id="loginId">Login</button>`
+    // templates
+    const animationPage = `    <h3 id="location">
                 </h3>
-                <textarea id="textarea" cols="50" rows="15"></textarea><br>
+                <textarea id="textarea" cols="70" rows="20"></textarea><br>
                 <button id="refAnimBtn">Refresh Animation</button>
-                <button id="logoutButn">Logout</button>`;
-    let outlet = document.getElementById("outlet");
-    outlet.innerHTML = loginPage;
-    let loginBtn = document.getElementById("loginId");
+                <button id="logoutButn">Logout</button>`
+    // render function
+    function render(template, node) {
+        node.innerHTML = template;
+    }
+    // DOM elements
+    const outlet = document.querySelector("#outlet");
+
+    render(loginPage, outlet);
+    const loginBtn = document.querySelector("#loginId");
     loginBtn.addEventListener("click", loadAnimationPage);
     function loadAnimationPage() {
-        outlet.innerHTML = animationPage;
-        logOut();
-        refresh();
-        getPos();
+        render(animationPage, outlet);
+        logOutBtn();
+        getLocation();
+        allAnimationFunc();
     }
-    function logOut() {
-        document.getElementById("logoutButn").addEventListener("click", logOutFunc);
+    // Log out function
+
+    function logOutBtn() {
+        document.querySelector("#logoutButn").addEventListener("click", logOutFunc);
         function logOutFunc() {
-            outlet.innerHTML = loginPage;
+            render(loginPage, outlet);
         }
     }
-    function refresh() {
-        document.getElementById("refAnimBtn").addEventListener("click", refreshFunc);
+
+    // get position 
+
+    function getLocation() {
+
+        navigator.geolocation.getCurrentPosition(success, failed);
+        async function success(position) {
+
+            const res = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${mapsKey}&location=${position.coords.latitude},${position.coords.longitude}`)
+            const obj = await res.json();
+            const locationObj = obj.results[0].locations;
+            const location = document.querySelector("#location")
+            location.innerHTML = `Welcome to ${locationObj[0].adminArea5},${locationObj[0].adminArea3},${locationObj[0].adminArea1}`;
+        }
+        function failed() {
+            location.innerHTML = `YOUR LOCATION NOT RECOGNIZED`;
+        }
     }
-    let interval = "";
-    async function refreshFunc() {
-        let tokenResponse = await fetch("http://mumstudents.org/api/login", {
+
+    // fetch the Token
+
+    async function fetchToken() {
+        const tokenResponse = await fetch("http://mumstudents.org/api/login", {
             method: "POST",
             headers: {
                 "Accept": "application/json,text/plain,*/*",
@@ -44,68 +68,47 @@ Password <input id="password" type="text"><br>
                     "password": "123"
                 })
         })
+        const tokenObj = await tokenResponse.json();
+        token = tokenObj.token;
+    }
+
+    
+    // fetch the Animation
+    
+    let interval = '';
+
+    async function fetchAnimation() {
+
+        await fetchToken();
         if (interval) clearInterval(interval);
-        let tokenObj = await tokenResponse.json();
-        let animeResponse = await fetch("http://www.mumstudents.org/api/animation", {
+        const animationResponse = await fetch("http://www.mumstudents.org/api/animation", {
             method: "GET",
-            headers: { "Authorization": `Bearer ${tokenObj.token}` }
+            headers: { "Authorization": `Bearer ${token}` }
         });
-        let animeString = await animeResponse.text();
-        eachString = animeString.split('=====');
-        console.log(eachString);
-
-        // function animate(arra) {
-        //     let count = 0;
-        //     for (let i = count; count < arra.length; i++){
-        //         console.log(arra[count]);
-                
-        //     }
-            // eachString.forEach((element,index,arr) => {
-            //     setInterval(() => {
-            //         console.log(arr[index]);
-            //     }, 500);
-            // });
-     
-        // }
-        
-        // }
-        // animate(eachString);
-        let count = 0;
-         interval=setInterval(function () { 
-            document.getElementById("textarea").innerHTML = eachString[count++];
-            if (count == eachString.length) { count = 0;}
-        },300);
+        const animationArr = await animationResponse.text();
+        return animationArr;
         
     }
-    refreshFunc();
-    function getPos() {
-        navigator.geolocation.getCurrentPosition(success, failed);
-        async function success(position) {
-            console.log(position)
-            let pos = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${mapsKey}&location=${position.coords.latitude},${position.coords.longitude}`)
-            let obj = await pos.json()
-            console.log(obj)
-            let location = obj.results[0].locations;
-            console.log(location);
-            document.getElementById("location").innerHTML = `Welcome to ${location[0].adminArea5},${location[0].adminArea3},${location[0].adminArea1}`;
-        }
 
-        function failed() {
-            document.getElementById("location").innerHTML = `locTION NOT RECOGNIZED`;
+    //animate the fetched data from server 
 
-        }
+    function allAnimationFunc() { 
+        document.querySelector("#refAnimBtn").addEventListener("click", animate);
+
     }
+    function animate() {    
+        fetchAnimation().then(function (animationArr) {
+            const eachString = animationArr.split('=====');
 
-    // getPos();
+            let count = 0;
+            let textElement = document.querySelector("#textarea");
+            interval = setInterval(function () {
+                textElement.innerHTML = eachString[count++];
+                if (count == eachString.length) { count = 0; }
+            }, 200); 
+        });
+    }
 }
-            // arr.forEach((element, index, arra) => {
-            //     setInterval((element) => {
-            //         console.log(arra[index])
-            //     }, 500);
-            // });
-
-
-
 
 
 
