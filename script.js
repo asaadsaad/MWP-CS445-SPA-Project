@@ -61,8 +61,8 @@ window.addEventListener("load", function animationProject() {
         try {
             /**
         * This function fetch (post) the user information to the server
-        * @param  {object} includes method and headers about the user
-        * @returns (JSON) token id once the server request is accepted.
+        * @param  {object} includes method and headers 
+        * @returns (JSON) token id once the server request is processed.
          */
 
             response2 = await fetch(`http://mumstudents.org/api/login`,
