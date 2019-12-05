@@ -1,10 +1,7 @@
 window.onload = function () {
   let outlet, token = null, animation = null, userLatitude = 0, userLongitude = 0,
-    loginPage, animationPage;
-
+  loginPage, animationPage;
   outlet = document.getElementById("outlet");
-
-
   loginPage = `<h1>Please Login</h1>
     <br />
     <form id="myLoginForm">
@@ -30,7 +27,6 @@ window.onload = function () {
 
   outlet.innerHTML = loginPage;
   document.getElementById("myLoginForm").onsubmit = submitForm;
-
   async function submitForm(event) {
     event.preventDefault();
     let userName = document.querySelector("#userName").value;
@@ -41,9 +37,7 @@ window.onload = function () {
     });
     token = restoken.token;
     loadAnimation();
-    
   };
-
   /**
    * Function to get a token asynchronously
    * @param {String} url the url to fetch token
@@ -57,7 +51,6 @@ window.onload = function () {
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json"
-
       },
       redirect: "follow",
       referrer: "no-referrer",
@@ -73,8 +66,8 @@ window.onload = function () {
   async function getAnimations(url = "") {
     const response = await fetch(url, {
       headers: new Headers({
-        Accept: "application/json",
-        Authorization: "Bearer " + token
+      Accept: "application/json",
+      Authorization: "Bearer " + token
       })
     });
     return await response.text();
@@ -89,32 +82,31 @@ window.onload = function () {
       animationArr = animation.split("=====\n");
       outlet.innerHTML = animationPage;
       history.pushState(animationArr, null, '/login');
-
       getLocation();
       document.getElementById("loadAnimationBtn").onclick = () =>
-        loadAnimation();
+      loadAnimation();
       document.getElementById("logOutBtn").onclick = () => logOut();
       loadAnimationWithInterval();
-    
     }
     catch (err) {
       console.log(err);
     }
   };
-window.addEventListener("popstate",function(){
-  if(history.state==null){
-    logOut();
 
-  }
-  else{
-    clearInterval(animationInterval);
-    animationArr=history.state;
-loadAnimationWithInterval();
+  /**
+   * this EventListener handel the history for backward and forward 
+   */
 
-
-  }
-  
-})
+  window.addEventListener("popstate", function () {
+    if (history.state == null) {
+      logOut();
+    }
+    else {
+      clearInterval(animationInterval);
+      animationArr = history.state;
+      loadAnimationWithInterval();
+    }
+  })
   /**
    * the function load animation with 200 millisecond intervals 
    */
@@ -142,7 +134,7 @@ loadAnimationWithInterval();
   }
 
   /**
-   * 
+   * function navigate the geolocation by getting current position 
    */
   function getLocation() {
     if (navigator.geolocation) {
@@ -154,7 +146,7 @@ loadAnimationWithInterval();
 
   /**
    * 
-   * @param {*} position 
+   * @param {object} position giving the exact location of user 
    */
   function showPosition(position) {
     userLatitude = position.coords.latitude;
@@ -164,11 +156,9 @@ loadAnimationWithInterval();
 
     )
       .then(res => res.json())
-
       .then(data => {
         let address = data.results[0].locations[0];
         console.log(address);
-
         let street = address.street;
         let state = address.adminArea3;
         let country = address.adminArea1;
