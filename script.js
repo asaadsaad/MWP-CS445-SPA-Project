@@ -1,4 +1,4 @@
-// your code here
+// // your code here
 
 window.onload=function(){
     const loginTemplate=`
@@ -72,19 +72,11 @@ window.onload=function(){
     outlet.innerHTML=loginTemplate;
     let picture= ` o\n/#\\\n_|_===== \\o/\n  #\n_/ \\_=====|_o_\n  # \\\n_/|_===== _o_/\n/ #\n _|\\_`;
 
-    //login.html
-    const logInBTN=document.getElementById("logInBTN");
 
-    logInBTN.addEventListener("click",function(){
-    postPromisesFunc();
-        outlet.innerHTML=animationTemplate;
-        // history.pushState({ 'page_id': 2}, "animate", "animate.html");
-        // history.replaceState({ 'page_id': 2}, "page 3", "login.html")
-        allContentOfAnimation();
-        });
 
-        ///////////////////////////////////////////////// below geolocation part
-          async function geoLocationFunc(){
+        ///////////////////////////////////////////////// below all about fetching functions  ///////////////////////////////////
+
+          async function geoLocationFunc(){     //geolocation fethch
             // if ("geolocation" in navigator) {
             //     navigator.geolocation.getCurrentPosition(function(position) {
             //         console.log(position.coords.latitude+" longtude => "+ position.coords.longitude);
@@ -104,9 +96,9 @@ window.onload=function(){
         }
         
         
-       async function postPromisesFunc(){
+       async function postPromisesFunc(){          ///////////////////  token fetch
             let promObj=await fetch(`http://www.mumstudents.org/api/login`,{ 
-                method: 'POST', // or 'PUT'
+                method: 'POST', 
                 body: JSON.stringify({
                                 "username": "mwp",
                                 "password": "123"
@@ -121,7 +113,7 @@ window.onload=function(){
             token=tokenObj.token
             return tokenObj;
        }
-     async function getPictureFromServer(){
+     async function getPictureFromServer(){               ////////////////// fetch Animations
          if(animationId)clearInterval(animationId);
          let promObj=await fetch("http://mumstudents.org/api/animation", {
         method: 'GET',
@@ -135,54 +127,82 @@ window.onload=function(){
      }
 
 
+     ///////////////////////////// below all about listener and suported functon with global property  ///////////////////////////////
+
      const speedArr=[50,100,200,300,400,500,600,700,800,900,1050];
      let speedIndex=(speedArr.length-1)/2;
      let myAnimation=true;
      let tempFetchAnimationPictures="",tempIndexToStopAnimation=0;
 
 
-        function allContentOfAnimation(){
+         //login.html
+    const logInBTN=document.getElementById("logInBTN");
+
+    logInBTN.addEventListener("click",logInFunc);    //login listener
+
+        function logInFunc(){
+            postPromisesFunc();
+        outlet.innerHTML=animationTemplate;
+
+        ///////////////////////////////////////////////////////below is history
+        // history.pushState({ page: login}, null, "?login");
+        // window.addEventListener('popstate',function(e){
+        //   if(e.state.page == login){
+        //     logInFunc();
+        //   }
+        // });
+        allContentOfAnimation();
+        }
+
+
+        function allContentOfAnimation(){  ///////////////////////// inside this method all about animation page listener/////////
+
             geoLocationFunc().then(()=>{document.getElementById("dis_h3").innerHTML=streetYourAddress});
             mineAnimationFunc();
             let stop=document.getElementById("stopBTN");
             let start=document.getElementById("startBTN");
             start.disabled=true;
 
-    stop.addEventListener("click",$=> {
+    stop.addEventListener("click",$=> {         ///stop animation listener
         if(animationId)clearInterval(animationId);
         start.disabled=false;
         stop.disabled=true;});
-    start.addEventListener("click",$=> {
+    start.addEventListener("click",$=> {         /// start animation listener
         tempFuncToSupportSpeed();
         start.disabled=true;
         stop.disabled=false;});
 
-    document.getElementById("increaseBTN").addEventListener("click",_=>{
+    document.getElementById("increaseBTN").addEventListener("click",_=>{     //speed up animation listener
         if(animationId)clearInterval(animationId);
         (speedIndex>0)? --speedIndex : speedIndex=0;
         (myAnimation)?mineAnimationFunc():tempFuncToSupportSpeed();
     });
 
-    document.getElementById("decreaseBTN").addEventListener("click",_=>{
+    document.getElementById("decreaseBTN").addEventListener("click",_=>{     /// speed down animation listener
         if(animationId)clearInterval(animationId);
         (speedIndex<speedArr.length)? ++speedIndex : speedIndex=speedArr.length-1;
         (myAnimation)?mineAnimationFunc():tempFuncToSupportSpeed();
     });
 
-    document.getElementById("logoutBTN").addEventListener("click",function(){
+    document.getElementById("logoutBTN").addEventListener("click",function(){    // log out listener
         token="";
         outlet.innerHTML=loginTemplate;
-        // history.pushState({ 'page_id': 2}, "login", "login.html");
-        // history.replaceState({ 'page_id': 2}, "page 3", "animate.html");
+        const logInBTN=document.getElementById("logInBTN");
+
+        logInBTN.addEventListener("click",logInFunc);
+       // history.pushState({ page: animate}, null, "?animation");      //'its about history
         });
 
-    document.getElementById("refAnimationBTN").addEventListener("click",function(){
+    document.getElementById("refAnimationBTN").addEventListener("click",function(){     //refresh listener
         myAnimation=false;
         speedIndex=(speedArr.length-1)/2;
         fetchAnimationFunc();
     });    
 
         }
+
+
+        ////////////////////////  below all about helper functions   //////////////////////
 
         function mineAnimationFunc() {
         const textArea=document.getElementById("disAnimation");
@@ -223,8 +243,5 @@ window.onload=function(){
         }
 
 }
-
-
-
 
 
