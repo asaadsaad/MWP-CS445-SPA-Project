@@ -2,17 +2,20 @@
 window.onload = main;
 function main() {
     let logins, animations, out, loggingBtn, myUniqueToken, myGeoLocKey, myGeoLoc, myLat, myLon, animFetching, animDisplayArea, animPlay, animArray;
-
+    
     logins = `<h2>Please Login</h2><br>
+    <link href="mycss.css" rel="stylesheet" type="text/css">
     Username: <input type="text" id="username" value="mwp"><br><br>
     Password: <input type="text" id="password" value="123"><br><br>
-    <input type="button" id="lgin" value="Login"></input>`
+    <input type="button" id="lgin" value="Login"></input>`;
 
     animations = `<h3 id="mygeoloc"></h3>
+    <link href="mycss.css" rel="stylesheet" type="text/css">
     <textarea rows="30" cols="80" id="animationDisp"></textarea><br>
     <input type="button" id="refresh" value="Refresh Animation"></input>
-    <input type="button" id="logout" value="Logout"></input>`
-
+    <input type="button" id="logout" value="Logout"></input>`;
+    history.pushState("LoginPage", "/login", "?login");
+    
     out = document.querySelector('#outlet');
     out.innerHTML = logins;
     loggingBtn = document.querySelector("#lgin");
@@ -29,6 +32,7 @@ function main() {
     */
     loggingBtn.addEventListener("click", function loggingUI() {
         let refrBtn, lOutBtn;
+        history.pushState("AnimationPage", "/animation", "?animation");
         out.innerHTML = animations;
         accessUserLoc();
         accessingToken();
@@ -61,14 +65,12 @@ function main() {
         lOutBtn = document.querySelector('#logout');
 
         lOutBtn.addEventListener('click', function () {
+            history.pushState("LoginPage", "/login", "?login")
             outlet.innerHTML = logins;
             loggingBtn.addEventListener("click", loggingUI);
             clearInterval(animPlay)
         });
     }); // end of login button OPERATION
-
-
-
 
     // access users location
     function accessUserLoc() {
@@ -77,6 +79,7 @@ function main() {
                 myLon = currPos.coords.longitude;
                 myLat = currPos.coords.latitude;
                 myGeoLoc = document.querySelector("#mygeoloc");
+                // fetch location
                 locFetching();
             });
     }
@@ -98,25 +101,21 @@ function main() {
             });
     } // end of function accessingToken() 
 
-
-
     // locFetching(): send request, fetches location
-    function locFetching() {
-        let questMapU, city, state, country;
+    async function locFetching() {
+        let questMapU, fRes, current, city, state, country;
 
         questMapU = `http://open.mapquestapi.com/geocoding/v1/reverse?key=${myGeoLocKey}&location=${myLat},${myLon}`;
-        fetch(questMapU,
+        fRes = await fetch(questMapU,
             {
                 method: 'GET',
                 headers: { 'content-type': 'application/json', }
-            }).then((fRes) => fRes.json())
-            .then((currPos) => {
-                city = currPos.results[0].locations[0].adminArea5;
-                state = currPos.results[0].locations[0].adminArea3;
-                country = currPos.results[0].locations[0].adminArea1;
-
-                myGeoLoc.innerHTML = `WELCOME all from ${city}, ${state}, ${country}`;
-            });
+            })
+        current = await fRes.json();
+        city = current.results[0].locations[0].adminArea5;
+        state = current.results[0].locations[0].adminArea3;
+        country = current.results[0].locations[0].adminArea1;
+        myGeoLoc.innerHTML = `WELCOME all from ${city}, ${state}, ${country}`;
     } // end of function locFetching() 
 
     // visualAnim(): displays animation based on the given time interval
@@ -130,19 +129,4 @@ function main() {
             }
         }, 300);
     } // end of function visualAnim()
-
-    //MyRouters(): function constructor creates two routes for default (LOGIN UI), & animation(ANIMATON UI)
-    let MyRouters = function (name, routers) {
-        return ({ name: name, routers: routers });
-    };
-    let myRouts = new MyRouters("myRouts",
-        [{ path: "/", name: "Login - Page" },
-        { path: "/animation", name: "Animation - Page" }]);
-
-    let currPath = window.location.pathname;
-    if (currPath === "/") {
-        out.innerHTML = logins;
-    } else if (currPath === "/animation") {
-        out.innerHTML = animations;
-    }
 }; // end of main() function
