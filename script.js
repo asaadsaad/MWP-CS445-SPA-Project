@@ -43,7 +43,7 @@ window.onload = function () {
 
         document.getElementById("animation_id").addEventListener("click", getAnimation)
         let animationsplit = animationData.split("=====")
-        //  history.pushState(animationsplit,document.title,"animation");// animation array stored on history state
+        history.pushState(animationsplit,document.title,"animation");// animation array stored on history state
         let count = 0;
         animationId = setInterval(function () {
             document.getElementById("textAreaId").innerHTML = animationsplit[count]
@@ -54,6 +54,12 @@ window.onload = function () {
         }, 200)
 
         window.addEventListener("popstate", function () {
+            if(history.state==null){
+                document.getElementById("outlet").innerHTML = loginTemplate
+                document.getElementById("login_id").addEventListener("click", login)
+
+            }
+            else {
             // console.log(history.state[0])
             clearInterval(animationId);
             splitedarray = history.state;
@@ -64,7 +70,7 @@ window.onload = function () {
                 if (count == splitedarray.length) { count = 0 };
 
             }, 200)
-
+        }
             // document.getElementById("textAreaId").innerHTML=history.state;
 
         })
@@ -98,7 +104,7 @@ window.onload = function () {
                         let geo2 = geolocationData.results[0].locations[0].adminArea3
                         let geo3 = geolocationData.results[0].locations[0].adminArea5
 
-                        document.getElementById("geolocation_id").innerHTML = geo3 + " " + geo2 + " " + geo1
+                        document.getElementById("geolocation_id").innerHTML ="Welcome To "+ "  "+ geo3 + " " + geo2 + " " + geo1
                     }
                     )
                     .then(err => { console.log(err) })
