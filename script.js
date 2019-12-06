@@ -1,4 +1,8 @@
 
+/*
+                                MWP –CS445-Project
+                                Ascii Animation
+ */
 
 window.onload = function () {
     let tokenState = false, animationId = null, geoLocationKey = "etyxXJEu28EtN6ySr5iCsUO9QrMuUc0m";
@@ -17,7 +21,7 @@ window.onload = function () {
         document.getElementById("outlet").innerHTML = loginTemplate;
         document.getElementById("login").addEventListener("click", loginAccess);
 
-
+// the login authentication method
     async function loginAccess() {
         try {
 
@@ -40,13 +44,15 @@ window.onload = function () {
             alert(error);
 
         }
+        // accesing the geolocation
         async function getAnimation() {
 
             try {
                 document.getElementById("outlet").innerHTML = animationTemplate;
                 document.getElementById("animationBtn").addEventListener("click", getAnimation);
                 document.getElementById("userlocation").innerHTML = userLocation;
-                document.getElementById("logoutBtn").addEventListener("click",function(){//logout functionality
+                document.getElementById("logoutBtn").addEventListener("click",function(){
+                    //logout functionality
 
                     document.getElementById("outlet").innerHTML = loginTemplate;
                     document.getElementById("login").addEventListener("click", loginAccess); 
@@ -79,6 +85,7 @@ window.onload = function () {
 
             }
         }
+// get the location of the user and display the location
     function getGeoLocation() {
 
             navigator.geolocation.getCurrentPosition(success, fail);
@@ -102,7 +109,7 @@ window.onload = function () {
 
     }
 
-    function updatcontent(event) {
+    function updatcontent(event) { // controlling the history functionality
 
         animationData = event.state;
        // console.log(event.location.href.split("/").pop());
@@ -128,6 +135,7 @@ window.onload = function () {
 
         }
     }
+    // event for the back and forward button
     window.addEventListener('popstate', function (event) {
        // console.log(event.currentTarget.location)
         updatcontent(event);
