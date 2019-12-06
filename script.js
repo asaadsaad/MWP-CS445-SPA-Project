@@ -20,6 +20,7 @@ window.onload = function () {
     function loginpage() {
         outlet.innerHTML = login;
         //history.pushState(state, title, url);
+        
     }
     loginpage();
     //animation function
@@ -46,12 +47,16 @@ window.onload = function () {
     //logout and referesh button functionality
     function allAnimaContent() {
         //when logout button is clicked i want to see the login page 
-        logout.addEventListener("click", loginpage);
+        logout.addEventListener("click", logOutFunc);
         //the refresh button will fetch animation
         refresh.addEventListener('click', displayRefesh);
         
     }
-
+    function logOutFunc(){
+        isFirstPageLoaded=true;
+        outlet.innerHTML = login;
+        button.addEventListener('click', LoginClicked);
+    }
     //login fetch: post request
     async function fetchLogin() {
         let loginfetch = await fetch(`http://www.mumstudents.org/api/login`, {
@@ -91,8 +96,6 @@ window.onload = function () {
         }
         
     }
-
-
     //display the anima in the textarea
     function displayFirstAnima() {
 
