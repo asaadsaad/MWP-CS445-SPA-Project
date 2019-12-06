@@ -1,6 +1,6 @@
 "use strict";
 window.onload = cs445Project;
-window.addEventListener('popstate', cs445Project);
+
 /**
  * CS445 Project SPA(Single Page application)
  * This function raps the entire page functions
@@ -18,11 +18,9 @@ function cs445Project() {
   //let tokenSatus;
   const loginTemplate = `<div class="log-form">
     <h1 >Please Login</h1>
-    <form>
     Username : <input type="text" value="mwp" id="username" /><br><br>
     Password : <input type="text"  value="123" id="password"/><br><br>
     <button type="button" class="btn" id="login">Login</button><br>
-    </form>
   </div><!--end log form -->`;
 
   //animation template 
@@ -32,22 +30,26 @@ function cs445Project() {
   <button id="logOut"> LogOut </button>`;
 
 
-  //default template for login 
+  //default template for login template 
   displayPage.innerHTML = loginTemplate;
 
-  // listeners to login 
-  document.getElementById("login").addEventListener("click", loginPage);
-  // adding history 
+  history.pushState("login", null, "?/login")
+
+  // adding listener and adding state to history 
   const loginButon = document.getElementById('login');
-  loginButon.addEventListener('click', _ => history.pushState({
-    page: 'login'
-  }, null, "?animaion"))
+  loginButon.addEventListener('click', _ => {
+    history.pushState({
+      page: 'login'
+    }, null, "?animationPage")
+    loginPage();
+  })
+
 
 
   /****************************************************************************************
-   * Function to feach response token as Authentication 
-   * @return {promises}  Json Object for token(autorization) 
-   *  info :   gelocation   and  getAnimation called in this function 
+   * Function to feach token for Authentication 
+   * @return {promises}  Json Object  
+   *  info :   gelocation()   and  getAnimation()  are invoked in this function
    ****************************************************************************************/
   async function loginPage() {
     try {
@@ -69,6 +71,7 @@ function cs445Project() {
         },
         body: JSON.stringify(logObject)
       });
+
       // result  from the Json response 
       let result = await response.json();
       token = result.token;
@@ -86,8 +89,10 @@ function cs445Project() {
       });
       //  history push after click refresh 
       const refresh = document.getElementById('refresh');
-      refresh.addEventListener('click', _ => history.pushState(
-        {page: 'refresh'}, null, "?/animation"))
+      refresh.addEventListener('click', _ => history.pushState({
+        page: 'refresh'
+      }, null, "?/refrashAnimation"))
+
       //throwing error message 
     } catch (error) {
       console.log(`Error message : ${error}`)
@@ -99,7 +104,6 @@ function cs445Project() {
   /*********************************************************************************************
    * Function to fetching animation  
    * @return {string} string of animation 
-   * 
    *********************************************************************************************/
   async function getAnimation() {
 
@@ -180,6 +184,16 @@ function cs445Project() {
       console.log(error);
     }
   }
+  // managing the back forward arrows
+  window.addEventListener('popstate', _ => {
+    if (history.page == "login") {
+      displayPage.innerHTML = loginTemplate;
+    } else if (history.page == "animation") {
+      displayPage.innerHTML = loginTemplate;
+    } else if (history.page == null) {
+      displayPage.innerHTML = loginTemplate;
+    }
+  });
 
 
 }
