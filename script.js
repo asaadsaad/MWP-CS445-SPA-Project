@@ -20,7 +20,7 @@ function SPA() {
     <button id="logout">Logout</button>
     `
 
-    //check
+    // fetch post and get token
     let addPost = async function () {
         try{
         let username = document.querySelector("#username").value;
@@ -66,7 +66,7 @@ function SPA() {
         }, 200);
     }
 
-    // Find location of the user using API key & location(longitude & latitude) - reverse geocode
+    // Find location of the user - reverse geocode
 
     function getLocation() {
 
@@ -93,7 +93,8 @@ function SPA() {
     //Login page
     function loginPage() {
         outlet.innerHTML = loginTemplate;
-        history.pushState({page:"login" }, null, "/loginpage");
+        // history API of loginpage
+        history.pushState({page:"login" }, null, "?loginpage");
         document.querySelector("#login").addEventListener("click", addPost);
         window.addEventListener('popstate',animationPage);
         }
@@ -104,7 +105,8 @@ function SPA() {
         outlet.innerHTML = animationTemplate;
         document.querySelector("#logout").addEventListener("click", loginPage);
         document.querySelector("#refresh").addEventListener("click", getAnimation);
-        history.pushState({page: "display" }, null, "/animationpage")
+        // history API of animation page
+        history.pushState({page: "display" }, null, "?animationpage")
         window.addEventListener('popstate', loginPage)
         getLocation()
         getAnimation();
