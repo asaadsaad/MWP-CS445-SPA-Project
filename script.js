@@ -54,7 +54,6 @@ window.onload = function() {
 
         const result = await response.json();
         tokenJson = result;
-        console.log(tokenJson);
         getUserLocation();
         //showAnimation();
         isLoggedIn = true;
@@ -67,19 +66,31 @@ window.onload = function() {
 
         async function success(position) {
 
-            await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${myGeolocationKey}&location=${position.coords.latitude},${position.coords.longitude}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.querySelector("#locationOutput").innerHTML = `Welcome all from ${data.results[0].locations[0].adminArea5}, ${data.results[0].locations[0].adminArea3}`;
-                });
-        }
+            const response = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${myGeolocationKey}&location=${position.coords.latitude},${position.coords.longitude}`);
+            const responseJson = await response.json();
+            document.querySelector("#locationOutput").innerHTML = `Welcome all from ${responseJson.results[0].locations[0].adminArea5}, ${responseJson.results[0].locations[0].adminArea3}`;
+        };
 
-        function fail(err) {
+        async function fail(err) {
             console.log(err.code + err.message);
         }
-
     }
 
-    //show animation
+
+
+    //get animation
+    async function getAnimation() {
+
+        const response = await fetch("http://mumstudents.org/api/animation", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${tokenJson.token}` },
+        });
+
+        let responseText = await response.text();
+        responseText = responseText.split("=====\n");
+
+        //throwing in the towel...
+
+    }
 
 }
