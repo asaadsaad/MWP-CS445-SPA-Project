@@ -2,6 +2,9 @@
 
 window.onload = animationApp;
 
+
+ window.addEventListener('popstate',animationApp);
+
 function animationApp() {
 
   const GEOLOCATION_API_KEY = "KAPjZLb1XuZglHU4hsaPZ3ip7ZRHUaFm";
@@ -22,36 +25,39 @@ function animationApp() {
 <button id="logout">Logout</button>
 `;
 
-  //login page and animation textrea page function. when first the function invokes take you
-  //to the login templete.
-
-   
-  pagination(loginPage,"random",'/my-url');
-   
-  function pagination(state,random,url) {
-   
-    if (state === loginPage) {
+  pagination({page:'login'},"/login");
+  /**
+   * @param  {string} state for the login page template
+   * @param  {string} random for the null history
+   * @param  {string} url for the url of the login page.
+   * @returns {string} displays the login page.
+   */
+  function pagination(state, random, url) {
+    if (state.page === 'login') {
       document.getElementById("outlet").innerHTML = loginPage;
-     // history.pushState(state,random,url);
+      history.pushState(state,null,url);
     }
-    if (state === animationPage) {
+    if (state.page === 'animation') {
       document.getElementById("outlet").innerHTML = animationPage;
-      //history.pushState(state,random,url);
+      history.pushState(state,null,url);
     }
   }
 
   // click login button invokes fetching function to get token and takes to the animation page.
-
+  /**
+   * @param  {string} "login" the button for login to the login page;
+   * @returns {string} returns the login page
+   */
   document.getElementById("login").addEventListener("click", function(e) {
     fetching();
     fetchAdress();
-    pagination(animationPage);
+    /**
+     * @param  {'animation'}} {page of the animation page.
+     */
+    pagination({page:'animation'},'/animation');
   });
 
- 
-
   async function fetching() {
-    //creating a username and password object.
     let data = {
       username: document.querySelectorAll("input")[0].value,
       password: document.querySelectorAll("input")[1].value
@@ -70,71 +76,78 @@ function animationApp() {
     token = result.token;
     console.log(token);
 
+    fetchAnimation();
+
     //refresh annimation button &
     //invoking the fetchAnimation from here.&
-    //logout button. 
-    document.getElementById('refresh').addEventListener('click',fetchAnimation);
-    fetchAnimation();
-    document.getElementById('logout').addEventListener('click',function(){ 
-    pagination(loginPage);
-    //when logout it clears the animation id.
-    if(animationId){ clearInterval(animationId);}
+    //logout button.
+
+  document.getElementById("refresh").addEventListener("click", fetchAnimation);
+  document.getElementById("logout").addEventListener("click", function() {
+    clearInterval(animationId);
+    pagination({page: 'login'});
   });
-  } 
+  }
+
   //getting the geoloation.
-  function fetchAdress(){
+  function fetchAdress() {
     navigator.geolocation.getCurrentPosition(success, failed);
 
-    async function success(position){
-
-    let long= position.coords.longitude;
-    let lat=position.coords.latitude;
+    async function success(position) {
+      let long = position.coords.longitude;
+      let lat = position.coords.latitude;
 
       console.log(position);
 
-      let response= await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${GEOLOCATION_API_KEY}&location=${lat},${long}&&includeRoadMetadata=true&includeNearestIntersection=true`);
-      response=await response.json();
+      let response = await fetch(
+        `http://www.mapquestapi.com/geocoding/v1/reverse?key=${GEOLOCATION_API_KEY}&location=${lat},${long}&&includeRoadMetadata=true&includeNearestIntersection=true`
+      );
+      response = await response.json();
       console.log(response);
-     const city=response.results[0].locations[0].adminArea5;
-     const state=response.results[0].locations[0].adminArea3;
-     const country=response.results[0].locations[0].adminArea1;
-     const zip=response.results[0].locations[0].postalcode;
+      const city = response.results[0].locations[0].adminArea5;
+      const state = response.results[0].locations[0].adminArea3;
+      const country = response.results[0].locations[0].adminArea1;
+      const zip = response.results[0].locations[0].postalcode;
 
-     document.querySelector('#adress').innerHTML=`welcome all from ${city},${state},${country}`;
+      document.querySelector(
+        "#adress"
+      ).innerHTML = `welcome all from ${city},${state},${country}`;
     }
-  
-  function failed(err){
-    document.querySelector('#address').innerHTML="welcome anonymous";
+
+    function failed(err) {
+      document.querySelector("#address").innerHTML = "welcome anonymous";
+    }
   }
-}
-  
   async function fetchAnimation() {
-   //any time you are clicking the refresh animation, the animation Id needs to be cleared.
-   //clear interval is calling from here.
-   
-    if(animationId){ clearInterval(animationId);}
+    //any time you are clicking the refresh animation, the animation Id needs to be cleared.
+    //clear interval is calling from here.
+
+    if (animationId) {
+      clearInterval(animationId);
+    }
 
     const response = await fetch("http://www.mumstudents.org/api/animation", {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
     console.log(response);
     const animation = await response.text();
     console.log(animation);
 
-//changing the animation to array in order to play the diffent parts at interval.
-  const frames=animation.split('=====\n')
-  const framelength=frames.length;
-  let currentframe=0;
+    //changing the animation to array in order to play the diffent parts at interval.
+    const frames = animation.split("=====\n");
+    const framelength = frames.length;
+    let currentframe = 0;
 
-  animationId=setInterval(()=>{
-      document.querySelector('#animation').value=frames[currentframe];
+    animationId = setInterval(() => {
+      document.querySelector("#animation").value = frames[currentframe];
       currentframe++;
-      if(currentframe===framelength){
-          currentframe=0;
-      }},200)
-//display the animation in the text area.
-   document.getElementById('animation').innerHTML=animation;
+      if (currentframe === framelength) {
+        currentframe = 0;
+      }
+    }, 200);
+    //display the animation in the text area.
+    document.getElementById("animation").innerHTML = animation;
   }
 }
