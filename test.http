@@ -1,14 +1,14 @@
 # @name login
-POST http://www.mumstudents.org/api/login HTTP/1.1
+POST https://cs445-project.herokuapp.com/api/login HTTP/1.1
 content-type: application/json
 
 {
-    "username": "mwp", 
-    "password":"123"
+    "username": "map", 
+    "password": "123456"
 }
+###
 @token = {{login.response.body.token}}
-
 ###
 
-GET  http://www.mumstudents.org/api/animation HTTP/1.1
+GET  https://cs445-project.herokuapp.com/api/animation HTTP/1.1
 Authorization: Bearer {{token}}
