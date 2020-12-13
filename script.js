@@ -1,12 +1,18 @@
-
-// login = "Clicked Button";
 const animTemp = function () {
+    const username = document.getElementById('username').value;
+
+    const password = document.getElementById('password').value;
+
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://cs445-project.herokuapp.com/api/login HTTP/1.1', true);
     xhr.onload = function () {
+
         const user = JSON.parse(this.responseText)
-        const display="hello";
-        document.getElementById('outlet').innerHTML = display
+        //console.log(user.username)
+        const display = "hello ";
+        if (username == user.username && password == user.password) {
+            document.getElementById('outlet').innerHTML = user
+        }
     }
     xhr.send();
 
