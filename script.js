@@ -2,59 +2,99 @@
 /*===========================================================================
 ===Singla Page Animation retriving data from online server and animate=======
 ===============================String========================================*/
+/**
+ * when the window load directly find the announmous function 
+ * and inside the login page invoked the it redirect to it .
+ */
 
 window.onload = function () {
-    let div = document.getElementById("outlet")
+
+    //variable which we need to the next path
+    let mapkey = "KjP5zwaRx5DO6MDhmIMI9fMtKsksKA1W";
+    let longitude, latitude, token;
+    let div = document.getElementById("outlet");
 
     //DOM which is added into div area when the window is loaded
-    const templatelogin = `<h1>Please Login</h1>
-            <fieldset style="width:600px">
-            <legend>animated game:</legend>
-                Username: <input type="text" placeholder="map"><br>
-                Password: <input type="text" placeholder="123456"><br>
-            <button id="loguser">Login</button>
-            </fieldset>`
+    const templatelogin = `<div id="logindiv">
+
+    <h1>Please Login</h1>
+    <hr><hr>
+    Username: <input type="text" id="username" placeholder="map"><br><hr>
+    Password: <input type="text" id="password" placeholder="123456"><br><hr>
+    <input type="button" id="login" class="btn btn-info" value="Login" > 
+    <input type="button" id="register" class="btn btn-info" value="Register" >
+    </div>`
+
     const templateAnimation = ` 
-            <h3>Wellcome All from location ........................</h3>
-            <fieldset>
-                <legend>animated game:</legend>
-                <textarea id="txtarea" name="w3review" rows="30" cols="70">
-                    this is display area for the animated pictures
-                </textarea>  <img src="./" /></im><br/>
-                <button>Refresh page</button>
-                <button>Logout</button>
-            </fieldset>
-
+    <div id="logindiv">
+    <h2>እንኳን ደና መጡ</h2>
+    <h2 id="welcome">  wellcome all from .............</h2>
+    <textarea rows="20" cols="40" id="playground" align="center"></textarea><br>
+    <button type="button" id="refresh" class="btn btn-info">Refresh Animation</button>
+    <button type="button" id="logout" class="btn btn-info">Logout</button> </div>
             `
-    // loading the dom to login template
-    div.innerHTML = templatelogin
+    loginpage();
+    /**
+     * History API to handle forward and back arrow 
+     * which diplayed on tab
+     */
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page === 1) {
+            loginpage();
+        } else {
+            playingpage();
+        }
+    })
+
+    function loginpage() {
+        // loading the dom to login template
+        div.innerHTML = templatelogin;
+        history.pushState({
+            page: 1
+        }, "Mylogin", "?loginpage");
+
+        let login = document.getElementById("login")
+        //add event listener to the login button
+        login.addEventListener("click", myLoginFunction);
 
 
-    let loginuser = document.getElementById("loguser")
-    //add event listener to the login button
-    loginuser.addEventListener("click", myLoginFunction);
+    }
 
-    
+    function playingpage() {
+        history.pushState({
+            page: 2
+        }, "animation", "?playingpage")
+        div.innerHTML = templateAnimation;
+
+
+        //// here we load the geoloaction and 
+
+    }
+
+
+
     async function myLoginFunction() {
-        
-        // document.getElementById("demo").innerHTML = 
-        alert("hey i am login button see your console for token data");
-   
         try {
 
-            let response = await fetch("http://www.mumstudents.org/api/login",
-                {
-                    method: "POST",
-                    headers: { "content-type": "application/json" },
-                    body: JSON.stringify({
-                        "username": "map",
-                        "password": "123456"
-                    })
+            const result = await fetch("https://cs445-project.herokuapp.com/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "username": "map",
+                    "password": "123456"
                 })
-            let datafromserver = await response.json();
-            token = datafromserver;
-            console.log(token)
-            
+            })
+
+            const validlogin = await result.json()
+            token = validlogin.token;
+            const status = validlogin.status;
+
+            if (status === true) {
+                playingpage(); 
+            }
+
         } catch (error) {
 
             alert(error);
@@ -62,4 +102,6 @@ window.onload = function () {
         }
 
     }
+
+
 }
