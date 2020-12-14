@@ -5,15 +5,19 @@ let timerId;
 window.onload = function () {
   outlet = document.getElementById("outlet");
 
-  outlet.innerHTML = `
+  window.loginTemplate = `
   <h1>Please Login</h1>
   Username <input value = "mwp"><br>
   Password <input value = "123"><br>
   <button onclick="login()">Login</button
 `;
+  outlet.innerHTML = window.loginTemplate;
+  history.pushState({ page: 1 }, null, "?login");
 };
 
 async function login() {
+  history.pushState({ page: 2 }, null, "?animation");
+
   const response = await fetch(
     "https://cs445-project.herokuapp.com/api/login",
     {
@@ -30,12 +34,13 @@ async function login() {
   const result = await response.json();
   loginToken = result;
   console.log(loginToken);
-  outlet.innerHTML = `<h3>Welcome all from <span id="location"></span></h3>
+  const animationTemplate = `<h3>Welcome all from <span id="location"></span></h3>
  <textarea id="animation" rows="10" cols="50"></textarea><br>
 
   <button onclick="refresh()">Refresh Animation</button>
   <button onclick="logout()">Logout</button>
   `;
+  outlet.innerHTML = animationTemplate;
 
   let geoKey = "hl5CFvCH0GGgkLuulKNPcQ5q1bPDGvYH";
 
@@ -55,10 +60,8 @@ async function login() {
         place.innerHTML = `${res.adminArea5}, ${res.adminArea3}, ${res.adminArea1} `;
       });
   });
-  
 
   showAnimation();
-
 }
 
 async function showAnimation() {
@@ -78,11 +81,17 @@ async function showAnimation() {
       frame[frameCount % frame.length];
     frameCount++;
   }, 300);
-
 }
 
-function refresh(){
+function refresh() {
   clearInterval(window.timerId);
   document.getElementById("animation").innerHTML = "";
   showAnimation();
-  }
+}
+
+function logout() {
+  history.pushState({ page: 2 }, "animation", "?login ");
+  clearInterval(window.timerId);
+
+  outlet.innerHTML = window.loginTemplate;
+}
