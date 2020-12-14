@@ -1,7 +1,17 @@
-const {fromEvent} = rxjs;
-import {geoKey} from "./config.js"
+const { fromEvent } = rxjs;
+import { geoKey } from "./config.js"
 
-(function(){
+(function () {
+    window.addEventListener('popstate', function (event) {
+        if(event.state.page === 'login'){
+            renderLogin();
+        } else if(event.state.page === 'animation'){
+            renderAnimation();
+        }
+    }); 
+    let animationInterval;
+    let token;
+    
     const loginTemplate = `
         <h1>Please Login</h1>
         <p>Username <input id='user'></p>
@@ -12,39 +22,41 @@ import {geoKey} from "./config.js"
         <span><button id='animate'>Refresh Animation</button> <button id="logout">Logout</button></span>`;
     const div = document.querySelector('#outlet');
 
-    (function renderLogin(){
+    function renderLogin() {
         div.innerHTML = "";
         div.innerHTML = loginTemplate;
         const login = document.querySelector('#login');
-        const observeLogin$ = fromEvent(login, 'click').subscribe(validate); 
-        history.pushState({page: 'login'}, null, '/login');
-        async function validate(){
+        const observeLogin$ = fromEvent(login, 'click').subscribe(validate);
+        history.pushState({ page: 'login' }, null, '/login');
+        async function validate() {
             const user = document.querySelector('#user');
             const password = document.querySelector('#password');
             try {
                 const response = await fetch('https://cs445-project.herokuapp.com/api/login',
-                { method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: user.value, password: password.value})
-                })
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: user.value, password: password.value })
+                    })
                 const body = await response.json();
-                const token = body.token;
-                renderAnimation(token);
+                token = body.token;
+                renderAnimation();
                 observeLogin$.unsubscribe();
-            } catch(error){
+            } catch (error) {
                 console.log(error);
             }
         }
-    })();
-    function renderAnimation(object){
+    };
+    renderLogin();
+    function renderAnimation() {
         div.innerHTML = "";
-        navigator.geolocation.getCurrentPosition(async function success(position){
+        navigator.geolocation.getCurrentPosition(async function success(position) {
             const coordinates = `${position.coords.latitude},${position.coords.longitude}`;
             const geoposition = await fetch('http://www.mapquestapi.com/geocoding/v1/reverse?key=' + geoKey + '&location=' + coordinates);
             const body = await geoposition.json();
             const h1 = document.createElement('h1');
             div.prepend(`Welcome all from ${body.results[0].locations[0].adminArea4}, ${body.results[0].locations[0].adminArea3}, ${body.results[0].locations[0].adminArea1}`, h1);
-            });
+        });
         div.innerHTML = animationTemplate;
         const refresh = document.querySelector('#animate');
         const logout = document.querySelector('#logout');
@@ -52,29 +64,33 @@ import {geoKey} from "./config.js"
         const watchLogout$ = fromEvent(logout, 'click').subscribe(() => {
             renderLogin();
             watchLogout$.unsubscribe();
-            watchAnimation$.unsubscribe()});
+            watchAnimation$.unsubscribe()
+        });
         const watchAnimation$ = fromEvent(refresh, 'click').subscribe(animate);
-        history.pushState({page: 'animation'}, null, '/animation');
-        (async function animate(){
-            try{
+        history.pushState({ page: 'animation' }, null, '/animation');
+        async function animate() {
+            if(animationInterval){
+                clearInterval(animationInterval);
+            }
+            
+            try {
                 const response = await fetch('https://cs445-project.herokuapp.com/api/animation', {
-                headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTE4NzExfQ.2cx6zOti0OFS6xewISy5HE7imhmL04D9VPOQsKynqs4'}
+                    headers: { 'Authorization': 'Bearer ' + token }
                 });
-                const results = response.json()
-                const results2 = results.body;
-                const string = results + '';
-                const frames = string.split("====\n");
+                const results = await response.text();
+                const frames = results.split("=====\n");
                 let i = 0;
-                const animationInterval = setInterval(() => {
-                    animation.value = frames[i];
-                    i++;
-                    if(i = frames.length + 1){
+                animationInterval = setInterval(() => {
+                    animation.innerHTML = frames[i];
+                    ++i;
+                    if (i > frames.length - 1) {
                         i = 0;
                     }
                 }, 200);
-            } catch(error){
+            } catch (error) {
                 console.log(error)
             }
-        })();
+        };
+        animate();
     }
 })();
