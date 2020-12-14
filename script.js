@@ -1,6 +1,7 @@
 "use strict";
 let loginToken;
 let outlet;
+let timerId;
 window.onload = function () {
   outlet = document.getElementById("outlet");
 
@@ -30,7 +31,7 @@ async function login() {
   loginToken = result;
   console.log(loginToken);
   outlet.innerHTML = `<h3>Welcome all from <span id="location"></span></h3>
- <textarea rows="10" cols="50"></textarea><br>
+ <textarea id="animation" rows="10" cols="50"></textarea><br>
 
   <button onclick="refresh()">Refresh Animation</button>
   <button onclick="logout()">Logout</button>
@@ -47,11 +48,31 @@ async function login() {
       .then((r) => r.json())
       .then((data) => {
         let res = data.results[0].locations[0];
-        console.log(`${res.adminArea5}, ${res.adminArea3} `);
+        console.log(`${res.adminArea5}, ${res.adminArea3}, ${res.adminArea1} `);
 
         let place = document.getElementById("location");
 
         place.innerHTML = `${res.adminArea5}, ${res.adminArea3}, ${res.adminArea1} `;
       });
   });
+  showAnimation();
+}
+
+async function showAnimation() {
+  let animation = await fetch(
+    " https://cs445-project.herokuapp.com/api/animation",
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${loginToken.token}` },
+    }
+  );
+  let resA = await animation.text();
+  let frame = resA.split("=====\n");
+
+  let frameCount = 0;
+  let timerId = setInterval(function () {
+    document.getElementById("animation").innerHTML =
+      frame[frameCount % frame.length];
+    frameCount++;
+  }, 300);
 }
