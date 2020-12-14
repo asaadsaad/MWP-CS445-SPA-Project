@@ -55,7 +55,10 @@ async function login() {
         place.innerHTML = `${res.adminArea5}, ${res.adminArea3}, ${res.adminArea1} `;
       });
   });
+  
+
   showAnimation();
+
 }
 
 async function showAnimation() {
@@ -70,9 +73,16 @@ async function showAnimation() {
   let frame = resA.split("=====\n");
 
   let frameCount = 0;
-  let timerId = setInterval(function () {
+  window.timerId = setInterval(function () {
     document.getElementById("animation").innerHTML =
       frame[frameCount % frame.length];
     frameCount++;
   }, 300);
+
 }
+
+function refresh(){
+  clearInterval(window.timerId);
+  document.getElementById("animation").innerHTML = "";
+  showAnimation();
+  }
