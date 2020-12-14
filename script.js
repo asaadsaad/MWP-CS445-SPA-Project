@@ -20,8 +20,11 @@ function login() {
   `;
 
   let geoKey = "hl5CFvCH0GGgkLuulKNPcQ5q1bPDGvYH";
+  
 
   navigator.geolocation.getCurrentPosition(function (position) {
+
+    
     const lat = position.coords.latitude;
     const long = position.coords.longitude;
     let geoLink = `http://www.mapquestapi.com/geocoding/v1/reverse?key=${geoKey}&location=${lat},${long}&includeRoadMetadata=true&includeNearestIntersection=true`;
