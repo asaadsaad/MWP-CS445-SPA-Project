@@ -24,33 +24,42 @@ window.onload = function login() {
             body: JSON.stringify(inputsObj)
 
         })
-        .then(response => response.json())
-        .then((response) => { response.status === true? anim(): login()})
+            .then(response => response.json())
+            .then((response) => { response.status === true ? anim() : login() })
+
         function anim() {
             let animationTemplate = `<h1>Welcome</h1>
             <textarea id="w3review" name="w3review" rows="4" cols="50"></textarea><br><br>
             <button type="button" id="resfreshAnimation" class="btn btn-primary btn-lg">Refresh Animation</button>
             <button type="button" id="logout" class="btn btn-primary btn-lg">Logout</button>`;
             document.querySelector('div').innerHTML = animationTemplate
-         }
+        }
+        getLocation()
         //
         // return fetchedData.json()
         // parsedData = await fetchedData.json();
         // console.log(parsedData)
     }
-  // JSON data parsed by `data.json()
-// function getLocation() {
-//     navigator.geolocation.getCurrentPosition(showPosition);
-// }
-// let latit;
-// let longit;
-// function showPosition(position) {
-//   latit = position.coords.latitude 
-//   longit = position.coords.longitude;
-// }
+    // JSON data parsed by `data.json()
 
-// let loc = await fetch('https://open.mapquestapi.com/geocoding/v1/reverse?41.013567099999996,-91.95915409999999')
-// let parsedloc = await loc.json();
-// console.log(parsedloc)
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            console.log("sorry...");
+        }
+    }
+let latitude;
+let longitude;
+    function showPosition(position) {
 
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+    }
+let m = async function temp() {
+    let loc = await fetch('https://open.mapquestapi.com/geocoding/v1/reverse?query=41.013567099999996,-91.95915409999999')
+    let parsedloc = await loc.json();
+    console.log(parsedloc)
+    }
+    
 }
