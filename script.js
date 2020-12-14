@@ -13,7 +13,7 @@ window.onload = function () {
   <button id="login">Login</button
 `;
   const animationTemplate = `<h3>Welcome all from <span id="location"></span></h3>
- <textarea id="animation" rows="10" cols="50"></textarea><br>
+ <textarea id="animation" rows="25" cols="50"></textarea><br>
 
   <button id="refresh">Refresh Animation</button>
   <button id ="logout">Logout</button>
