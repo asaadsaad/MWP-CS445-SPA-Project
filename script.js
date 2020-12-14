@@ -1,32 +1,58 @@
-const animTemp = function () {
+//const div = document.getElementById('outlet')
+const user = () => {
     const username = document.getElementById('username').value;
-
+    console.log(username)
     const password = document.getElementById('password').value;
+    console.log(password)
+    fetch("https://cs445-project.herokuapp.com/api/login", {
+        method: "POST",
+        headers: {
+            'accept': 'application/json',
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://cs445-project.herokuapp.com/api/login HTTP/1.1', true);
-    xhr.onload = function () {
-
-        const user = JSON.parse(this.responseText)
-        //console.log(user.username)
-        const display = "hello ";
-        if (username == user.username && password == user.password) {
-            document.getElementById('outlet').innerHTML = user
-        }
-    }
-    xhr.send();
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status) {
+                gameTemp();
+            }
+        })
 
 }
+
 window.onload = function loginTemp() {
 
-    document.write('<form><label for="task" style="width: 100%; text-align:center;">PLEASE LOGIN FIRST !</label></form>');
-    document.write('Username <input id="username"><br/><br/>');
-    document.write('Password: <input id="password"><br/><br/>');
+    const logTemp = `<form><label for="task" style="width: 100%; text-align:center;">PLEASE LOGIN FIRST !</label></form><br/>
+Username:<input id="username"><br/><br/>
+    Password: <input id="password"><br/><br/>
 
-    document.write('<button id="login" >LOG-IN</button>');
-
-
-    document.getElementById("login").addEventListener("click", animTemp);
+    <button id="login" >LOG-IN</button>`
+    const div = document.getElementById('outlet')
+    div.innerHTML = logTemp;
+    document.getElementById("login").addEventListener("click", user);
 
 }
+
+
+function gameTemp() {
+    const animTemp = `
+    <form><label for="task" style="width: 100%; text-align:center;">WELCOME ALL FROM "ADD LOCATION HERE"!</label></form>
+    <textarea id="playground" cols=100 rows=50></textarea><br/><br/>
+
+    <button id="refresh" >Refresh Animation</button>  
+ <button id="logout" >Log-Out</button> `
+    const div = document.getElementById('outlet')
+    div.innerHTML = animTemp;
+    document.getElementById("refresh").addEventListener("click", loginTemp());
+    document.getElementById("logout").addEventListener("click", loginTemp());
+
+}
+
+
+
 
