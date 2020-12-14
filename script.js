@@ -1,8 +1,9 @@
 "use strict";
-let loginToken;
-let outlet;
-let timerId;
+
 window.onload = function () {
+  let loginToken;
+  let outlet;
+  let timerId;
   outlet = document.getElementById("outlet");
 
   const loginTemplate = `
@@ -83,7 +84,7 @@ window.onload = function () {
     let frame = resA.split("=====\n");
 
     let frameCount = 0;
-    window.timerId = setInterval(function () {
+    timerId = setInterval(function () {
       document.getElementById("animation").innerHTML =
         frame[frameCount % frame.length];
       frameCount++;
@@ -91,14 +92,14 @@ window.onload = function () {
   }
 
   function refresh() {
-    clearInterval(window.timerId);
+    clearInterval(timerId);
     document.getElementById("animation").innerHTML = "";
     showAnimation();
   }
 
   function logout() {
     history.pushState({ page: 2 }, "animation", "?login ");
-    clearInterval(window.timerId);
+    clearInterval(timerId);
 
     outlet.innerHTML = loginTemplate;
     document.getElementById("login").addEventListener("click", login);
