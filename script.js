@@ -41,10 +41,10 @@ window.onload = function () {
     function loginPage() {
         display.innerHTML = loginTemplate;
         const loginB = document.querySelector('#login');
-        history.pushState({ 'page': 1 }, null, '/login');
         loginB.addEventListener('click', animationPage);
-
+        history.pushState({ 'page': 1 }, null, '/login');
     }
+
     /*Animation page contains
     -welcome text and user location , textbox for animation, refresh button and logout button
      */
@@ -56,15 +56,13 @@ window.onload = function () {
         // console.log("input password", password)
         if (username === "mwp" && password === "123") {
             display.innerHTML = animationTemplate;
-            history.pushState({ page: 2 }, "animation", "animation")
+            history.pushState({ page: 2 }, "animation", "/animation")
 
             let logoutB = document.querySelector('#logout');
             logoutB.addEventListener('click', logOutFun);
             const refreshB = document.querySelector('#refresh');
             refreshB.addEventListener('click', refreshFun);
             getToken()
-
-
         } else {
             alert(' invalid username/password \n please try again with avalid username and password')
         };
@@ -84,12 +82,8 @@ window.onload = function () {
         const respondBody = await response.json();
         token = respondBody.token;
         console.log(token)
-        fetchAnimation()
-        geoInfo()
 
-    }
-    // Along with the animation page,  call mapquestapi
-    async function fetchAnimation() {
+
         const respAnimation = await fetch(' https://cs445-project.herokuapp.com/api/animation', {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
@@ -108,14 +102,49 @@ window.onload = function () {
             }
         }, 1000)
 
+        geoInfo()
+
     }
+
+    window.addEventListener('popstate', function (event) {
+        console.log("pageone ", event.state.page)
+        if (event.state.page === 1) {
+            clearInterval(intervalID)
+            loginPage();
+        } else {
+            clearInterval(intervalID)
+            animationPage();
+        }
+    })
+    // Along with the animation page,  call mapquestapi
+    //   async function fetchAnimation() {
+    // const respAnimation = await fetch(' https://cs445-project.herokuapp.com/api/animation', {
+    //     method: "GET",
+    //     headers: { "Authorization": `Bearer ${token}` }
+    // })
+    // const respondA = await respAnimation.text();
+    // animationFrame = respondA.split('=====\n');
+    // document.getElementById('animation').innerHTML = animationFrame;
+    // //console.log("Animation", animationFrame.length)
+    // //console.log("animation", respondA)
+    // let count = 0;
+    // intervalID = setInterval(function () {
+    //     document.getElementById("animation").innerHTML = animationFrame[count];
+    //     count++;
+    //     if (count === animationFrame.length) {
+    //         count = 0;
+    //     }
+    // }, 1000)
+
+    // }
     /*every time is clicked you will fetch a new animation frames from the server
     “Load animation”  clear the previous animation, send an Ajax call 
     to fetch a new animation frames, start a new interval.
     */
     function refreshFun() {
         clearInterval(intervalID);
-        fetchAnimation();
+        getToken()
+        //  fetchAnimation();
 
     }
     /*
