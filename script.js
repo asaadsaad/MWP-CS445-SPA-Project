@@ -4,7 +4,9 @@ window.onload = function () {
     const ApiKey = "58HRZHHnoCAyde85DRAWpGbqvG3796br";;
     //outlet id from index.html div
     const display = document.querySelector('#outlet');
-    //first day - loginpage loginTemplate
+
+    // Two templates constants: loginTemplate and animationTemplate are defined
+
     const loginTemplate = `
                 <h2>Please Login</h2><br><b>   
                 Username: <input placeholder="mwp" value="mwp" id="username"/><br/><br/><b>
@@ -39,33 +41,39 @@ window.onload = function () {
     function loginPage() {
         display.innerHTML = loginTemplate;
         const loginB = document.querySelector('#login');
-        history.pushState({ 'page': 1, 'user_id': 'login' }, "", "?login?page=1");
+        history.pushState({ 'page': 1 }, null, '/login');
         loginB.addEventListener('click', animationPage);
 
     }
     /*Animation page contains
     -welcome text and user location , textbox for animation, refresh button and logout button
      */
+
     function animationPage() {
         let username = document.getElementById('username').value;
         let password = document.getElementById('password').value;
-        console.log("input username", username);
-        console.log("input password", password)
+        // console.log("input username", username);
+        // console.log("input password", password)
         if (username === "mwp" && password === "123") {
             display.innerHTML = animationTemplate;
-            history.pushState({ page: 2 }, "animation", "?page=2")
-        }
-        const logoutB = document.querySelector('#logout');
-        logoutB.addEventListener('click', loginPage);
-        const refreshB = document.querySelector('#refresh');
-        refreshB.addEventListener('click', refreshFun);
-        getToken();
+            history.pushState({ page: 2 }, "animation", "animation")
+
+            let logoutB = document.querySelector('#logout');
+            logoutB.addEventListener('click', logOutFun);
+            const refreshB = document.querySelector('#refresh');
+            refreshB.addEventListener('click', refreshFun);
+            getToken()
+
+
+        } else {
+            alert(' invalid username/password \n please try again with avalid username and password')
+        };
     }
     async function getToken() {
         const response = await fetch("https://cs445-project.herokuapp.com/api/login", {
             method: 'POST',
             headers: {
-                'Accept': "application/json,text/plain",
+                'Accept': "application/json",
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -76,25 +84,50 @@ window.onload = function () {
         const respondBody = await response.json();
         token = respondBody.token;
         console.log(token)
+        fetchAnimation()
         geoInfo()
+
     }
+    // Along with the animation page,  call mapquestapi
     async function fetchAnimation() {
         const respAnimation = await fetch(' https://cs445-project.herokuapp.com/api/animation', {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         })
         const respondA = await respAnimation.text();
-        frame = respondA.split('=====\n');
-        document.getElementById('animation').innerHTML = frame;
-        // console.log(frame)
+        animationFrame = respondA.split('=====\n');
+        document.getElementById('animation').innerHTML = animationFrame;
+        //console.log("Animation", animationFrame.length)
         //console.log("animation", respondA)
+        let count = 0;
+        intervalID = setInterval(function () {
+            document.getElementById("animation").innerHTML = animationFrame[count];
+            count++;
+            if (count === animationFrame.length) {
+                count = 0;
+            }
+        }, 1000)
 
     }
-
+    /*every time is clicked you will fetch a new animation frames from the server
+    “Load animation”  clear the previous animation, send an Ajax call 
+    to fetch a new animation frames, start a new interval.
+    */
     function refreshFun() {
+        clearInterval(intervalID);
         fetchAnimation();
 
     }
+    /*
+    When users click on “Logout” button, you will need to clear the token, clear the
+    animation, and load the login page again into the DOM.
+    */
+
+    function logOutFun() {
+        clearInterval(intervalID)
+        loginPage()
+    }
+    //latitude and longitude
     function geoInfo() {
         navigator.geolocation.getCurrentPosition(success);
 
