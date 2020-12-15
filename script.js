@@ -14,24 +14,27 @@ window.onload = function () {
 
      let animationTemplate = `
       <div id="animationPage">
-          <p id="welcomming">Welcome  to Fair Fild</p>
+     
+          <p id="welcomming" style="font-size: 20px"> </p>
 
           <div id="animationArea">
-          <textarea disabled id="animationTextArea"></textarea> <br>
+          <textarea disabled id="animationTextArea" style="height: 290px; width:300px"></textarea> <br>
           <input type="button"  id="refreshAnimation" value="Refresh Animation">
           <input type="button" id="logoutBotton" value="Logout"  >
           </div>
      </div>`
 
+     document.getElementById("login").addEventListener("click", displayAnimaTemplate);
+
+
      function displayAnimaTemplate() {
 
           document.getElementById("outlet").innerHTML = animationTemplate;
-         
-          fetchData()
 
+          fetchData()
      }
 
-     document.getElementById("login").addEventListener("click", displayAnimaTemplate);
+
 
 
      let token;
@@ -46,7 +49,34 @@ window.onload = function () {
           })
           const respondBody = await response.json();
           token = respondBody.token;
+         
+          getGeoLocation()
+        
+     }
 
-          document.getElementById("animationTextArea").innerHTML = token;
-     } 
+     let currentLocation;
+
+     function getGeoLocation() {
+
+          let locationKey = "AqK0xFKWQGXZBQSTX56v8pr4ki9AEGz1"
+
+          navigator.geolocation.getCurrentPosition(success, fail);
+          async function success(position) {
+               let longitude = position.coords.longitude;
+               let latitude = position.coords.latitude;
+               let locationInfo = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${locationKey}&location=${latitude},${longitude}`)
+               locationInfo = await locationInfo.json();
+               // console.log(locationInfo)
+               let city = locationInfo.results[0].locations[0].adminArea5;
+               let state = locationInfo.results[0].locations[0].adminArea3;
+               let country = locationInfo.results[0].locations[0].adminArea1;
+               currentLocation = `You are in ${city},  ${state}, ${country}`;
+
+               document.getElementById("welcomming").innerHTML = currentLocation;
+          }
+          function fail(details) {
+               console.log(details.message);
+          }
+     }
+     
 }
