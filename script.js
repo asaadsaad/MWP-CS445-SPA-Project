@@ -1,5 +1,9 @@
 //your code here
-
+// let tok = {
+//     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
+//     "status": true
+//   }
+  
 window.onload = function login() {
     let loginTemplate = `<h1>Login Please</h1>
     <input type="text" id="username" placeholder="User name" required /><br><br>
@@ -16,7 +20,6 @@ window.onload = function login() {
         const fetchedData = await fetch('https://cs445-project.herokuapp.com/api/login', {
             method: 'POST',
             cache: 'no-cache',
-            credentials: 'same-origin',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -24,23 +27,21 @@ window.onload = function login() {
             body: JSON.stringify(inputsObj)
 
         })
+         
             .then(response => response.json())
-            .then((response) => { response.status === true ? anim() : login() })
-
-        function anim() {
+        
+            .then((response) => { response.status === true ? animationPage() : login() })
+ 
+        function animationPage() {
             let animationTemplate = `<h1>Welcome</h1>
-            <textarea id="w3review" name="w3review" rows="4" cols="50"></textarea><br><br>
+            <textarea id="animation" name="anim" rows="20" cols="50"></textarea><br><br>
             <button type="button" id="resfreshAnimation" class="btn btn-primary btn-lg">Refresh Animation</button>
             <button type="button" id="logout" class="btn btn-primary btn-lg">Logout</button>`;
             document.querySelector('div').innerHTML = animationTemplate
+           
         }
         getLocation()
-        //
-        // return fetchedData.json()
-        // parsedData = await fetchedData.json();
-        // console.log(parsedData)
     }
-    // JSON data parsed by `data.json()
 
     function getLocation() {
         if (navigator.geolocation) {
@@ -49,17 +50,45 @@ window.onload = function login() {
             console.log("sorry...");
         }
     }
-let latitude;
-let longitude;
     function showPosition(position) {
 
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
+        // console.log(latitude)
+        // console.log(longitude)
+         greeterWithLocation()
+         animFetch()
+    
     }
-let m = async function temp() {
-    let loc = await fetch('https://open.mapquestapi.com/geocoding/v1/reverse?query=41.013567099999996,-91.95915409999999')
-    let parsedloc = await loc.json();
-    console.log(parsedloc)
+    
+    async function greeterWithLocation() {
+        let loc = await fetch('http://open.mapquestapi.com/geocoding/v1/reverse?key=soAPyBnsVHIA5KhbILyUTH4vDfYI1Tno&location=41.013567099999996,-91.95915409999999&includeRoadMetadata=true&includeNearestIntersection=true')
+        // console.log(loc)
+        let parsedloc = await loc.json();
+        //console.log(parsedloc)
+        let cityStateCountry = parsedloc.results[0].locations[0].adminArea5 + ", " + parsedloc.results[0].locations[0].adminArea3 + ", " + parsedloc.results[0].locations[0].adminArea1 + "!";
+        document.querySelector('h1').innerHTML = `<h4>Welcome all from ${cityStateCountry}</h4>`
+    }
+    
+    let animFetch= async function() {
+
+        let feData = await fetch('https://cs445-project.herokuapp.com/api/animation',{
+            method: 'GET',
+
+            headers: {
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA',
+              
+                
+            },
+        })
+        let recievedAnim = await feData.text();
+        let animArray = recievedAnim.split("=====");
+        //console.log(animArray[1])
+        document.querySelector('textarea').innerHTML = animArray;
+        document.getElementById('logout').onclick = function() {
+        document.querySelector('div').innerHTML = loginTemplate;
+        
+        }
     }
     
 }
