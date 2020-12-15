@@ -1,8 +1,8 @@
 //your code here
-// let tok = {
-//     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
-//     "status": true
-//   }
+let tok = {
+    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
+    status: true
+  }
   
 window.onload = function login() {
     let loginTemplate = `<h1>Login Please</h1>
@@ -76,7 +76,7 @@ window.onload = function login() {
             method: 'GET',
 
             headers: {
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA',
+                'Authorization': 'Bearer ' + tok.token,
               
                 
             },
