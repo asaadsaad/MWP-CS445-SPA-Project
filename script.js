@@ -1,4 +1,3 @@
-//const div = document.getElementById('outlet')
 const user = () => {
     const username = document.getElementById('username').value;
     console.log(username)
@@ -19,39 +18,51 @@ const user = () => {
         .then(res => res.json())
         .then(data => {
             if (data.status) {
-                gameTemp();
+                getLocation();
             }
         })
-
 }
 
 window.onload = function loginTemp() {
-
-    const logTemp = `<form><label for="task" style="width: 100%; text-align:center;">PLEASE LOGIN FIRST !</label></form><br/>
+    const logTemp = `<form><label for="task">PLEASE LOGIN FIRST !</label></form><br/>
 Username:<input id="username"><br/><br/>
     Password: <input id="password"><br/><br/>
-
-    <button id="login" >LOG-IN</button>`
+<button id="login" >LOG-IN</button>`
     const div = document.getElementById('outlet')
     div.innerHTML = logTemp;
     document.getElementById("login").addEventListener("click", user);
 
 }
 
-
-function gameTemp() {
+getLocation = () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(geocode);
+    } else {
+        alert("Sorry, your browser does not support this feature... Please Update your Browser to enjoy it");
+    }
+}
+geocode = (position) => {
     const animTemp = `
-    <form><label for="task" style="width: 100%; text-align:center;">WELCOME ALL FROM "ADD LOCATION HERE"!</label></form>
-    <textarea id="playground" cols=100 rows=50></textarea><br/><br/>
-
+    <form><h1>Welcome all from: </h1></form>
+    <textarea id="playground" cols=50 rows=50></textarea><br/><br/>
     <button id="refresh" >Refresh Animation</button>  
  <button id="logout" >Log-Out</button> `
     const div = document.getElementById('outlet')
     div.innerHTML = animTemp;
-    document.getElementById("refresh").addEventListener("click", loginTemp());
-    document.getElementById("logout").addEventListener("click", loginTemp());
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    console.log(`Current Latitude is ${latitude} and your longitude is ${longitude}`);
+    const latlng = latitude + "," + longitude;
+    fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=a4NLzenGoJzhK1MowK1UaA1jOR88iE1I&location=${latlng}&includeRoadMetadata=true&includeNearestIntersection=true`)
+        .then(res => res.json())
+        .then(data => {
+            const addres = data.results[0].locations;
+            document.querySelector("h1").innerHTML += `${addres[0].adminArea5},${addres[0].adminArea3}
+                                                      ,${addres[0].adminArea1}`
+        });
 
 }
+
 
 
 
