@@ -1,4 +1,6 @@
 "use strict";
+// MAP – CS445 - Final Project
+// Linked to index.html File
 (function () {
     let div;
     let userToken = "";
@@ -12,21 +14,18 @@
                     el.classList.add(add);
                     break;
                 default:
-                    //****************** typing error 
-                    // interface I1 {
-                    //   readonly n: number
-                    //   s: string
-                    // }
-                    // type IfEquals<X, Y, A=X, B=never> =
+                    //******Type Error I Cannot Get Rid Of 
+                    // type IfEquals<X, Y, A, B> =
                     // (<T>() => T extends X ? 1 : 2) extends
                     // (<T>() => T extends Y ? 1 : 2) ? A : B;
-                    // type WritableKeys<T> = {
-                    //   [P in keyof T]-?: IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P>
+                    // type WritableKeysOf<T> = {
+                    //     [P in keyof T]: IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, P, never>
                     // }[keyof T];
-                    // type I2 = Pick<I1, WritableKeys<I1>>; 
-                    // equivalent to { s: string; }
-                    // el[type as I2] = add;
-                    // el[type as keyof WritableKeys<HTMLElement>] = add;
+                    // type WritablePart<T> = Pick<T, WritableKeysOf<T>>;
+                    // type key = WritablePart<keyStr>
+                    // type keyStr = keyof HTMLElement
+                    // el[type as keyof HTMLElement] = add; // 60+ Errors Cannot Assign Read Only Properties
+                    // Error No index signature with a parameter of type 'string' was found on type 'HTMLElement'
                     el[type] = add;
             }
         });
@@ -36,21 +35,23 @@
     };
     let createLoginPage = function () {
         let frag = document.createDocumentFragment();
+        // Form
+        let form = createElmt("form", frag, [["class", "centered"], ["autocomplete", "one-time-code"]]);
+        form.onsubmit = function () { return false; }; // Disable for Ajax
         // Header
-        let el = createElmt("div", frag, [["class", "centered"]]);
-        createElmt("h2", el, [["class", "center"], ["text", "Please Login"]]);
+        let el = createElmt("div", form, [["class", "centered"]]);
+        createElmt("h2", el, [["class", "center"], ["innerText", "Please Login"]]);
         // Username
-        let subEl = createElmt("div", el, [["class", "margin"]]);
+        let subEl = createElmt("p", el, []);
         createElmt("label", subEl, [["innerText", "Username:"]]);
-        let user = createElmt("input", subEl, [["type", "text"], ["value", "map"]]);
+        let user = createElmt("input", subEl, [["type", "text"], ["class", "margin"], ["value", "map"]]);
         // Password
-        subEl = createElmt("div", el, [["class", "margin"]]);
+        subEl = createElmt("p", el, [["class", "margin"]]);
         createElmt("label", subEl, [["innerText", "Password:"]]);
-        //******* CHANGE TO PASSWORD ["type","password"]
-        let pw = createElmt("input", subEl, [["type", "text"], ["value", "123456"]]);
+        let pw = createElmt("input", subEl, [["type", "password"], ["class", "margin"], ["value", "123456"]]);
         // Login Button
         subEl = createElmt("div", el, [["class", "center"], ["class", "margin"]]);
-        createElmt("button", subEl, [["innerText", "Login"]]).onclick = function () {
+        createElmt("button", subEl, [["innerText", "Login"], ["class", "loginBtn"]]).onclick = function () {
             // Login
             let loginReq = {
                 method: "POST",
@@ -85,27 +86,32 @@
             welcome.innerText = displayAnimation.location;
         }
         else {
+            let dispLocation = function (location) {
+                displayAnimation.location = location;
+                welcome.innerText = location;
+            };
             navigator.geolocation.getCurrentPosition(function ({ coords: { latitude: lat, longitude: long } }) {
-                //**Key Goes Here
-                HTTPRequest(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${key}&location=${lat},${long}`)
-                    .then(n => n.json())
-                    .then((n) => {
-                    let { results } = n;
-                    let { locations } = results[0];
+                // Please do not steal my key
+                HTTPRequest(`http://www.mapquestapi.com/geocoding/v1/reverse?key=IML1aluZdsjo4Uuj91wjTRca2WGH1oCC&location=${lat},${long}`)
+                    .then(n => {
+                    if (n.status === 403)
+                        throw Error;
+                    return n.json();
+                })
+                    .then(({ results: [{ locations }] }) => {
                     let { adminArea1: country, adminArea3: state, adminArea5: city } = locations[0];
-                    displayAnimation.location = `Welcome: from ${city}, ${state}, ${country} Thank You for Visiting`;
-                    welcome.innerText = displayAnimation.location;
-                });
+                    dispLocation(`Welcome: from ${city}, ${state}, ${country} Thank You for Visiting`);
+                }).catch(() => { dispLocation(`Welcome: From ? Location Unavailable`); });
             }, 
             // Get Location Error
-            () => { welcome.innerText = `Welcome: From ? Location Unavailable`; });
+            () => { dispLocation(`Welcome: From ? Location Unavailable`); });
         }
         // Text Area
-        let subEl = createElmt("div", el, [["class", "margin"]]);
+        let subEl = createElmt("div", el, [["class", "margin"], ["class", "center"]]);
         let txtArea = createElmt("textarea", subEl, [["class", "animation"]]);
         // Load Animation Button
         subEl = createElmt("div", el, [["class", "center"], ["class", "margin"]]);
-        let refreshBtn = createElmt("button", subEl, [["innerText", "Load Animation"], ["class", "margin"]]);
+        let refreshBtn = createElmt("button", subEl, [["innerText", "Load Animation"], ["class", "margin"], ["class", "loginBtn"]]);
         let refreshAnimation = function () {
             let animationReq = {
                 method: "GET",
@@ -135,7 +141,7 @@
         if (updtFromHistory)
             displayAnimation.animate(txtArea);
         // Logout Button
-        createElmt("button", subEl, [["innerText", "Logout"], ["class", "margin"]]).onclick = function () {
+        createElmt("button", subEl, [["innerText", "Logout"], ["class", "margin"], ["class", "loginBtn"]]).onclick = function () {
             loadLoginPage();
             userToken = "";
             displayAnimation.clearAnimation();
@@ -174,9 +180,10 @@
         animate: function (elmt) {
             this.clearAnimation();
             let cnt = 0;
-            let length = this.imageAry.length;
+            let { length } = this.imageAry;
             if (length === 0)
                 return;
+            // Interval to Display Animation
             this.timerId = window.setInterval(() => {
                 elmt.value = this.imageAry[cnt++];
                 cnt = cnt % length;
@@ -190,7 +197,6 @@
             ;
         }
     };
-    //************* responsetype optional
     // Fetch Requests
     let HTTPRequest = async function (url, data) {
         try {
@@ -216,24 +222,57 @@
             }
             else {
                 window.alert("Already Logged Out. Please Login Again!");
+                loadLoginPage(false);
             }
         }
         // Load Login, Push /login if Needed
         loadLoginPage(state !== null);
     });
     // CSS Styles
-    let styles = [".margin {margin: 10px;}",
-        ".center {text-align: center;}",
+    let styles = [
         `.centered {
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
+                  position: fixed;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
                 }`,
-        `.animation {
-                      width: 450px;
-                      height: 350px;
-                 }`,
+        `.center {
+                text-align: center;
+                }`,
+        `.margin{
+                margin: 10px
+                }`,
+        `body{
+                font-size: 30px;
+                background-color: azure;
+                }`,
+        `button{
+                font-size: 20px;
+                padding: 10px;
+                margin-top: 30px;
+                }`,
+        `.loginBtn {
+                padding-right: 40px;
+                padding-left: 40px;
+                border-radius: 10px;
+                }`,
+        `input{
+                font-size: 20px;
+                border-radius: 5px;
+                padding:5px
+                }`,
+        `form  {display: table;}`,
+        `p     {display: table-row;}`,
+        `label { display: table-cell;}`,
+        `input { display: table-cell;}`,
+        `.animation{
+                width: 450px;
+                height: 350px;
+                border-radius: 5px;
+                }`,
+        `button:hover{
+                  cursor:pointer;
+                }`,
     ];
     // Create/ Append Stylesheet and Insert Rules
     let style = createElmt("style", document.head, [["type", "text/css"]]).sheet;
