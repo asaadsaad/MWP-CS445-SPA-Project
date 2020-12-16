@@ -39,7 +39,7 @@ function animApp() {
                     method: "POST",
                     headers: { "content-type": "application/json" },
                     body: JSON.stringify({
-                        "username": "mwp",
+                        "username": "map",
                         "password": "123456"
                     })
 
@@ -51,9 +51,9 @@ function animApp() {
             outLet.innerHTML = animationForm
             history.replaceState({}, document.title, "/animation");
 
-            //getGeoLocation()
+            
             fetchTokensAnimation();
-
+            getGeoLocation()
         } catch (error) { alert(error) }
 
     }
@@ -81,8 +81,40 @@ function animApp() {
             tokenLength++
             if (tokenLength === arrLength) tokenLength = 0;
         }, 300)
-        refreshAnimationPage()
     }
+
+        function getGeoLocation() {
+        navigator.geolocation.getCurrentPosition(success, (failed) => { alert(failed.message) });
+
+        function success(position) {
+            currentLongitude = position.coords.longitude;
+            currentLatitude = position.coords.latitude;
+
+            fetchCurrentLocation()
+            refreshAnimationPage()
+        }
+    }
+    async function fetchCurrentLocation() {
+        try {
+            let geoLocationKey = "om1PtZHStjj5GgHz7NRKVFnFfVHSbk11"
+            let getLocation = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${geoLocationKey}&location=${currentLatitude},${currentLongitude}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            let resultLocation = await getLocation.json()
+            console.log(resultLocation)
+
+            let country = resultLocation.results[0].locations[0].adminArea1
+            console.log(country)
+            let state = resultLocation.results[0].locations[0].adminArea3
+            let city = resultLocation.results[0].locations[0].adminArea5
+
+            document.getElementById("geoloc").innerHTML = `Welcome All from ${city}, ${state} ${country}`
+        } catch (error) { alert(error) }
+    }
+
 
     function refreshAnimationPage() {
         let refresh = document.querySelector("#refreshAnim")
