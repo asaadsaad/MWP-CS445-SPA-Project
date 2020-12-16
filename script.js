@@ -10,7 +10,7 @@ window.onload = function () {
     const loginTemplate = `
                 <h2>Please Login</h2><br><b>   
                 Username: <input placeholder="mwp" value="mwp" id="username"/><br/><br/><b>
-                Password: <input placeholder="123" value="123"  id="password"/><br/>
+                Password: <input placeholder="123" value="123"  id="password"/><br><br>
                 <button id="login" class="btn btn-success">Login</button> <b>
                 <style>
                 body{
@@ -20,14 +20,14 @@ window.onload = function () {
                 </style>
                 `
     const animationTemplate = `
-                    <div id="address"  style="font-size:20px" style="font-weight:bold"></div>  
+                    <div id="address"  style="font-size:22px" style="font-weight:bold"></div>  
                     <textarea id="animation" rows="20" cols="37" style="font-size: 20px"></textarea><br><br>
                     <button id="refresh">Refresh Animation</button><b> 
                     <button id="logout">Logout</button> <b>  
                     <style>
                 body{
-                    width: 600px;
-                    margin: 1em auto;
+                    width: 400px;
+                    margin: 0.5em auto;
                 }
                 </style>     
                     `
@@ -82,7 +82,7 @@ window.onload = function () {
         const respondBody = await response.json();
         token = respondBody.token;
         console.log(token)
-
+        geoInfo()
 
         const respAnimation = await fetch(' https://cs445-project.herokuapp.com/api/animation', {
             method: "GET",
@@ -90,9 +90,9 @@ window.onload = function () {
         })
         const respondA = await respAnimation.text();
         animationFrame = respondA.split('=====\n');
-        document.getElementById('animation').innerHTML = animationFrame;
+        // document.getElementById('animation').innerHTML = animationFrame;
         //console.log("Animation", animationFrame.length)
-        //console.log("animation", respondA)
+        console.log("animation", respondA)
         let count = 0;
         intervalID = setInterval(function () {
             document.getElementById("animation").innerHTML = animationFrame[count];
@@ -100,9 +100,9 @@ window.onload = function () {
             if (count === animationFrame.length) {
                 count = 0;
             }
-        }, 1000)
+        }, 600)
 
-        geoInfo()
+
 
     }
 
@@ -116,27 +116,6 @@ window.onload = function () {
             animationPage();
         }
     })
-    // Along with the animation page,  call mapquestapi
-    //   async function fetchAnimation() {
-    // const respAnimation = await fetch(' https://cs445-project.herokuapp.com/api/animation', {
-    //     method: "GET",
-    //     headers: { "Authorization": `Bearer ${token}` }
-    // })
-    // const respondA = await respAnimation.text();
-    // animationFrame = respondA.split('=====\n');
-    // document.getElementById('animation').innerHTML = animationFrame;
-    // //console.log("Animation", animationFrame.length)
-    // //console.log("animation", respondA)
-    // let count = 0;
-    // intervalID = setInterval(function () {
-    //     document.getElementById("animation").innerHTML = animationFrame[count];
-    //     count++;
-    //     if (count === animationFrame.length) {
-    //         count = 0;
-    //     }
-    // }, 1000)
-
-    // }
     /*every time is clicked you will fetch a new animation frames from the server
     “Load animation”  clear the previous animation, send an Ajax call 
     to fetch a new animation frames, start a new interval.
@@ -156,7 +135,7 @@ window.onload = function () {
         clearInterval(intervalID)
         loginPage()
     }
-    //latitude and longitude
+    //latitude , longitude and fetch the current user location
     function geoInfo() {
         navigator.geolocation.getCurrentPosition(success);
 
