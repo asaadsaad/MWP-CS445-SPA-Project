@@ -1,11 +1,14 @@
 window.onload = singlePage;
-
+window.addEventListener('popstate', singlePage)
 function singlePage() {
 
   const KEY = "5aQ8mwDkBUizqbxGg48NuIcoWCnogSyM";
 
   let animationId;
   let token;
+  let movement;
+  let lati;
+  let long;
 
   const loginStream = `
  <h1>Please login</h1>
@@ -20,110 +23,160 @@ function singlePage() {
 <button id="logout">Logout</button>
 `;
 
-  stream({page:'login'},"/login");
-  
+window.addEventListener('popstate', function (event) {
+  if (event.state.page === 1) {
+      clearInterval(animationId)
+      stream();
+  } else {
+      clearInterval(animationId)
+      robotLogin();
+  }
+})
+
+stream()
    
-  function stream(state, url) {
-    if (state.page === 'login') {
-      document.getElementById("outlet").innerHTML = loginStream;
-      history.pushState(state, null, url);
-    }
-    if (state.page === 'animation') {
-      document.getElementById("outlet").innerHTML = animationStream;
-      history.pushState(state,null,url);
-    }
-  }
-  document.getElementById("login").addEventListener("click", function(e) {
-    streaming();
-    streamFrom();
+function stream() {
+    let outlet = document.querySelector("#outlet");
+    outlet.innerHTML = loginStream;
     
-     
-    stream({page:'animation'},'/animation');
-  });
-
-  async function streaming() {
-    let data = {
-      username: document.querySelectorAll("input")[0].value,
-      password: document.querySelectorAll("input")[1].value
-    };
-
-    const response = await fetch("https://cs445-project.herokuapp.com/api/login", {
-      method: "POST",
-      headers: {
-        Accept: "application/json, text/plain,*/*",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-    const result = await response.json();
-    token = result.token;
-    console.log(token);
-
-    callRobot();
-
-  document.getElementById("refresh").addEventListener("click", callRobot);
-  document.getElementById("logout").addEventListener("click", function() {
-    clearInterval(animationId);
-    stream({page: 'login'},'login');
-  });
-  }
-
-  function streamFrom() {
-    navigator.geolocation.getCurrentPosition(success, failed);
-
-    async function success(position) {
-      let long = position.coords.longitude;
-      let lat = position.coords.latitude;
-
-      console.log(position);
-
-      let response = await fetch(
-        `http://www.mapquestapi.com/geocoding/v1/reverse?key=${KEY}&location=${lat},${long}&&includeRoadMetadata=true&includeNearestIntersection=true`
-      );
-      response = await response.json();
-      console.log(response);
-      const city = response.results[0].locations[0].adminArea5;
-      const state = response.results[0].locations[0].adminArea3;
-      const country = response.results[0].locations[0].adminArea1;
-      const zip = response.results[0].locations[0].postalcode;
-
-      let result = document.querySelector("#adress");
-      result.innerHTML = `welcome all from ${city},${state},${country}`;
-      
-    }
-
-    function failed(err) {
-      document.querySelector("#adress").innerHTML = "welcome anonymous";
-    }
-  }
-  async function callRobot() {
-    
-    if (animationId) {
-      clearInterval(animationId);
-    }
-
-    const response = await fetch("http://www.mumstudents.org/api/animation", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    console.log(response);
-    const robot = await response.text();
-    console.log(robot);
+    history.pushState({
+        page: 1
+    }, "login", "?login")
 
     
-    const frames = robot.split("=====\n");
-    const framelength = frames.length;
-    let currentframe = 0;
+    let button = document.querySelector("#login");
 
-    animationId = setInterval(() => {
-      document.querySelector("#animation").value = frames[currentframe];
-      currentframe++;
-      if (currentframe === framelength) {
-        currentframe = 0;
-      }
-    }, 200);
     
-    document.getElementById("animation").innerHTML = robot;
+    button.addEventListener("click", fetchLogin);
   }
+
+async function fetchLogin() {
+    const result = await fetch("https://cs445-project.herokuapp.com/api/login", {
+    method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "username": "map",
+            "password": "123456"
+        })
+    })
+
+    const myJson = await result.json()
+    token = myJson.token;
+    const status = myJson.status;
+
+    if (status === true) {
+        robotLogin(); 
+    }
 }
+
+function robotLogin() {
+  history.pushState({
+      page: 2
+  }, "animation", "?animation")
+  outlet.innerHTML = animationStream;
+
+  fetchAddress();
+  callRobot(); 
+}
+
+function fetchAddress() {
+
+  navigator.geolocation.getCurrentPosition(success, fail);
+  
+  function success(position) {
+      long = position.coords.longitude;
+      lati = position.coords.latitude;
+      address(); 
+      loginAndOut(); 
+  }
+  
+  function fail(msg) {
+      alert(`${msg.code} ...... ${msg.message} `);
+      
+      outlet.innerHTML = "need geoLocation";
+      
+
+  }
+
+}
+async function address() {
+  const result = await fetch(`http://open.mapquestapi.com/geocoding/v1/reverse?key=${Key}&location=${lati},${long}`, {
+      method: "GET",
+      headers: {
+          "Content-Type": "application/json",
+      }
+  })
+  const position = await result.json();
+  const city = position.results[0].locations[0].adminArea5;
+  const state = position.results[0].locations[0].adminArea3;
+  const country = position.results[0].locations[0].adminArea1;
+  
+  geolocation.innerHTML = `Thanks for accessing from ${city}, ${state} ${country}`;
+
+
+}
+function loginAndOut() {
+    
+  let refresh = document.querySelector("#refresh");
+  let logout = document.querySelector("#logout");
+  logout.addEventListener("click", logoutOf);
+  refresh.addEventListener("click", removeAnimation);
+
+}
+function moving() {
+  const array = result.split("=====\n");
+  
+  let animation = document.querySelector("#animation");
+  animation.innerHTML = array[0];
+  
+  let curr = 0;
+  let maxlength = array.length;
+  animationId = setInterval(() => {
+      animation.innerHTML = array[curr];
+      curr++;
+      if (curr === maxlength) {
+          curr = 0;
+      }
+  }, 200);
+}
+function removeAnimation(){
+  clearInterval(animationId);
+  callRobot();
+
+
+}
+function logoutOf() {
+  outlet.innerHTML = loginStream;
+  token = null;
+  stream(); 
+
+
+}
+async function callRobot() {
+  const result = await fetch("https://cs445-project.herokuapp.com/api/animation", {
+      method: "GET",
+      headers: {
+          "Content-Type": "application/text",
+          Authorization: `Bearer ${token}`
+
+      }
+
+
+  })
+  movement = await result.text();
+  moving();
+}
+}
+
+
+
+
+
+
+
+
+
+
+
