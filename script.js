@@ -3,36 +3,43 @@
 window.onload = spa
 function spa() {
 
-    const loginTemplate = `
-                            <h1>Please Login</h1>
-                            <label>Username</label>
-                            <input type="Username" class="user" id="userid" placeholder="map" value="map">
-                            <div>
-                                <label>Password</label>
-                                <input type="password" class="pass" id="passwordid" placeholder="123456" value="123456">
+    const loginTemplate = `             
+                            <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+                            
+                            <div class="container">
+                                <form>
+                                    <div class="form-group">
+                                    <h1>Please Login</h1>
+                                        <label>Username:</label>
+                                        <input type="text" name="username" id="userid" placeholder="map" value="map">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Password:</label>
+                                        <input type="password" id="passwordid" placeholder="123456" value="123456">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-success" id = "login">Login</button>
+                                    </div>
+                                </form>
                             </div>
-                            <button type="submit" id = "login" class="btn btn-primary">Login</button>
                             `
 
     const animationTemplate = `
                                 <div>
                                     <h1 id = "location"></h1>
-                                    <textarea id="disAnimation" cols="80" rows="30"></textarea><br><br>
+                                    <textarea id="showAnimation" cols="80" rows="30"></textarea><br><br>
                                     <button id="refAnimationBTN" class="button">Refresh Animation</button>
                                     <button type="button" id="logout">Logout</button>
                                 </div>
                                 `
-
-
-    ///////////////////////////////////////////////////////
     let fullAdress;
+    let token;
     let latitud;
     let longitud;
-    let geoKey = "opPTwim7J6IURz5wAUrMZ9cmrvn8HXxq";
-    let outlet = document.getElementById("outlet");
+    const geoKey = "opPTwim7J6IURz5wAUrMZ9cmrvn8HXxq";
+    const outlet = document.getElementById("outlet");
 
     outlet.innerHTML = loginTemplate;
-
     ////////////////////////////////////////////////////////////////////Geolocation fetch
     async function location() {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -48,20 +55,58 @@ function spa() {
     }
 
 
-//////////////////////////////////////////////////////////////////////////////
+
     const logInButton = document.getElementById("login");
     logInButton.addEventListener("click", logInFunction);
     function logInFunction() { // //The login function holds all the DOM elements for the credential page.
         activitiesAfterLogin()
     }
 
-//////////////////////////////////////////////////////////////////////////////
-    function activitiesAfterLogin() {
+
+    async function activitiesAfterLogin() {
         outlet.innerHTML = animationTemplate;
         location()
 
-        document.getElementById("logout").addEventListener("click", logoutAnimPage);
-        function logoutAnimPage() { //Back to the login page when we click the logout button
+        const response = await fetch("https://cs445-project.herokuapp.com/api/login", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                "username": "map",
+                "password": "123456"
+            })
+        })
+
+        const jsonObj = await response.json()
+        token = jsonObj.token;
+        const status = jsonObj.status;
+
+        if (status === true) {
+            getAnimation();
+        }
+
+        const animation = document.getElementById("showAnimation");
+        async function getAnimation() {
+            const response = await fetch("https://cs445-project.herokuapp.com/api/animation", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/text",
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            const allAnimation = await response.text();
+            const animArray = allAnimation.split("=====\n");
+            animation.innerHTML = animArray[0];
+            //Moving animation code here...........
+        }
+
+           //refresh page code here................
+        
+        ///////////////////Log out the page
+        const logOut = document.getElementById("logout")
+        logOut.addEventListener("click", logoutAnimPage);
+        function logoutAnimPage() { //Function that return the login page 
             outlet.innerHTML = loginTemplate;
             const logInButton = document.getElementById("login");
             logInButton.addEventListener("click", logInFunction);
