@@ -50,7 +50,7 @@ window.onload = function () {
     </style>
     
     `
-
+    //DOM which is added into div area when the login button is clicked
     const templateAnimation = ` 
     <div id="logindiv">
    
@@ -87,10 +87,10 @@ window.onload = function () {
           #playground
           {
             text-align: center;
-            background-image: url("./g3.gif");
+            background-image: url("./g33.gif");
             background-repeat: no-repeat;
             background-size: cover;
-            color:white;
+            color:black;
             position: relative;
             font-weight: bold;
           }
@@ -99,6 +99,10 @@ window.onload = function () {
     
             `
 
+    /**
+     * @param{no paramater to take}
+     *  window load function 
+     */
     loginpage();
     /**
      * History API to handle forward and back arrow 
@@ -106,12 +110,10 @@ window.onload = function () {
      */
     window.addEventListener('popstate', function (event) {
         if (event.state.page === 1) {
-           //ye saate negere saat atefa ale
             clearInterval(TimerID)
             loginpage();
         } else {
-           //ye saate negere saat atefa ale
-           clearInterval(TimerID)
+            clearInterval(TimerID)
             playingpage();
         }
     })
@@ -119,6 +121,7 @@ window.onload = function () {
      * when the window load it invoke the loginpage function
      * then it collect html and and js function into browser
      */
+
     function loginpage() {
         // loading the dom to login template
         div.innerHTML = templatelogin;
@@ -131,7 +134,10 @@ window.onload = function () {
         login.addEventListener("click", myLoginFunction);
 
     }
-
+    /**
+     * @param{no paramter to pass}
+     * 
+     */
     function playingpage() {
         history.pushState({
             page: 2
@@ -142,12 +148,17 @@ window.onload = function () {
         getAnimation();
 
     }
-
+    /**
+     * when the refresh button is clicked 
+     * it clearout ther setinterval ID to protect memory leak
+     */
     function reload() {
-        //ye saate negere saat atefa ale
         clearInterval(TimerID)
         getAnimation();
     }
+    /**
+     * when the logout button is clicked return back to login window
+     */
     function logout() {
         div.innerHTML = templatelogin
         token = false;
@@ -192,6 +203,11 @@ window.onload = function () {
         }
 
     }
+
+    /**
+     * @param{no parameter to pass }
+     * this function gives the geolocation of the user who is currently logged in
+     */
     function getlocation() {
 
         navigator.geolocation.getCurrentPosition(success,
@@ -199,7 +215,11 @@ window.onload = function () {
                 alert(`${message.code}, ${message.message} `);
                 div.innerHTML = "Accept location request require unless doesn't work";
             })
-
+        /**
+         * 
+         * @param {*} position 
+         * A callback function that takes a GeolocationPosition object as its sole input parameter.
+         */
         async function success(position) {
             longitude = position.coords.longitude;
             latitude = position.coords.latitude;
@@ -223,6 +243,12 @@ window.onload = function () {
 
     }
 
+    /**
+     * @Param{ no parameter to pass}
+     * this function fetch animated string from server and pass to 
+     * the html to the dom playing area .
+     */
+
     async function getAnimation() {
         const result = await fetch("https://cs445-project.herokuapp.com/api/animation", {
             method: "GET",
@@ -237,19 +263,14 @@ window.onload = function () {
         playground.innerHTML = splitdata[0];
         let next = 1;
         let maxlength = splitdata.length;
-        // for (next of splitdata)
-        // {
-        //     playground.innerHTML = splitdata[next];
-
-        // }
-         TimerID = setInterval(() => {
+        TimerID = setInterval(() => {
             playground.innerHTML = splitdata[next];
             next++;
             if (next === maxlength) {
                 next = 0;
             }
         }, 200);
-       
+
     }
 
     ////////////////////////simple digital clock for decorator/////////////////////////
