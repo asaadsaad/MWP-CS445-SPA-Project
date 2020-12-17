@@ -36,10 +36,12 @@ function spa() {
     let token;
     let latitud;
     let longitud;
+    let moveAnimation
     const geoKey = "opPTwim7J6IURz5wAUrMZ9cmrvn8HXxq";
     const outlet = document.getElementById("outlet");
 
     outlet.innerHTML = loginTemplate;
+
     ////////////////////////////////////////////////////////////////////Geolocation fetch
     async function location() {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -97,13 +99,26 @@ function spa() {
             })
             const allAnimation = await response.text();
             const animArray = allAnimation.split("=====\n");
-            animation.innerHTML = animArray[0];
-            //Moving animation code here...........
-        }
+            // animation.innerHTML = animArray[0];
 
-           //refresh page code here................
-        
-        ///////////////////Log out the page
+            let currentAnim = 0;
+            let maxlength = animArray.length;
+            moveAnimation = setInterval(() => {
+                animation.innerHTML = animArray[currentAnim];
+                currentAnim++;
+                if (currentAnim === maxlength) {
+                    currentAnim = 0;
+                }
+            }, 200);
+        }
+        ////////////////////Refresh the page
+        const refresh = document.getElementById("refAnimationBTN");
+        refresh.addEventListener("click", clearLastAnimation)
+        function clearLastAnimation() {
+            clearInterval(moveAnimation)
+            getAnimation(); //Function that fetches the animation from the API
+        }
+        ///////////////////Log outzthe page
         const logOut = document.getElementById("logout")
         logOut.addEventListener("click", logoutAnimPage);
         function logoutAnimPage() { //Function that return the login page 
