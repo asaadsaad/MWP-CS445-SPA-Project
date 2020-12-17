@@ -81,11 +81,12 @@
         // Header
         let el = createElmt("div", frag, [["class", "centered"]]);
         let welcome = createElmt("h2", el, [["class", "center"], ["innerText", "Welcome"]]);
-        // Get Location
+        // Update Location
         if (updtFromHistory) {
             welcome.innerText = displayAnimation.location;
         }
         else {
+            // Request Location
             let dispLocation = function (location) {
                 displayAnimation.location = location;
                 welcome.innerText = location;
@@ -168,6 +169,7 @@
     let addToHistory = function (urlAdd) {
         history.pushState({ display: urlAdd }, "", "/" + urlAdd);
     };
+    // Object to Handle Animation
     let displayAnimation = {
         imageStr: "",
         imageAry: [""],
@@ -213,7 +215,7 @@
         div = document.getElementById("outlet");
         loadLoginPage();
     };
-    // History
+    // Handle History
     window.addEventListener("popstate", function ({ state }) {
         if (state && state.display === "animation") {
             if (userToken) {

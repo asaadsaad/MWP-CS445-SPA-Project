@@ -115,11 +115,12 @@
     let el = createElmt("div", frag, [["class","centered"]])
     let welcome = createElmt("h2", el, [["class","center"], ["innerText","Welcome"]])
 
-    // Get Location
+    // Update Location
     if (updtFromHistory) {
       welcome.innerText = displayAnimation.location;
     } else {
 
+        // Request Location
         let dispLocation = function (location: string) {
           displayAnimation.location = location;
           welcome.innerText = location;
@@ -222,7 +223,7 @@
     history.pushState({display: urlAdd}, "", "/" + urlAdd);
   }
 
-  
+  // Object to Handle Animation
   let displayAnimation = {
 
     imageStr: "",
@@ -283,7 +284,7 @@
       loadLoginPage();
   }
 
-  // History
+  // Handle History
   window.addEventListener("popstate", function({state}:PopStateEvent) {
 
       if (state && state.display === "animation") {
