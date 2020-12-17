@@ -7,8 +7,6 @@ Password <input placeholder="char" value="123456"/><br/>
 <button type="button" id="login">Login</button>`
 
 
-
-
 let animationForm = `<h3 id="geoloc">Welcome All</h3>
 <textarea rows="30" cols="120" id="animation"></textarea><br>
 <button type="button" id="refreshAnim">Refresh Animation</button>
@@ -18,18 +16,23 @@ let animationForm = `<h3 id="geoloc">Welcome All</h3>
 let Tokens, playAnimation;
 
 window.onload = animApp
+/**
+ * when window is loading the login page will display
+ */
 function animApp() {
 
     let outLet = document.getElementById("outlet")
     outLet.innerHTML = loginForm
 
-    history.replaceState({}, document.title, "/login");
+    history.pushState({page: 1}, "login page", "?login")
 
     let loginBtn = document.querySelector("#login")
 
     loginBtn.addEventListener("click", displayPage)
 
-
+    /**
+     * fetching and cheking the body and display the animation page
+     */
     async function displayPage() {
         try {
 
@@ -49,8 +52,7 @@ function animApp() {
             Tokens = result.token
 
             outLet.innerHTML = animationForm
-            history.replaceState({}, document.title, "/animation");
-
+            history.pushState({page: 2}, "dispaly page", "?animation")
             
             fetchTokensAnimation();
             getGeoLocation()
@@ -58,9 +60,12 @@ function animApp() {
 
     }
 
+    /**
+     * fetch each tokens and split each tokens with "====="
+     */
 
     async function fetchTokensAnimation() {
-
+        try{
         let animResponse = await fetch("https://cs445-project.herokuapp.com/api/animation",
             {
                 method: "GET",
@@ -76,12 +81,23 @@ function animApp() {
         let resultArray = animResult.split("=====\n")
         let tokenLength = 0;
         let arrLength = resultArray.length
+        clearInterval(playAnimation)
         playAnimation = setInterval(() => {
             document.getElementById("animation").innerHTML = resultArray[tokenLength];
             tokenLength++
             if (tokenLength === arrLength) tokenLength = 0;
         }, 300)
+
+        }catch(error){
+            alert(error)
+        }
     }
+
+    
+
+    /**
+     * navigate the geolocation latitude and longitude
+     */
 
         function getGeoLocation() {
         navigator.geolocation.getCurrentPosition(success, (failed) => { alert(failed.message) });
@@ -94,6 +110,11 @@ function animApp() {
             refreshAnimationPage()
         }
     }
+
+    /**
+     * fetch the current location based on the given longitude, latitude and geolocation key
+     */
+
     async function fetchCurrentLocation() {
         try {
             let geoLocationKey = "om1PtZHStjj5GgHz7NRKVFnFfVHSbk11"
@@ -115,6 +136,9 @@ function animApp() {
         } catch (error) { alert(error) }
     }
 
+    /**
+     * refereshing the animation page to get different pattern whenever it called
+     */
 
     function refreshAnimationPage() {
         let refresh = document.querySelector("#refreshAnim")
@@ -126,20 +150,19 @@ function animApp() {
             animApp();
         })
     }
-
+    /**
+     * history API for baking to the login page
+     */
     window.addEventListener("popstate", (event) => {
         if (event.state.page === 1) {
             clearInterval(playAnimation);
             animApp()
+        } else {
+            clearInterval(playAnimation);
+            displayPage()
         }
-        clearInterval(playAnimation);
-        displayPage()
+        
     })
-  /*   window.addEventListener("click", back)
-    function back(){
-        window.location.href = "https://cs445-project.herokuapp.com/api/login";
-    } */
-
 
 }
 
