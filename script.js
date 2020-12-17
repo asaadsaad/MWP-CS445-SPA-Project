@@ -5,7 +5,7 @@ window.onload = function () {
   let timerId;
   const outlet = document.getElementById("outlet");
 
-  //create templates
+  //create 2 templates for login and animation 
   const loginTemplate = `
   <h1>Please Login</h1>
   Username <input id="username" value = "mwp"><br>
@@ -52,7 +52,7 @@ window.onload = function () {
 
       let geoKey = "hl5CFvCH0GGgkLuulKNPcQ5q1bPDGvYH";
 
-      //get user location
+      //get user's current location
       navigator.geolocation.getCurrentPosition(function (position) {
         const lat = position.coords.latitude;
         const long = position.coords.longitude;
@@ -68,11 +68,14 @@ window.onload = function () {
             );
 
             let userLocation = document.getElementById("location");
-
-            userLocation.innerHTML = `${res.adminArea5}, ${res.adminArea3}, ${res.adminArea1} `;
+            let city = res.adminArea5;
+            let state = res.adminArea3;
+            let country = res.adminArea1;
+            userLocation.innerHTML = `${city}, ${state}, ${country} `;
           });
       });
 
+      //display animation and add event listener to refresh button and logout button
       showAnimation();
       let refreshButton = document.getElementById("refresh");
       refreshButton.addEventListener("click", refresh);
