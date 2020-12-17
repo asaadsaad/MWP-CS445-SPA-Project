@@ -170,5 +170,16 @@ function application() {
 
     };
 
+    // This function handle history changes when the  back and forward arrow are clicked 
+    window.addEventListener('popstate', function (event) {
+        if (event.state.page === 2) {
+            clearInterval(timerId)
+            loginFunc();
+        } else {
+            clearInterval(timerId)
+            div.innerHTML = loginPage;
+        }
+    });
+
 
 }
