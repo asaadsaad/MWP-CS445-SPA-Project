@@ -126,7 +126,7 @@ function loginAndOut() {
 
 }
 function moving() {
-  const array = result.split("=====\n");
+  const array = movement.split("=====\n");
   
   let animation = document.querySelector("#animation");
   animation.innerHTML = array[0];
