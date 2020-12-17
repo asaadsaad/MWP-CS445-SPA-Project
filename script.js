@@ -112,7 +112,7 @@
         let txtArea = createElmt("textarea", subEl, [["class", "animation"]]);
         // Load Animation Button
         subEl = createElmt("div", el, [["class", "center"], ["class", "margin"]]);
-        let refreshBtn = createElmt("button", subEl, [["innerText", "Load Animation"], ["class", "margin"], ["class", "loginBtn"]]);
+        let refreshBtn = createElmt("button", subEl, [["innerText", "Refresh Animation"], ["class", "margin"], ["class", "loginBtn"]]);
         let refreshAnimation = function () {
             let animationReq = {
                 method: "GET",
