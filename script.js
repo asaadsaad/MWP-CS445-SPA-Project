@@ -1,4 +1,7 @@
 //your code here
+
+// I am not pushing a new change today because I wanted to spend the day getting ready for my exams and 
+//most of the part of the project is done, just few things to add like the history API
 let tok = {
     token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
     status: true
@@ -10,6 +13,7 @@ window.onload = function login() {
     <input type="text" id="password" placeholder="Passwod" required /><br><br>
     <button type="button" id="loginButton" class="btn btn-primary btn-lg">Login</button>`;
     document.querySelector('div').innerHTML = loginTemplate;
+    
     
 
     document.getElementById('loginButton').onclick = async function log() {
