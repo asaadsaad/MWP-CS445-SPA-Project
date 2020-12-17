@@ -9,9 +9,9 @@
 
 window.onload = function () {
 
-    //letiable which we need to the next path
+    //variable which we need to the next path
     let mykey = "KjP5zwaRx5DO6MDhmIMI9fMtKsksKA1W";
-    let longitude, latitude, token, TimerID;
+    let longitude, latitude, token;
     let div = document.getElementById("outlet");
 
     //DOM which is added into div area when the window is loaded
@@ -30,7 +30,7 @@ window.onload = function () {
         margin-right: 25%;
           margin-left: 25%;
           margin-top: 20px;
-               background-image: url("./bgimg.jpg");
+               background-image: url("./miu.jpg");
                background-repeat: no-repeat;
                 background-size: cover;
           }
@@ -38,7 +38,7 @@ window.onload = function () {
           #logindiv
           {
                margin-top: 50px;
-          background-image: url("./bgimg.jpg");
+          background-image: url("./aa.png");
                background-repeat: no-repeat;
                 background-size: cover;
             position: relative;
@@ -57,7 +57,7 @@ window.onload = function () {
     <h2>እንኳን ደና መጡ</h2>
     <h2 id="myclock"></h2>
     <h2 id="welcome">  wellcome all from .............</h2>
-    <textarea rows="20" cols="40" id="playground" align="center"></textarea><br>
+    <textarea rows="20" cols="60" id="playground" align="center"></textarea><br>
     <button type="button" id="refresh" class="btn btn-info">Refresh_Animation</button>
     <button type="button" id="logout"  class="btn btn-info">Logout</button> </div>
 
@@ -66,7 +66,7 @@ window.onload = function () {
         margin-right: 25%;
           margin-left: 25%;
           margin-top: 20px;
-               background-image: url("./bgimg.jpg");
+               background-image: url("./miu.jpg");
                background-repeat: no-repeat;
                 background-size: cover;
         
@@ -75,7 +75,7 @@ window.onload = function () {
           #logindiv
           {
                margin-top: 50px;
-          background-image: url("./bgimg.jpg");
+          background-image: url("./aa.png");
                background-repeat: no-repeat;
                 background-size: cover;
             position: relative;
@@ -84,35 +84,48 @@ window.onload = function () {
         }
           h2 {
           text-decoration: underline;}
+          #playground
+          {
+            text-align: center;
+            background-image: url("./g3.gif");
+            background-repeat: no-repeat;
+            background-size: cover;
+            color:white;
+            position: relative;
+            font-weight: bold;
+          }
+        
     </style>
     
             `
 
-     loginpage();
+    loginpage();
     /**
      * History API to handle forward and back arrow 
      * which diplayed on tab
      */
     window.addEventListener('popstate', function (event) {
         if (event.state.page === 1) {
+           //ye saate negere saat atefa ale
             clearInterval(TimerID)
             loginpage();
         } else {
-            clearInterval(TimerID)
+           //ye saate negere saat atefa ale
+           clearInterval(TimerID)
             playingpage();
         }
     })
-/**
- * when the window load it invoke the loginpage function
- * then it collect html and and js function into browser
- */
+    /**
+     * when the window load it invoke the loginpage function
+     * then it collect html and and js function into browser
+     */
     function loginpage() {
         // loading the dom to login template
         div.innerHTML = templatelogin;
         showTime();
         //change the url of the page  and push 1 to the histroy api
         history.pushState({ page: 1 }, "Mylogin", "?loginpage");
-    
+
         let login = document.getElementById("login")
         //add event listener to the login button
         login.addEventListener("click", myLoginFunction);
@@ -131,12 +144,13 @@ window.onload = function () {
     }
 
     function reload() {
+        //ye saate negere saat atefa ale
         clearInterval(TimerID)
         getAnimation();
     }
     function logout() {
         div.innerHTML = templatelogin
-        token = null;
+        token = false;
         loginpage();
     }
 
@@ -223,37 +237,45 @@ window.onload = function () {
         playground.innerHTML = splitdata[0];
         let next = 1;
         let maxlength = splitdata.length;
-        for (next; next <= maxlength; next++)
-        {
+        // for (next of splitdata)
+        // {
+        //     playground.innerHTML = splitdata[next];
+
+        // }
+         TimerID = setInterval(() => {
             playground.innerHTML = splitdata[next];
-
+            next++;
+            if (next === maxlength) {
+                next = 0;
             }
-      
+        }, 200);
+       
     }
 
-////////////////////////simple digital clock for decorator/////////////////////////
-function showTime(){
-    let date = new Date();
-    let h = date.getHours(); // 0 - 23
-    let m = date.getMinutes(); // 0 - 59
-    let s = date.getSeconds(); // 0 - 59
-    let session = "AM";
-    
-    if(h >= 12){
-        h = h - 12;
-        session = "PM";}
-    if(h == 0){
-        h = 12;
+    ////////////////////////simple digital clock for decorator/////////////////////////
+    function showTime() {
+        let date = new Date();
+        let h = date.getHours(); // 0 - 23
+        let m = date.getMinutes(); // 0 - 59
+        let s = date.getSeconds(); // 0 - 59
+        let session = "AM";
+
+        if (h >= 12) {
+            h = h - 12;
+            session = "PM";
+        }
+        if (h == 0) {
+            h = 12;
+        }
+
+        h = (h < 10) ? "0" + h : h;
+        m = (m < 10) ? "0" + m : m;
+        s = (s < 10) ? "0" + s : s;
+
+        let time = h + ":" + m + ":" + s + " " + session;
+        document.getElementById("myclock").innerText = time;
+        setTimeout(showTime, 1000);
     }
-
-    h = (h < 10) ? "0" + h : h;
-    m = (m < 10) ? "0" + m : m;
-    s = (s < 10) ? "0" + s : s;
-
-    let time = h + ":" + m + ":" + s + " " + session;
-    document.getElementById("myclock").innerText = time;
-    setTimeout(showTime, 1000);
-}
 
 
 }
