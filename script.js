@@ -12,7 +12,7 @@ window.onload = function () {
 
      document.getElementById("outlet").innerHTML = loginTemplate;
 
-     history.pushState({screen: "loginScreen"}, null, '/login')
+     history.pushState({ screen: "loginScreen" }, null, '/login')
 
 
 
@@ -38,7 +38,7 @@ window.onload = function () {
           fetchData()
           update()
 
-          history.pushState( {screen: "Animation sceen"}, null, '/animation')
+          history.pushState({ screen: "Animation sceen" }, null, '/animation')
      }
 
 
@@ -117,10 +117,11 @@ window.onload = function () {
                document.getElementById("outlet").innerHTML = loginTemplate;
 
                // login again befor refreshing the window             
-               document.getElementById("login").addEventListener("click",function(){displayAnimaTemplate();  history.pushState({screen: "loginScreen"}, null, '/login')
+               document.getElementById("login").addEventListener("click", function () {
+                    displayAnimaTemplate(); history.pushState({ screen: "loginScreen" }, null, '/login')
 
 
-               } );
+               });
           });
      }
 }
