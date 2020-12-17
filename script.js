@@ -28,7 +28,7 @@ function application() {
     div.innerHTML = loginPage;
     history.pushState({ page: 1 }, "login", "?/login ");
 
-    // Adding event listener to the login button,executing the loginFunc function and pushing a new state to the history API when login button is clicked.
+    // Adding event listener to the login button,Invoke the loginFunc function and pushing a new state to the history API when login button is clicked.
     let login = document.querySelector("#login")
     login.addEventListener("click", loginFunc);
     login.addEventListener("click", () => history.pushState({ page: 2 }, "animation", "?/animation "));
@@ -36,7 +36,7 @@ function application() {
 
     // This function will load the animation template into the DOM,
     // send an Ajax call to the server to authenticate the user,
-    // Execute the addEvent function and 
+    // Invoke the addEvent function and 
     // Invoke the geoloction Api 
     function loginFunc() {
         div.innerHTML = animationPage;
@@ -48,7 +48,7 @@ function application() {
 
 
     // This function will add some elements to the DOM,
-    // Add event listener to the refersh_animation and logout button
+    // Add event listener to the refersh_animation button and the logout button
     function addEvent() {
         header = document.querySelector("#locationstatus")
         text = document.querySelector("#textarea");
@@ -68,8 +68,8 @@ function application() {
     };
 
 
-    // send an Ajax call to the server to authenticate the user,
-    // Execute the fetchAnimation function if the authentication status is true 
+    // This function send an Ajax call to the server to authenticate the user,
+    // Invoke the fetchAnimation function if the authentication status is true 
     async function authenticateUserToken() {
 
         const result = await fetch('https://cs445-project.herokuapp.com/api/login',
@@ -79,13 +79,9 @@ function application() {
                 body: JSON.stringify({ username: "map", password: "123456" })
             });
 
-        // console.log(result);
         const myJson = await result.json()
-        // console.log(myJson);
         token = myJson.token;
-        // console.log(token);
         const status = myJson.status;
-        // console.log(status);
         if (status === true) {
             fetchAnimation();
         }
@@ -100,11 +96,8 @@ function application() {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/text', Authorization: `Bearer ${token}` },
             });
-        // console.log(response);
         const animationResult = await response.text();
-        // console.log(animationResult);
         animationFrame = animationResult;
-
         StartAnimation();
     };
 
@@ -132,7 +125,7 @@ function application() {
     };
 
 
-    // This is the callBack function for the geolocation Api which invoked when Alow button is clicked on the browser 
+    // This is the callBack function for the geolocation Api which invoked when Allow button is clicked on the browser 
     // Will invoke the fechLocation function 
     // will set the user current coordinates;
     function Accept(position) {
@@ -147,7 +140,7 @@ function application() {
         alert(" Sorry,we are not able to show your location, You rejected to give permission to access your location ")
     };
 
-    // this function will send an Ajax call to the mapquestapi, which accept the user current coordinates .
+    // This function will send an Ajax call to the mapquestapi, which accept the user current coordinates .
     async function fetchLocation() {
 
         const location = await fetch(`http://www.mapquestapi.com/geocoding/v1/reverse?key=${geolocationAPIKey}&location=${Latitude},${Longitude}`,
@@ -155,13 +148,10 @@ function application() {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
             });
-        // console.log(location);
+
         const locationResult = await location.json()
-        // console.log(locationResult);
         let arr = locationResult.results[0]
-        // console.log(arr);
         let locationObject = arr.locations[0]
-        // console.log(locationObject);
         let country = (locationObject.adminArea1)
         let city = (locationObject.adminArea5)
         let state = (locationObject.adminArea3)
