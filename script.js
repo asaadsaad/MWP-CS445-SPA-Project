@@ -5,6 +5,7 @@ window.onload = function () {
     //outlet id from index.html div
     const display = document.querySelector('#outlet');
 
+
     // Two templates constants: loginTemplate and animationTemplate are defined
 
     const loginTemplate = `
