@@ -23,7 +23,17 @@ window.onload = function firstPage() {
 </h3>`
 
   output.innerHTML = loginPage;
+history.pushState({page : 1}, "firstPage", "?firstpage")
 
+window.addEventListener('popstate', function(event){
+  if (event.state.page == 1){
+  clearInterval(loop);
+  firstPage();
+  } else {
+    clearInterval(loop);
+    star();
+  }
+} )
 
   const login = document.querySelector("#login");
 
@@ -31,7 +41,7 @@ window.onload = function firstPage() {
    * This function generates token and allows the user to login if the user id and password are correct. This takes us to the next page where the animation is shown.
    */
 
-  login.onclick = async function () {
+  login.onclick = async function() {
 
     let user = await fetch(`https://cs445-project.herokuapp.com/api/login`, {
       method: "post",
@@ -45,13 +55,13 @@ window.onload = function firstPage() {
 
     });
 
-    // console.log(user) 
+    console.log(user) 
     const authorize = await user.json(); //because we are receiving data as json accoriding to the instructions in API
-     console.log(authorize)
+    //  console.log(authorize)
 
 
     if (authorize.status) {
-
+      
       animationPage =
         `<h4>Welcome to ${longitude}, ${latitude}</h4> 
         <textarea id = "animationpage" cols = "75" rows = "25"></textarea><br>
@@ -60,7 +70,7 @@ window.onload = function firstPage() {
         //In this beginning I wrote longitude and latitude in the innerHTML textboxjust to see if that is printed in innerHTML. Later on I am going to change this tag fetching the city name and full address with the help of latitude and longitude
 
       output.innerHTML = animationPage;
-
+      history.pushState({page : 2}, "AnimationPage", "?firstpage");
       const anime = document.querySelector("#refresh");
       const stopanime = document.querySelector("#logout");
       let loop;
@@ -71,13 +81,15 @@ window.onload = function firstPage() {
       
       anime.onclick = async function star() {
 
+       
+
         let animation = await fetch(`https://cs445-project.herokuapp.com/api/animation`, {
           method: "get",
           headers: {
             "Authorization": "Bearer " + authorize.token
           }
         });
-        console.log(authorize.token)
+        // console.log(authorize.token)
         // console.log(animation)
         const characters = await animation.text();
         // console.log(characters)
