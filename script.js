@@ -1,11 +1,9 @@
-//your code here
-
-// I am not pushing a new change today because I wanted to spend the day getting ready for my exams and 
-//most of the part of the project is done, just few things to add like the history API
-let tok = {
-    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
-    status: true
-}
+// The div will display the login page when the page loads by calling the login function, 
+// The function log will send a fetch request with the name and password entered as input when the login button is clicked.
+// Once the inputs are matching the page will greet the user with location.
+// the div will display the template page when the user is logged in.
+// The page will send a second request for a new frames everytime the user clicks the refresh button.
+// The div will display the login page again when the user clicks log out button.
 
 window.onload = function login() {
     let loginTemplate = `<h1>Login Please</h1>
@@ -17,10 +15,11 @@ window.onload = function login() {
     
 
     document.getElementById('loginButton').onclick = async function log() {
-        let inputsObj = {}
-        inputsObj.username = document.getElementById("username").value
-        inputsObj.password = document.getElementById("password").value
+        let inputsObj = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
         //console.log(inputsObj)
+        }
 
         const fetchedData = await fetch('https://cs445-project.herokuapp.com/api/login', {
             method: 'POST',
@@ -45,11 +44,12 @@ window.onload = function login() {
             document.querySelector('div').innerHTML = animationTemplate;
             document.getElementById('refreshAnimation').onclick = refreshing;
             document.getElementById('logout').onclick = loggingOut;
+            
         }
         getLocation()
         
     }
-
+    
     function getLocation() {
         navigator.geolocation.getCurrentPosition(showPosition);
     }
@@ -73,6 +73,10 @@ window.onload = function login() {
     }
     let timerid;
     let animArray;
+    let tok = {
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWNyZXQiOiJNb2Rlcm4gQXN5bmNocm9ub3VzIFByb2dyYW1taW5nIiwiaWF0IjoxNjA3OTg0MzEzfQ.zdugpxz3FKBdEXbf0nuXeDhI1zVzqrXYDv_OmYkzCbA",
+        status: true
+    }
     let animFetch = async function () {
         let fetchedFrames = await fetch('https://cs445-project.herokuapp.com/api/animation', {
             method: 'GET',
@@ -102,17 +106,9 @@ window.onload = function login() {
      function loggingOut() {
          clearInterval(timerid)
          document.querySelector('div').innerHTML = loginTemplate;
+         
      }
 
 }
 
-// document.getElementById('logout').onclick = function() {
-//     document.querySelector('div').innerHTML = loginTemplate;
 
-// } 
-
-// function s(params) {
-//     document.getElementById('refreshAnimation').onclick = function nam() {
-//         document.querySelector('textarea').innerHTML = animFetch; 
-//     }
-// }
