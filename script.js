@@ -39,7 +39,7 @@ Username:<input id="username"><br/><br/>
 
             const animTemp = `
             <form><h1>Welcome all from: </h1></form>
-            <textarea id="playground" cols=50 rows=20></textarea><br/><br/>
+            <textarea id="playground" cols=70 rows=30></textarea><br/><br/>
             <button id="refresh" >Refresh Animation</button>  
          <button id="logout" >Log-Out</button> `
             const div = document.getElementById('outlet')
